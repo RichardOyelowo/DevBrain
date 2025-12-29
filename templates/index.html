@@ -1,23 +1,14 @@
 {% block title %}
-DevBrain
+    DevBrain
 {% endblock %}
 
 {% block body %}
-    <header>
-        <h1>DevBrain!</h1>
-        <p> Sharpen your engineering understanding one quiz at a time.</p>
-    </header>
-
-    
-    <div class="difficulty-section">
+    <div class="difficulty-section container">
         <h2>Select Difficulty Level:</h2>
-        <form action="/quiz" method="get">
-            <select name="difficulty">
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-            </select>
-            <input type="submit" value="Start Quiz">
+        <form action="/quiz" name="difficulty" method="get" style="display: inline;">
+            <input type="radio" name="difficulty" value="Easy">Easy</input>
+            <input type="radio" name="difficulty" value="Medium">Medium</input>
+            <input type="radio" name="difficulty" value="Hard">Hard</input>
         </form>
     </div>
 
@@ -31,9 +22,9 @@ DevBrain
                     <button type="submit">{{ topic.capitalize() }}</button>
                 </form>
             {% endfor %}
-    </div>
-
-    <div><button>Start Quiz</button></div>
+        
+    <!-- Start Quiz Button -->
+    </div id="start button"><input type="submit" value="Start Quiz"></div>
 
 
     <div class="Navigation-links">
@@ -41,10 +32,4 @@ DevBrain
         <a href="/History">History</a>
     </div>
 
-    <footer>
-        <ul>
-            <li>Copyright &copy; 2025 DevBrain. All rights reserved.</p>
-            <li><a href="https://github.com/RichardOyelowo/DevBrain.git">GitHub Page</a></li>
-        </ul>
-    </footer>
 {% endblock %}

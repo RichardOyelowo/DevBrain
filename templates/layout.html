@@ -1,15 +1,50 @@
 <!DOCTYPE html>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>
-            {{% block title %}}CS50 Project{{% endblock %}}
+            CS50 Project: {% block title %} {% endblock %}
         </title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     </head>
-    <body>
-        {{% block body %}}
 
-        {{% endblock %}}
+    <body>
+
+        <!--header/Navigation bar-->
+        <header>
+            <h1>DevBrain!</h1>
+            <p> Sharpen your engineering understanding one quiz at a time.</p>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('history') }}">History</a></li>
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Flash Messages / Alerts -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        {% block body %}{% endblock %}
+
+        <!-- Footer -->
+        <footer>
+            <ul>
+                <li>Copyright &copy; 2025 DevBrain. All rights reserved.</li>
+                <li><a href="https://github.com/RichardOyelowo/DevBrain.git">GitHub Page</a></li>
+            </ul>
+        </footer>
     </body>
 </html>

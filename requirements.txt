@@ -1,0 +1,3 @@
+flask
+BeautifulSoup4
+requests

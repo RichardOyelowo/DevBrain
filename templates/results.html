@@ -1,0 +1,27 @@
+{% block title %}
+Quiz Results
+{% endblock %}
+
+{% block body %}
+    <div>
+        <h1>Your Quiz Results</h1>
+        <p>You scored {{ score }} out of {{ total }}.</p>
+    </div>
+
+    <!-- Result details -->
+    <div class="results-details">
+        <h2>Detailed Results:</h2>
+        <ul>
+            {% for question, user_answer, correct_answer in results %}
+                <li>
+                    <strong>Question:</strong> {{ question }}<br>
+                    <strong>Your Answer:</strong> {{ user_answer }}<br>
+                    <strong>Correct Answer:</strong> {{ correct_answer }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="/">Take Another Quiz</a>
+
+{% endblock %}
