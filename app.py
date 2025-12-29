@@ -1,7 +1,6 @@
 import sqlite3
 from flask_session import Session
 from flask import Flask, request, render_template, redirect, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
 from question import Questions
 from auth import register, login, logout
 from config import SECRET_KEY, DATABASE_URL

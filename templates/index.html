@@ -1,35 +1,35 @@
-{% block title %}
-    DevBrain
-{% endblock %}
+{% extends "layout.html" %}
 
 {% block body %}
-    <div class="difficulty-section container">
-        <h2>Select Difficulty Level:</h2>
-        <form action="/quiz" name="difficulty" method="get" style="display: inline;">
-            <input type="radio" name="difficulty" value="Easy">Easy</input>
-            <input type="radio" name="difficulty" value="Medium">Medium</input>
-            <input type="radio" name="difficulty" value="Hard">Hard</input>
-        </form>
-    </div>
+    <form action="/quiz" method="post">
+        <!-- Topic Selection -->
+        <div class="topic-section">
+            <h2>Choose a Topic:</h2>
+                <input type="checkbox" name="quiz[topics][]" value="uncategorized"> Uncategorized
+                {% for topic in topics %}
+                    <label>
+                        <input type="checkbox" name="quiz[topics][]" value="{{ topic }}"> {{ topic.capitalize() }}
+                    </label>
+                {% endfor %}
+        </div>
 
+        <!-- Difficulty Selection -->
+        <div class="difficulty-section">
+            <h2>Select Difficulty Level:</h2>
+                <label><input type="radio" name="quiz[difficulty]" value="Easy">Easy</label>
+                <label><input type="radio" name="quiz[difficulty]" value="Medium">Medium</label>
+                <label><input type="radio" name="quiz[difficulty]" value="Hard">Hard</label>
+        </div>
 
-    <div class="topic-section">
-        <h2>Choose a Topic:</h2>
-            {% for topic in topics %}
-                <form action="/quiz" method="get" style="display: inline;">
-                    <input type="hidden" name="topic" value="{{ topic }}">
-                    <input type="hidden" name="difficulty" value="Easy">
-                    <button type="submit">{{ topic.capitalize() }}</button>
-                </form>
-            {% endfor %}
-        
-    <!-- Start Quiz Button -->
-    </div id="start button"><input type="submit" value="Start Quiz"></div>
+        <!-- Questions Count -->
+        <div class="count-sections">
+            <h2>Number of Questions:</h2>
+            <input type="number" name="quiz[limit]" placeholder="Questions Count" min="1" max="50" required>
+        </div>
 
+        <!-- Start Quiz Button -->
+        <button type="submit" class="btn btn-primary fw-bold">Start Quiz</button>
+    </form>
 
-    <div class="Navigation-links">
-        <a href="/about">About DevBrain</a>
-        <a href="/History">History</a>
-    </div>
 
 {% endblock %}

@@ -1,3 +1,4 @@
 flask
 BeautifulSoup4
 requests
+werkzeug

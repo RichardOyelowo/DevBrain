@@ -1,1 +1,16 @@
 config.py
+pycache/
+__pycache__/   
+*.pyc
+instance
+.env
+.env.*
+venv/
+venv_*/ 
+env/
+env_*/
+.idea/
+database.db
+database_*.db
+*.sqlite3
+*.log

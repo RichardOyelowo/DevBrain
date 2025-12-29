@@ -1,10 +1,23 @@
 import sqlite3
-from flask import session, request,render_template
+from flask import session, request,render_template, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 from config import DATABASE_URL
-
 
 db = sqlite3.connect(DATABASE_URL, check_same_thread=False)
 db= db.cursor()
+
+
+def login_required(f):
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
 
 def register():
     if request.method == "POST":
@@ -52,7 +65,7 @@ def login():
 
         session["user_id"] = rows[0]["id"]
 
-        return redirect(url_for("index"))
+    return redirect(url_for("index"))
 
 
 def logout():
