@@ -4,8 +4,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from config import DATABASE_URL
 
-db = sqlite3.connect(DATABASE_URL, check_same_thread=False)
-db= db.cursor()
+
+def get_db():
+    conn = sqlite3.connect(DATABASE_URL)
+    conn.row_factory = sqlite3.Row
+    
+    return conn
 
 
 def login_required(f):
@@ -38,8 +42,9 @@ def register():
             return render_template("register.html", error="Username already exists")
 
         # Insert new user into the database
-        db.execute("INSERT INTO users (username, password) VALUES (?, ?)", username, generate_password_hash(password))
+        db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, generate_password_hash(password)))
         db.commit()
+        db.close() # Close the database connection
 
         rows = db.execute("SELECT id FROM users WHERE username = ?", username)
 
@@ -51,6 +56,9 @@ def register():
 
 
 def login():
+
+    session.clear() # forget previous user
+
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -58,14 +66,16 @@ def login():
         if not username or not password:
             return render_template("login.html", error="Fill all details")
 
-        rows = db.execute("SELECT * FROM users WHERE username = ?", username)
+        rows = db.execute("SELECT * FROM users WHERE username = ?", (username))
 
         if len(rows) != 1 or not check_password_hash(rows[0]["password"], password):
             return render_template("login.html", error="Invalid username or password")
 
         session["user_id"] = rows[0]["id"]
 
-    return redirect(url_for("index"))
+        return redirect(url_for("index"))
+
+    return render_template("login.html", error=None)
 
 
 def logout():
