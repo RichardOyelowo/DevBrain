@@ -5,24 +5,29 @@ from config import API_KEY
 
 
 class Questions:
+
+    DEFAULT_TOPICS = [
+        "Linux", "Docker", "bash", "php", "Kubernetes", "Python",
+        "JavaScript", "HTML", "CSS", "SQL", "React", "NodeJS"
+    ]
     
     def fetch_quiz_topics(self) -> list:
-            response = requests.get('https://quizapi.io/categories')
-            html_content = response.content # Use .content to help with character encoding
+        try:
+            response = requests.get('https://quizapi.io/categories', timeout=5)
+            response.raise_for_status()
+        except requests.RequestException:
+            return self.DEFAULT_TOPICS
 
-            soup = BeautifulSoup(html_content, 'html.parser')
-            topics_card= soup.find_all('div', class_= 'card card-body border text-center')
+        soup = BeautifulSoup(response.text, 'html.parser')
+        topics_cards = soup.find_all('div', class_='card card-body border text-center')
 
-            topics = []
-            for topic in topics_card:
-                topic_name = topic.find('h5').text.strip()
-                topics.append(topic_name)
+        topics = []
+        for card in topics_cards:
+            h5_tag = card.find('h5')
+            if h5_tag:
+                topics.append(h5_tag.get_text(strip=True))
 
-            if not topics:
-                return ["Linux", "Docker", "bash", "php", "Kubernetes", "Python", 
-                        "JavaScript", "HTML", "CSS", "SQL", "React", "NodeJS"]
-
-            return topics 
+        return topics or self.DEFAULT_TOPICS 
     
 
     def get_questions(self, topic: str = "uncategorized", limit: int = 10, difficulty: str = 'Easy') -> dict:
@@ -30,14 +35,16 @@ class Questions:
        
         response = requests.get(url)
 
-        if response.status_code != 200:
-            return {"error": "HTTP Error"}
+        try:
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+        except requests.RequestException:
+            return {"error": "HTTP Error or network issue"}
         
         questions_data = response.json()
 
-        if questions_data == []:
+        if not questions_data:
             return {"error": "No questions"}
-
 
         questions = [] # Question List
 
@@ -45,14 +52,13 @@ class Questions:
         for item in questions_data:
             desc = item.get("description", "")
             question_text = f"{item['question']}"
-            answers_list = item.get("answers", {})
+            answers_list = {k:v for k, v in item.get("answers", {}).items() if v is not None}
             explanation = item.get("explanation", "")
 
             correct_answer = None  # initialize before using
             for key, value in item.get("correct_answers", {}).items():
-                if value == "true":
-                    answer_key = key.replace("_correct", "")
-                    correct_answer = answers_list.get(answer_key)
+                if str(value).lower() == "true":
+                    correct_answer = answers_list.get(key.replace("_correct", ""))
                     break
 
             if correct_answer is None:
@@ -65,5 +71,9 @@ class Questions:
                 "correct_answer" : correct_answer, 
                 "explanation" : explanation
             })
+
+        if not questions:
+            return {"error": "No valid questions found"}
+
 
         return {"questions": questions}
