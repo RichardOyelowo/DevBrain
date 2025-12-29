@@ -35,20 +35,24 @@ def register():
         if password != confirmation:
             return render_template("register.html", error="Passwords do not match")
 
-        # Check if username already exists
-        existing = db.execute("SELECT * FROM users WHERE username = ?", username)
+        conn = get_db()
+        cur = conn.cursor()
 
-        if len(existing) != 0:
+        # Check if username already exists
+        existing = cur.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+
+        if existing is not None:
+            conn.close() # Close the database connection
             return render_template("register.html", error="Username already exists")
 
         # Insert new user into the database
-        db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, generate_password_hash(password)))
-        db.commit()
-        db.close() # Close the database connection
+        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, generate_password_hash(password)))
+        conn.commit()
 
-        rows = db.execute("SELECT id FROM users WHERE username = ?", username)
+        row = cur.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()
+        conn.close() # Close the database connection
 
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = row["id"]
 
         return redirect(url_for("index"))
 
@@ -66,12 +70,16 @@ def login():
         if not username or not password:
             return render_template("login.html", error="Fill all details")
 
-        rows = db.execute("SELECT * FROM users WHERE username = ?", (username))
+        conn = get_db()
+        cur = conn.cursor()
 
-        if len(rows) != 1 or not check_password_hash(rows[0]["password"], password):
+        row = cur.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        conn.close() # Close the database connection
+
+        if row is None or not check_password_hash(row["password"], password):
             return render_template("login.html", error="Invalid username or password")
 
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = row["id"]
 
         return redirect(url_for("index"))
 
