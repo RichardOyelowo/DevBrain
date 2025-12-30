@@ -1,4 +1,12 @@
 flask
-BeautifulSoup4
+sqlite3
+jinja2
+flask-mail
+flask_wtf
+flask-session
+bs4
 requests
-werkzeug
+werkzeug.security
+itsdangerous
+functools
+smtplib
