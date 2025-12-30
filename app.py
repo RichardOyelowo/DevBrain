@@ -1,6 +1,6 @@
 import sqlite3
 from flask_session import Session
-from auth import login_required, get_db, auth
+from auth import login_required, get_db, auth, mail
 from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_wtf import CSRFProtect
@@ -21,9 +21,18 @@ brain = Questions() # Questions class instance
 conn = get_db() #connection
 cur = conn.cursor() #cursor 
 
-# Registering auth routes
-app.register_blueprint(auth)
+# configure mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = EMAIL
+app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
 
+mail.init_app(app) # to configure the mail config to auth.py Mail instance
+
+# Registering auth routes
+csrf.exempt(auth)  # Exempt auth routes from CSRF protection since it's pre-login
+app.register_blueprint(auth)
 
 @app.after_request
 def after_request(response):
