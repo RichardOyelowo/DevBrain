@@ -2,9 +2,10 @@ import sqlite3
 from flask import session, request, render_template, redirect, url_for, Blueprint, current_app
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
-import smtplib
 from config import DATABASE_URL, EMAIL, EMAIL_PASSWORD
+from functools import wraps
+from flask_mail import Mail, Message
+import smtplib
 
 auth = Blueprint("auth", __name__)
 
@@ -20,6 +21,17 @@ def login_required(f):
             return redirect(url_for("auth.login"))
         return f(*args, **kwargs)
     return decorated_function
+
+# ---------------- Reset Email Utility ----------------
+mail = Mail()
+def send_reset_email(to_email, reset_link, sender_email):
+    msg = Message(
+        subject="DevBrain Password Reset",
+        recipients=[to_email],
+        body=f"Reset your password: {reset_link}",
+        sender=sender_email
+    )
+    mail.send(msg)
     
 
 # ---------------- Registration ----------------
@@ -60,7 +72,7 @@ def register():
 # ---------------- Login ----------------
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-    session.clear()
+    
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -77,6 +89,8 @@ def login():
             return render_template("login.html", error="Invalid email or password")
 
         session["user_id"] = row["id"]
+
+        print("Logged in user ID:", session["user_id"])
         return redirect(url_for("index"))
 
     return render_template("login.html", error=None)
@@ -95,6 +109,7 @@ def forgot_password():
     token = None
     if request.method == "POST":
         users_email = request.form.get("email")
+
         if not users_email:
             return render_template("forgot_password.html", form_type="forgot", token=token, error="Please enter your email.")
 
@@ -103,20 +118,16 @@ def forgot_password():
         row = cur.execute("SELECT * FROM users WHERE email = ?", (users_email,)).fetchone()
         conn.close()
 
-        # Send email only if user exists
-        if row:
+        if row: # Send email only if user exists
             s = URLSafeTimedSerializer(current_app.secret_key)
             token = s.dumps(row["id"], salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
 
-            with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-                smtp.starttls()
-                smtp.login(EMAIL, EMAIL_PASSWORD)
-                smtp.sendmail(
-                    from_addr=EMAIL,
-                    to_addrs=users_email,
-                    msg=f"Subject: DevBrain Password Reset\n\nReset your password: {reset_link}"
-                )
+            # Send reset email
+            try:
+                send_reset_email(to_email=users_email, reset_link=reset_link, sender_email=EMAIL)
+            except:
+                return render_template("forgot_password.html", form_type="forgot", token=token, error="Please try again later, some error encountered.")
 
         # Always show the same message for security
         return render_template("forgot_password.html", form_type="sent_or_notfound", token=None, error=None)
