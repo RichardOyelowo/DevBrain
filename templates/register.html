@@ -11,22 +11,24 @@
             <p class="error-message">{{ error }}</p>
         {% endif %}
 
-        <form action="{{ url_for('register') }}" method="post">
+        <form action="{{ url_for('auth.register') }}" method="post">
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <div class="mb-3">
                 <label for="email">Email:</label>
-                <input type="text" id="email" name="email" class="form-control" autofocus autocomplete="email" required> 
+                <input type="email" id="email" name="email" class="form-control" autofocus autocomplete="email" required> 
             </div>
             <div class="mb-3">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" class="form-control" autofocus autocomplete="username" placeholder="optional" optional> 
+                <input type="text" id="username" name="username" class="form-control" placeholder="Optional"> 
             </div>
             <div class="mb-3">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" autocomplete="new-password" required>
             </div>
             <div class="mb-3">
                 <label for="confirmation">Confirm Password:</label>
-                <input type="password" id="confirmation" name="confirmation" class="form-control" required>
+                <input type="password" id="confirmation" name="confirmation" class="form-control" autocomplete="new-password" required>
             </div>
             <div><button type="submit" class="btn btn-primary me-2">Register</button></div>
         </form>
