@@ -1,11 +1,14 @@
 import sqlite3
 from flask_session import Session
+from auth import login_required, get_db, auth
+from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
 from flask import Flask, request, render_template, redirect, url_for, session
+from flask_wtf import CSRFProtect
+import smtplib
 from question import Questions
-from auth import register, login, logout
-from config import SECRET_KEY, DATABASE_URL
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 # Configure session to use filesystem (instead of signed cookies)
 app.secret_key = SECRET_KEY
@@ -13,16 +16,13 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Initialize question handler
-brain = Questions()
-# Initialize database connection
-db = sqlite3.connect(DATABASE_URL, check_same_thread=False)
-db = db.cursor()
+brain = Questions() # Questions class instance
+
+conn = get_db() #connection
+cur = conn.cursor() #cursor 
 
 # Registering auth routes
-app.add_url_rule("/register", view_func=register, methods=["GET", "POST"])
-app.add_url_rule("/login", view_func=login, methods=["GET", "POST"])
-app.add_url_rule("/logout", view_func=logout)
+app.register_blueprint(auth)
 
 
 @app.after_request
@@ -35,12 +35,14 @@ def after_request(response):
 
 
 @app.route("/", methods= ["GET", "POST"])
+@login_required
 def index():
     session["topics"] = brain.fetch_quiz_topics()
     return render_template("index.html", topics=session["topics"])
 
 
 @app.route("/quiz", methods= ["POST"])
+@login_required
 def quiz():
     if request.method != "POST":
         return redirect(url_for("index"))
@@ -56,11 +58,13 @@ def quiz():
 
 
 @app.route("/result", methods= ["POST"])
+@login_required
 def result():
     render_template("results.html")
 
 
 @app.route("/history", methods=["GET"])
+@login_required
 def history():
     render_template("history.html")
 
