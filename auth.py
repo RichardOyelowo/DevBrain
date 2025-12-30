@@ -92,7 +92,7 @@ def logout():
 # ---------------- Forgot Password ----------------
 @auth.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
-
+    token = None
     if request.method == "POST":
         users_email = request.form.get("email")
         if not users_email:
@@ -103,7 +103,8 @@ def forgot_password():
         row = cur.execute("SELECT * FROM users WHERE email = ?", (users_email,)).fetchone()
         conn.close()
 
-        if row:  # Only send email if user exists
+        # Send email only if user exists
+        if row:
             s = URLSafeTimedSerializer(current_app.secret_key)
             token = s.dumps(row["id"], salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
@@ -117,10 +118,10 @@ def forgot_password():
                     msg=f"Subject: DevBrain Password Reset\n\nReset your password: {reset_link}"
                 )
 
-        # Always show the same message to prevent fraud
-        return render_template("forgot_password.html", form_type="sent_or_notfound")
+        # Always show the same message for security
+        return render_template("forgot_password.html", form_type="sent_or_notfound", token=None, error=None)
 
-    return render_template("forgot_password.html", form_type="forgot")
+    return render_template("forgot_password.html", form_type="forgot", token=None, error=None)
 
 
 # ---------------- Reset Password ----------------
