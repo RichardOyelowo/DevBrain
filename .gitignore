@@ -12,5 +12,3 @@ env_*/
 .idea/
 database.db
 database_*.db
-*.sqlite3
-*.log
