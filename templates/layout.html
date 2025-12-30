@@ -7,43 +7,48 @@
         <title>
             CS50 Project DevBrain{% block title %} {% endblock %}
         </title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="/static/styles.css">
         <!-- http://getbootstrap.com/docs/5.3/ -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     </head>
 
     <body>
-
         <!--header/Navigation bar-->
         <header>
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">DevBrain</a>
+                <a class="navbar-brand" href="{{ url_for('index') }}">DevBrain</a>
+                
+                 <!-- Toggler for mobile -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class= "collapse navbar-collapse" id="navbarNav">
-                    {% if session.get("user_id") %}
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+
+                <div class= "collapse navbar-collapse" id="navbarNav">        
+                    <!-- Left Navigation Links -->
+                    <ul class="navbar-nav">
+                        {% if session.get("user_id") %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('quiz') }}">Quiz</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('history') }}">History</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About Devbrain</a></li>
-                        </ul>
-                        
-                        <ul class="navbar-nav mx-2">
-                            <li class="nav-item"><a class="btn btn-danger" href="{{ url_for('logout') }}">Logout</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About Us</a></li>
+                    </ul>
+                    
+                    <!-- Right Navigation Links -->
+                    {% if session.get("user_id") %}
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item"><a class="btn btn-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
                         </ul>
                     {% else %}
-                        <ul class="navbar-nav">
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('about') }}">About Devbrain</a></li>
-                        </ul>
-                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                            <li class="nav-item"><a class="btn btn-secondary" href="{{ url_for('register') }}">Register</a></li>
-                            <li class="nav-item"><a class="btn btn-primary" href="{{ url_for('login') }}">Login</a></li>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item me-2"><a class="btn" href="{{ url_for('auth.register') }}">Register</a></li>
+                            <li class="nav-item me-2"><a class="btn" href="{{ url_for('auth.login') }}">Login</a></li>
                         </ul>
                     {% endif %}
                 </div>
+            </div>
+            </nav>
         </header>
 
         <!-- Flash Messages / Alerts -->
@@ -60,15 +65,12 @@
         <!-- Main Content -->
         {% block body %}{% endblock %}
 
-        
-
         <!-- Footer -->
-        <footer>
-            <ul>
+        <footer class="footer bg-dark text-white text-center fixed-bottom">
+            <ul class="footer-list">
                 <li>Copyright &copy; 2025 DevBrain. All rights reserved.</li>
                 <li><a href="https://github.com/RichardOyelowo/DevBrain.git">GitHub Page</a></li>
                 <li><a href="{{ url_for('about') }}">About DevBrain</a></li>
-                <li><a href="{{ url_for('history') }}">History</a></li>
             </ul>
         </footer>
     </body>
