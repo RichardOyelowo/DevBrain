@@ -5,59 +5,56 @@
 {% endblock %}
 
 {% block body %}
-    <main class="about-container">
-        <h1>About Devbrain</h1>
 
-        <section class="about-intro">
-            <p>Welcome to <strong>Devbrain</strong>, an interactive platform for learning, testing, 
-            and mastering knowledge in programming and technology. Whether you're a student, 
-            professional, or curious learner, Devbrain provides engaging quizzes and challenges 
-            to help you track and improve your skills.</p>
-        </section>
+<main class="about-page">
+    <section class="about-header">
+        <h1>About DevBrain</h1>
+        <p>
+            DevBrain is a learning platform built around one core idea:
+            understanding improves when knowledge is tested.
+        </p>
+    </section>
 
-        <section class="about-mission">
-            <h2>Our Mission</h2>
-            <p>We empower learners to enhance their knowledge and skills through interactive quizzes. 
-            Learning should be engaging, accessible, and tailored to individual needs.</p>
-        </section>
+    <section class="about-mission">
+        <h2>Our Mission</h2>
+        <p>
+            We aim to help learners strengthen their understanding through interactive quizzes
+            that provide immediate feedback and measurable progress.
+        </p>
+        <p>Learning should be active, practical, and accessible — not passive or overwhelming.</p>
+    </section>
 
-        <section class="about-how-it-works">
-            <h2>How It Works</h2>
-            <p>Choose quizzes by topic and difficulty. Receive instant feedback, detailed explanations, 
-            and track your performance over time with personalized history and analytics.</p>
-        </section>
+    <section class="about-philosophy">
+        <h2>Our Philosophy</h2>
+        <p>Memorization fades. Understanding sticks.</p>
+        <p>
+            DevBrain focuses on clear questions, honest scoring, and meaningful feedback
+            so learners can identify gaps and improve efficiently.
+        </p>
+    </section>
 
-        <section class="about-why">
-            <h2>Why Choose Devbrain?</h2>
-            <ul>
-                <li><strong>Immediate Feedback:</strong> Reinforces understanding right away.</li>
-                <li><strong>Personalized Progress:</strong> Track your improvement over time.</li>
-                <li><strong>Engaging Content:</strong> Interactive quizzes make learning fun.</li>
-                <li><strong>Wide Topics:</strong> From general coding to specialized subjects.</li>
-                <li><strong>Simple Design:</strong> Focus stays on learning, not distractions.</li>
-            </ul>
-        </section>
+    <section class="about-vision">
+        <h2>Our Vision</h2>
+        <p>
+            We envision a learning experience where progress is continuous,
+            self-directed, and driven by curiosity rather than pressure.
+        </p>
+    </section>
 
-        <section class="about-features">
-            <h2>Key Features</h2>
-            <ul>
-                <li>Wide range of quiz topics covering programming languages and concepts.</li>
-                <li>Multiple difficulty levels for beginners and advanced users.</li>
-                <li>Instant feedback with detailed explanations.</li>
-                <li>Track your progress with personalized quiz history.</li>
-                <li>User-friendly interface for seamless quiz-taking experience.</li>
-            </ul>
-        </section>
+    <section class="about-who">
+        <h2>Who DevBrain Is For</h2>
+        <ul>
+            <li>Students learning programming and technical concepts</li>
+            <li>Developers refreshing fundamentals</li>
+            <li>Self-learners who want structured self-assessment</li>
+            <li>Anyone who learns best by testing their knowledge</li>
+        </ul>
+    </section>
 
-        <section class="about-vision">
-            <h2>Our Vision</h2>
-            <p>We envision a world where learning is continuous, accessible, and engaging. 
-            Devbrain helps learners take control of their knowledge and grow every day.</p>
-        </section>
+    <section class="about-cta">
+        <p>Ready to test what you know?</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Take a Quiz</a>
+    </section>
+</main>
 
-        <section class="about-cta">
-            <p>Ready to start improving your skills?</p>
-            <a href="{{ url_for('index') }}" class="btn btn-primary">Take Your First Quiz</a>
-        </section>
-    </main>
 {% endblock %}
