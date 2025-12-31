@@ -1,35 +1,111 @@
 {% extends "layout.html" %}
 
+{% block title %}
+    DevBrain - Home
+{% endblock %}
+
 {% block body %}
-    <form action="/quiz" method="post">
-        <!-- Topic Selection -->
-        <div class="topic-section">
-            <h2>Choose a Topic:</h2>
-                <input type="checkbox" name="quiz[topics][]" value="uncategorized"> Uncategorized
-                {% for topic in topics %}
-                    <label>
-                        <input type="checkbox" name="quiz[topics][]" value="{{ topic }}"> {{ topic.capitalize() }}
-                    </label>
-                {% endfor %}
+
+<main class="homepage">
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Test Your Knowledge with DevBrain</h1>
+        <p>
+            DevBrain is an interactive quiz platform built to help developers and learners
+            test their understanding, identify gaps, and improve through practice.
+        </p>
+        <p>
+            No passive learning. No fluff. Just clear questions, instant feedback,
+            and real progress tracking.
+        </p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Create Free Account</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Try a Demo Quiz</a>
         </div>
+    </section>
 
-        <!-- Difficulty Selection -->
-        <div class="difficulty-section">
-            <h2>Select Difficulty Level:</h2>
-                <label><input type="radio" name="quiz[difficulty]" value="Easy">Easy</label>
-                <label><input type="radio" name="quiz[difficulty]" value="Medium">Medium</label>
-                <label><input type="radio" name="quiz[difficulty]" value="Hard">Hard</label>
-        </div>
+    <!-- What DevBrain Is -->
+    <section class="overview">
+        <h2>What Is DevBrain?</h2>
+        <p>
+            DevBrain is designed for learners who want to actively test what they know.
+            Whether you're studying programming fundamentals or sharpening technical concepts,
+            DevBrain turns learning into measurable progress.
+        </p>
+        <p>
+            You can take quizzes instantly without an account, or sign up to save your results
+            and track your improvement over time.
+        </p>
+    </section>
 
-        <!-- Questions Count -->
-        <div class="count-sections">
-            <h2>Number of Questions:</h2>
-            <input type="number" name="quiz[limit]" placeholder="Questions Count" min="1" max="50" required>
-        </div>
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <ul class="cards-list">
+            <li><strong>Choose a Topic</strong> – Select a subject and difficulty level.</li>
+            <li><strong>Take the Quiz</strong> – Answer carefully crafted questions.</li>
+            <li><strong>Get Instant Feedback</strong> – See your score and explanations immediately.</li>
+            <li><strong>Track Progress</strong> – Registered users can review past attempts and growth.</li>
+        </ul>
+    </section>
 
-        <!-- Start Quiz Button -->
-        <button type="submit" class="btn btn-primary fw-bold">Start Quiz</button>
-    </form>
+    <!-- Key Features -->
+    <section class="features">
+        <h2>Key Features</h2>
+        <ul class="cards-list">
+            <li><strong>Wide Topic Coverage</strong> – Programming concepts, fundamentals, and more.</li>
+            <li><strong>Multiple Difficulty Levels</strong> – Beginner to advanced.</li>
+            <li><strong>Instant Scoring</strong> – Know where you stand right away.</li>
+            <li><strong>Progress Tracking</strong> – View your quiz history when logged in.</li>
+            <li><strong>Simple, Focused Design</strong> – Learning without distractions.</li>
+        </ul>
+    </section>
 
+    <!-- Demo vs Account -->
+    <section class="demo-info">
+        <h2>Try Before You Commit</h2>
+        <p>You can take quizzes without creating an account to explore how DevBrain works.</p>
+        <p>
+            Creating an account unlocks progress tracking, saved results,
+            and a more personalized learning experience.
+        </p>
+    </section>
+
+    <!-- Vision -->
+    <section class="vision">
+        <h2>Our Vision</h2>
+        <p>
+            DevBrain aims to make learning continuous, practical, and honest.
+            Improvement starts by knowing what you don’t know — and fixing it.
+        </p>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <h2>What Our Users Say</h2>
+        <ul class="cards-list">
+            <li>"DevBrain has transformed how I study coding – fun and effective!" – Alex, Student</li>
+            <li>"I love tracking my progress and reviewing my results." – Maria, Developer</li>
+            <li>"Instant feedback helps me understand my mistakes immediately." – John, Learner</li>
+        </ul>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <h2>Start Learning Smarter</h2>
+        <p>Test your knowledge today and build confidence through practice.</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+    </section>
+</main>
+
+<!-- Footer -->
+        <footer class="footer text-white text-center bottom">
+            <ul class="footer-list">
+                <li>Copyright &copy; 2025 DevBrain. All rights reserved.</li>
+                <li><a href="https://github.com/RichardOyelowo/DevBrain.git">GitHub Page</a></li>
+                <li><a href="{{ url_for('about') }}">About DevBrain</a></li>
+            </ul>
+        </footer>
 
 {% endblock %}
