@@ -1,0 +1,33 @@
+/* Body - Main background */
+body {
+    background-color: #181A1F;
+    color: #cdd6f4;
+}
+
+/* Header/Navbar Styling*/
+header {
+    background-color: #11111b;
+}
+
+.navbar, .navbar a, .navbar-brand {
+    color: white !important;
+}
+
+footer {
+    background-color: #181A1F;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    color: #f5e0dc;
+}
+
+/* Accent color - soft cyan/blue */
+a,
+.text-accent {
+    color: #94dfec;
+}
+
+a:hover {
+    color: #77bfe1;
+}
