@@ -4,6 +4,76 @@
     : Quiz
 {% endblock %}
 
-{{% block body %}}
+{% block body %}
+    {% if data %}
+        <form action="/quiz" method="post">
 
-{{% endblock}}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    let answer_picked = document.querySelectorAll(".users_answer");
+                    const correct_answer = "{{ data['correct_answer'] }}";
+                    let score = parseInt("{{ data['score'] }}") || 0;
+                    let question_count = parseInt("{{ data['question_count'] }}") || 0;
+
+                    for (var answer of answer_picked) {
+                        answer.addEventListener("click", function() {
+                            if (this.textContent.trim().toLowerCase() == correct_answer.toLowerCase()) {
+                                this.style.background = "green";
+                                score += 1;
+                            }
+                            else {
+                                this.style.background = "red";
+                            }
+                            this.parentElement.querySelector(".feedback").innerHTML = "{{ data['explanation']}}"
+                            question_count += 1;
+                        })
+                        
+
+                    }
+                })
+            </script>
+
+            <div class="Question-section">
+                <h2>{{ data["text"] }}</h2>
+                <p>{{ data["description"] }}</p>
+                <div>
+                    {% for answer in answers %}
+                        <button type="button" class="users_answer btn" >{{ answer.capitalize() }}</button>
+                    {% endfor %}
+                    <p class="feedback"></p>
+                </div>
+            </div>
+        </form>
+
+    {% elif topics %}
+        <form action="/quiz" method="post">
+            <!-- Topic Selection -->
+            <div class="topic-section">
+                <h2>Choose a Topic:</h2>
+                    <input type="checkbox" name="topics" value="uncategorized"> Uncategorized
+                    {% for topic in topics %}
+                        <label>
+                            <input type="checkbox" name="topics" value="{{ topic }}"> {{ topic.capitalize() }}
+                        </label>
+                    {% endfor %}
+            </div>
+
+            <!-- Difficulty Selection -->
+            <div class="difficulty-section">
+                <h2>Select Difficulty Level:</h2>
+                    <label><input type="radio" name="difficulty" value="Easy">Easy</label>
+                    <label><input type="radio" name="difficulty" value="Medium">Medium</label>
+                    <label><input type="radio" name="difficulty" value="Hard">Hard</label>
+            </div>
+
+            <!-- Questions Count -->
+            <div class="count-sections">
+                <h2>Number of Questions:</h2>
+                <input type="number" name="limit" placeholder="Questions Count" min="1" max="50" required>
+            </div>
+
+            <!-- Start Quiz Button -->
+            <button type="submit" class="btn btn-primary fw-bold">Start Quiz</button>
+        </form>
+    {% endif %}
+{% endblock %}
