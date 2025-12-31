@@ -64,7 +64,8 @@ def register():
         conn.close()
 
         session["user_id"] = user_id
-        return redirect(url_for("index"))
+        
+        return redirect(url_for("quiz"))
 
     return render_template("register.html")
 
@@ -90,8 +91,7 @@ def login():
 
         session["user_id"] = row["id"]
 
-        print("Logged in user ID:", session["user_id"])
-        return redirect(url_for("index"))
+        return redirect(url_for("quiz"))
 
     return render_template("login.html", error=None)
 
