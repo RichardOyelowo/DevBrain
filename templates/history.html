@@ -15,25 +15,28 @@
                         <th>Date</th>
                         <th>Topic</th>
                         <th>Difficulty</th>
+                        <th>Questions</th>
                         <th>Score</th>
-                        <th>Grade Level</th>
+                        <th>Grade</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for entry in history %}
+                    {% for details in history %}
                         <tr>
-                            <td>{{ entry.date }}</td>
-                            <td>{{ entry.topic }}</td>
-                            <td>{{ entry.difficulty }}</td>
-                            <td>{{ entry.score }}%</td>
-                            <td>{{ entry.grade-level }}</td>
+                            <td>{{ details["date"] }}</td>
+                            <td>{{ details["topic"] }}</td>
+                            <td>{{ details["difficulty"] }}</td>
+                            <td>{{ details["qustion_count"] }}</td>
+                            <td>{{ details["score"] }}</td>
+                            <td>{{ details["grade"] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
             <h3>No quiz history available.</h3>
+            <a href="{{ url_for('quiz') }}" class="btn btn-primary">Take Quiz</a>
         {% endif %}
     </div>
 {% endblock %}
