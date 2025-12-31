@@ -27,7 +27,7 @@
                             <td>{{ details["date"] }}</td>
                             <td>{{ details["topic"] }}</td>
                             <td>{{ details["difficulty"] }}</td>
-                            <td>{{ details["qustion_count"] }}</td>
+                            <td>{{ details["question_count"] }}</td>
                             <td>{{ details["score"] }}</td>
                             <td>{{ details["grade"] }}</td>
                         </tr>
@@ -36,7 +36,7 @@
             </table>
         {% else %}
             <h3>No quiz history available.</h3>
-            <a href="{{ url_for('quiz') }}" class="btn btn-primary">Take Quiz</a>
+            <a href="{{ url_for('quiz') }}" class="btn btn-primary">Take Your First Quiz</a>
         {% endif %}
     </div>
 {% endblock %}
