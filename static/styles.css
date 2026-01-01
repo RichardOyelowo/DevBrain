@@ -1,67 +1,43 @@
-/* Body - Main background */
+/* Base Styles */
 body {
     background-color: #181A1F;
     color: #cdd6f4;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
     margin: 0;
     padding: 0;
-    text-align: left;
+    overflow-x: hidden;
 }
 
-/* Container for main content */
 .container {
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1px;
-    padding-right: 5px;
+    margin: 0 auto;
+    padding: 0 5px 0 1px;
 }
 
-/* Header/Navbar Styling */
 header {
     padding: 0 1rem;
     background-color: #11111b !important;
-    width: 100%;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
 }
 
-/* Footer Styling */
 footer {
-    width: 100%;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
     background-color: #11111b;
     padding: 1rem 15px;
-    margin-right: auto;
     text-align: center;
 }
 
-/* Navbar links */
-.navbar, .navbar a, .navbar-brand {
-    color: white !important;
-}
+.navbar, .navbar a, .navbar-brand { color: white !important; }
+h1, h2, h3, h4, h5, h6 { color: #f5e0dc; }
+ul { list-style: none; margin: 0; padding: 0; }
+a, .text-accent { color: #94dfec; }
+a:hover { color: #77bfe1; }
 
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-    color: #f5e0dc;
-}
-
-/* Lists */
-ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-/* Links / Accent color */
-a,
-.text-accent {
-    color: #94dfec;
-}
-
-a:hover {
-    color: #77bfe1;
-}
-
-/* ------------ HOMEPAGE STYLING ----------- */
+/* Homepage */
 .homepage {
     max-width: 900px;
     margin: 0 auto;
@@ -79,20 +55,11 @@ a:hover {
 .hero {
     text-align: center;
     padding: 3rem 2rem !important;
-    background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+    background: linear-gradient(135deg, #1e1e2e, #2a2a3e);
 }
 
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #94dfec;
-}
-
-.hero p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: #cdd6f4;
-}
+.hero h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #94dfec; }
+.hero p { font-size: 1.1rem; margin-bottom: 1rem; }
 
 .hero-actions {
     display: flex;
@@ -108,13 +75,8 @@ a:hover {
     text-decoration: none;
 }
 
-.overview h2,
-.how-it-works h2,
-.features h2,
-.demo-info h2,
-.vision h2,
-.testimonials h2,
-.cta h2 {
+.overview h2, .how-it-works h2, .features h2, 
+.demo-info h2, .vision h2, .testimonials h2, .cta h2 {
     color: #94dfec;
     margin-bottom: 1rem;
     font-size: 1.8rem;
@@ -133,7 +95,7 @@ a:hover {
 
 .cta {
     text-align: center;
-    background: linear-gradient(135deg, #2a2a3e 0%, #1e1e2e 100%);
+    background: linear-gradient(135deg, #2a2a3e, #1e1e2e);
     padding: 3rem 2rem !important;
 }
 
@@ -143,7 +105,7 @@ a:hover {
     margin-top: 1rem;
 }
 
-/*  QUIZ STYLING  */
+/* Quiz */
 .Question-section {
     max-width: 800px;
     margin: 2rem auto;
@@ -153,16 +115,8 @@ a:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.Question-section h4 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #f5e0dc;
-}
-
-.Question-section p {
-    margin-bottom: 1.5rem;
-    color: #cdd6f4;
-}
+.Question-section h4 { font-size: 1.5rem; margin-bottom: 1rem; }
+.Question-section p { margin-bottom: 1.5rem; }
 
 .users_answer {
     width: 100%;
@@ -198,10 +152,8 @@ a:hover {
     font-weight: bold;
 }
 
-/* -------- Topic Selection --------- */
-.topic-section,
-.difficulty-section,
-.count-sections {
+/* Topic Selection */
+.topic-section, .difficulty-section, .count-sections {
     max-width: 700px;
     margin: 2rem auto;
     padding: 2rem;
@@ -210,15 +162,12 @@ a:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.topic-section h2,
-.difficulty-section h2,
-.count-sections h2 {
+.topic-section h2, .difficulty-section h2, .count-sections h2 {
     color: #94dfec;
     margin-bottom: 1rem;
 }
 
-.topic-section label,
-.difficulty-section label {
+.topic-section label, .difficulty-section label {
     display: block;
     margin-bottom: 0.75rem;
     padding: 0.5rem;
@@ -227,8 +176,7 @@ a:hover {
     border-radius: 4px;
 }
 
-.topic-section label:hover,
-.difficulty-section label:hover {
+.topic-section label:hover, .difficulty-section label:hover {
     background-color: #2a2a3e;
 }
 
@@ -252,7 +200,7 @@ a:hover {
     outline: none;
 }
 
-/* ---------- RESULTS STYLING ------------- */
+/* Results */
 .results-details {
     max-width: 800px;
     margin: 2rem auto;
@@ -262,21 +210,13 @@ a:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.results-details h1,
-.results-details h2 {
+.results-details h1, .results-details h2 {
     color: #94dfec;
     margin-bottom: 1.5rem;
 }
 
-.results-details p {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-}
-
-.results-details ul {
-    list-style: none;
-    padding: 0;
-}
+.results-details p { font-size: 1.2rem; margin-bottom: 1rem; }
+.results-details ul { list-style: none; padding: 0; }
 
 .results-details li {
     background-color: #2a2a3e;
@@ -304,6 +244,11 @@ a:hover {
     transition: background-color 0.3s;
 }
 
-.results-details a:hover {
-    background-color: #77bfe1;
+.results-details a:hover { background-color: #77bfe1; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    body { padding: 0 1rem; }
+    .homepage { padding: 1rem 0; }
+    .homepage section { padding: 1.5rem; }
 }
