@@ -1,3 +1,4 @@
+import requests
 from config import API_KEY
 
 class Questions:
