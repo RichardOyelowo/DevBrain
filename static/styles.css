@@ -13,12 +13,17 @@ body {
 }
 
 header {
-    padding: 0 1rem;
     background-color: #11111b !important;
     width: 100vw;
     position: relative;
     left: 50%;
     margin-left: -50vw;
+}
+
+.navbar {
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 footer {
@@ -251,4 +256,8 @@ a:hover { color: #77bfe1; }
     body { padding: 0 1rem; }
     .homepage { padding: 1rem 0; }
     .homepage section { padding: 1.5rem; }
+    .navbar { padding: 1rem 1.5rem; }
+    .navbar-toggler-icon { 
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
 }
