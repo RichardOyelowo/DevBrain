@@ -1,33 +1,10 @@
-# for the quuestion API scraping
-import requests
-from bs4 import BeautifulSoup
 from config import API_KEY
-
 
 class Questions:
 
-    DEFAULT_TOPICS = [
-        "Linux", "Docker", "bash", "php", "Kubernetes", "Python",
-        "JavaScript", "HTML", "CSS", "SQL", "React", "NodeJS"
-    ]
-    
-    def fetch_quiz_topics(self) -> list:
-        try:
-            response = requests.get('https://quizapi.io/categories', timeout=5)
-            response.raise_for_status()
-        except requests.RequestException:
-            return self.DEFAULT_TOPICS
-
-        soup = BeautifulSoup(response.text, 'html.parser')
-        topics_cards = soup.find_all('div', class_='card card-body border text-center')
-
-        topics = []
-        for card in topics_cards:
-            h5_tag = card.find('h5')
-            if h5_tag:
-                topics.append(h5_tag.get_text(strip=True))
-
-        return topics or self.DEFAULT_TOPICS 
+    DEFAULT_TOPICS = ['Linux', 'BASH', 'PHP', 'Docker', 'HTML', 'Postgres', 'MySQL', 
+    'Laravel', 'Kubernetes', 'JavaScript', 'Python', 'Openshift', 'Terraform', 'React', 
+    'Django', 'cPanel', 'Ubuntu', 'nodeJS', 'WordPress', 'Next.js', 'VueJS', 'Apache Kafka']
     
 
     def get_questions(self, topic: str = "uncategorized", limit: int = 10, difficulty: str = 'Easy') -> list:
