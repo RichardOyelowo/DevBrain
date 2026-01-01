@@ -27,10 +27,6 @@ app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
 
 mail.init_app(app) # to configure the mail config to auth.py Mail instance
 
-# Registering auth routes
-csrf.exempt(auth)  # Exempt auth routes from CSRF protection since it's pre-login
-app.register_blueprint(auth)
-
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -39,10 +35,44 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# Registering auth routes
+csrf.exempt(auth)  # Exempt auth routes from CSRF protection since it's pre-login
+app.register_blueprint(auth)
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
+
+
+def calculate_grade(score, total):
+    """Calculate grade based on percentage score"""
+    percentage = (score / total) * 100
+    
+    if percentage < 40:
+        return "Needs Improvement", percentage
+    elif percentage < 60:
+        return "Fair", percentage
+    elif percentage < 75:
+        return "Average", percentage
+    elif percentage < 90:
+        return "Competent", percentage
+    else:
+        return "Mastery", percentage
+
+def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
+    """Save quiz results to database for logged-in users"""
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO quizzes (user_id, topic, difficulty, question_count, score, grade) VALUES (?, ?, ?, ?, ?, ?)", 
+        (user_id, topic, difficulty.upper(), limit, score, grade))
+    conn.commit()
+    conn.close()
+
+def clear_quiz_session():
+    """Remove quiz data from session"""
+    session.pop("questions", None)
+    session.pop("quiz_data", None)
 
 
 @app.route("/quiz", methods=["GET", "POST"])
@@ -52,56 +82,40 @@ def quiz():
         score = request.form.get("score")
         question_count = request.form.get("question_count")
         
+        # Handle answer submission
         if score and question_count:
             score = int(score)
             question_count = int(question_count)
             
-            # passes blank list/dict if none was found to prevent error
             questions = session.get("questions", [])
             limit = session.get("quiz_data", {}).get("limit", 10)
             
-            # Check if quiz is complete to grade and store infos
+            # Check if quiz is complete
             if question_count >= limit or question_count >= len(questions):
-                percentage = (score / limit) * 100
+                grade, percentage = calculate_grade(score, limit)
                 
-                # Grading Levels
-                if percentage < 40:
-                    grade = "Needs Improvement"
-                elif percentage < 60:
-                    grade = "Fair"
-                elif percentage < 75:
-                    grade = "Average"
-                elif percentage < 90:
-                    grade = "Competent"
-                else:
-                    grade = "Mastery"
-                
-                # Saves data for users with acct
+                # Save results for logged-in users
                 if "user_id" in session:
-                    conn = get_db()
-                    cur = conn.cursor()
-                    cur.execute(
-                        "INSERT INTO quizzes (user_id, topic, difficulty, question_count, score, grade) "
-                        "VALUES (?, ?, ?, ?, ?, ?)", 
-                        (session["user_id"], session["quiz_data"]["topic"], 
-                         session["quiz_data"]["difficulty"].upper(), limit, score, grade)
+                    save_quiz_result(
+                        session["user_id"],
+                        session["quiz_data"]["topic"],
+                        session["quiz_data"]["difficulty"],
+                        limit,
+                        score,
+                        grade
                     )
-                    conn.commit()
-                    conn.close()
                 
-                # Removes rendered/answered questions
-                session.pop("questions", None)
-                session.pop("quiz_data", None)
-                
+                clear_quiz_session()
                 return render_template("results.html", score=score, total=limit, grade=grade, percentage=round(percentage, 2))
             
-            # Load next question is safe because we checked if it's done
+            # Load next question
             next_question = questions[question_count]
             next_question["score"] = score
             next_question["question_count"] = question_count
             
             return render_template("quiz.html", data=next_question, answers=next_question.get("answers", []))
         
+        # Handle quiz setup
         else:
             user_data = { 
                 "topic": "&".join(request.form.getlist("topics")) or None,
@@ -111,19 +125,25 @@ def quiz():
 
             questions = brain.get_questions(**{k: v for k, v in user_data.items() if v is not None})
             
+            # Check if questions were found
             if not isinstance(questions, list) or len(questions) == 0:
-                topics = brain.DEFAULT_TOPICS
-                return render_template("quiz.html", error="No questions found for the selected criteria.", topics=topics)
+                return render_template("quiz.html", 
+                                     error="No questions found for the selected criteria.", 
+                                     topics=brain.DEFAULT_TOPICS)
 
+            # Store quiz data in session
             session["questions"] = questions
-            
             defaults = {"topic": "uncategorized", "limit": 10, "difficulty": "Easy"}
             session["quiz_data"] = {**defaults, **{k: v for k, v in user_data.items() if v is not None}}
+            
+            # Set initial score and count
             questions[0]["score"] = 0
             questions[0]["question_count"] = 0
 
-            return render_template("quiz.html", data=questions[0], answers=questions[0].get("answers", []))
+            return render_template("quiz.html", data=questions[0], 
+                                 answers=questions[0].get("answers", []))
 
+    # GET request - show topic selection
     topics = brain.DEFAULT_TOPICS
     return render_template("quiz.html", topics=topics)
 
@@ -161,7 +181,6 @@ def history():
 def about():
     return render_template("about.html")
 
-print(brain.fetch_quiz_topics())
 
 
 if __name__ == "__main__":
