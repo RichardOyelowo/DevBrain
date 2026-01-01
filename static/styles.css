@@ -61,7 +61,7 @@ a:hover {
     color: #77bfe1;
 }
 
-/* =============== HOMEPAGE STYLING =============== */
+/* ------------ HOMEPAGE STYLING ----------- */
 .homepage {
     max-width: 900px;
     margin: 0 auto;
@@ -143,7 +143,7 @@ a:hover {
     margin-top: 1rem;
 }
 
-/* =============== QUIZ STYLING =============== */
+/*  QUIZ STYLING  */
 .Question-section {
     max-width: 800px;
     margin: 2rem auto;
@@ -198,7 +198,7 @@ a:hover {
     font-weight: bold;
 }
 
-/* Topic Selection Form */
+/* -------- Topic Selection --------- */
 .topic-section,
 .difficulty-section,
 .count-sections {
@@ -252,7 +252,7 @@ a:hover {
     outline: none;
 }
 
-/* =============== RESULTS STYLING =============== */
+/* ---------- RESULTS STYLING ------------- */
 .results-details {
     max-width: 800px;
     margin: 2rem auto;
