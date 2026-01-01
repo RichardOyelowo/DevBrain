@@ -4,8 +4,21 @@ from auth import login_required, get_db, auth, mail
 from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
 from flask import Flask, request, render_template, redirect, url_for, session
 from flask_wtf import CSRFProtect
-import smtplib
 from question import Questions
+import smtplib
+import os
+
+# database
+DATABASE_PATH = "database.db"
+
+def init_db():
+    "creates a database if it doesn't exists"
+    if not os.path.exists(DATABASE_PATH):
+        with sqlite3.connect(DATABASE_PATH) as conn:
+            with open("schema.sql", "r") as f:
+                conn.executescript(f.read())
+
+init_db()
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
@@ -64,6 +77,11 @@ def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
     """Save quiz results to database for logged-in users"""
     conn = get_db()
     cur = conn.cursor()
+    
+    #for multiple topics combined
+    if "&" in topic:
+        topic = topic.replace("&", ", ")
+
     cur.execute("INSERT INTO quizzes (user_id, topic, difficulty, question_count, score, grade) VALUES (?, ?, ?, ?, ?, ?)", 
         (user_id, topic, difficulty.upper(), limit, score, grade))
     conn.commit()
