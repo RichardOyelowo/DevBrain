@@ -305,4 +305,4 @@ If you have questions or find bugs, feel free to reach out or open an issue.
 
 ## License
 
-MIT License – use it, modify it, break it, whatever. Just don't blame me if your quiz scores are terrible.
+MIT License – use it, modify it, break it, whatever.
