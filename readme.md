@@ -1,8 +1,17 @@
+<div align=center>
+
+
 # DevBrain
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 
-**Video Demo:** <https://youtu.be/PJQcfZ2Tmg0>
+</div>
 
----
+![Demo](images/screenshot.png)
+
+[**Video Demo**](<https://youtu.be/PJQcfZ2Tmg0>)
 
 ## Description
 
@@ -11,6 +20,30 @@ DevBrain is a web-based quiz application I built to help people actually test th
 You can jump right in and take quizzes without an account, or register to track your progress over time. Either way works. The whole point is to make testing yourself as frictionless as possible.
 
 ---
+
+## Project Structure
+```
+project/
+│
+├── app.py              # Main Flask app and routes
+├── auth.py             # Authentication blueprint (login, register, password reset)
+├── question.py         # Questions class that handles quiz logic
+├── config.py           # Config vars (secret key, email creds, etc.)
+├── schema.sql          # Database schema
+├── database.db         # SQLite database (auto-generated)
+├── requirements.txt    # Python dependencies
+├── templates/          # Jinja2 HTML templates
+│   ├── index.html
+│   ├── quiz.html
+│   ├── results.html
+│   ├── history.html
+│   ├── login.html
+│   ├── register.html
+│   ├── forgot_password.html
+│   └── about.html
+├── static/             # CSS files
+└── flask_session/      # Session data (auto-created)
+```
 
 ## How It Works
 
@@ -43,32 +76,6 @@ One thing I spent way too much time on: the topics. I initially scraped the quiz
 **Email:** Flask-Mail with Gmail SMTP  
 
 I went with Flask because it's lightweight and doesn't force a million opinions on you. SQLite made sense for a single-user-focused app—no need for Postgres overkill. The session management is file-based which is honestly overkill for what I needed, but I wanted to avoid signed cookies and it was easy to set up.
-
-
-## Project Structure
-```
-project/
-│
-├── app.py              # Main Flask app and routes
-├── auth.py             # Authentication blueprint (login, register, password reset)
-├── question.py         # Questions class that handles quiz logic
-├── config.py           # Config vars (secret key, email creds, etc.)
-├── schema.sql          # Database schema
-├── database.db         # SQLite database (auto-generated)
-├── requirements.txt    # Python dependencies
-├── templates/          # Jinja2 HTML templates
-│   ├── index.html
-│   ├── quiz.html
-│   ├── results.html
-│   ├── history.html
-│   ├── login.html
-│   ├── register.html
-│   ├── forgot_password.html
-│   └── about.html
-├── static/             # CSS files
-└── flask_session/      # Session data (auto-created)
-```
-
 
 ## Database
 
