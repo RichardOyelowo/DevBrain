@@ -7,6 +7,9 @@
 [![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 
+DevBrain is a simple web-based project focused on practicing and showcasing core frontend concepts using HTML and CSS. It demonstrates clean structure, layout organization, and basic user interface design fundamentals.
+
+---
 </div>
 
 ![Demo](images/screenshot.png)
