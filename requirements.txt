@@ -1,11 +1,7 @@
 flask
-sqlite3
 jinja2
 flask-mail
-flask_wtf
+flask-wtf
 flask-session
 requests
-werkzeug.security
 itsdangerous
-functools
-smtplib
