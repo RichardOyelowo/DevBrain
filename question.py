@@ -3,9 +3,11 @@ from config import API_KEY
 
 class Questions:
 
-    DEFAULT_TOPICS = ['Linux', 'BASH', 'PHP', 'Docker', 'HTML', 'Postgres', 'MySQL', 
-    'Laravel', 'Kubernetes', 'JavaScript', 'Python', 'Openshift', 'Terraform', 'React', 
-    'Django', 'cPanel', 'Ubuntu', 'nodeJS', 'WordPress', 'Next.js', 'VueJS', 'Apache Kafka']
+    DEFAULT_TOPICS = ["any", "linux", "bash", "uncategorized", "docker", "sql",
+        "cms", "code", "devops", "react", "laravel",
+        "postgres", "django", "cpanel", "nodejs", "wordpress",
+        "next-js", "vuejs", "apache-kafka", "html"
+    ]
     
 
     def get_questions(self, topic: str = "uncategorized", limit: int = 10, difficulty: str = 'Easy') -> list:
@@ -15,10 +17,10 @@ class Questions:
                 timeout=5
             )
             response.raise_for_status()
-        except requests.RequestException:
+        except requests.RequestException as e:
             return []
-
         questions_data = response.json()
+
         if not questions_data:
             return []
 
