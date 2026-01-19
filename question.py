@@ -3,7 +3,7 @@ from config import API_KEY
 
 class Questions:
 
-    DEFAULT_TOPICS = ["any", "linux", "bash", "uncategorized", "docker", "sql",
+    DEFAULT_TOPICS = ["linux", "bash", "uncategorized", "docker", "sql",
         "cms", "code", "devops", "react", "laravel",
         "postgres", "django", "cpanel", "nodejs", "wordpress",
         "next-js", "vuejs", "apache-kafka", "html"
