@@ -1,5 +1,5 @@
 import requests
-from config import API_KEY
+from config import DEVBRAIN_API_KEY
 
 class Questions:
 
@@ -13,7 +13,7 @@ class Questions:
     def get_questions(self, topic: str = "uncategorized", limit: int = 10, difficulty: str = 'Easy') -> list:
         try:
             response = requests.get(
-                f'https://quizapi.io/api/v1/questions?apiKey={API_KEY}&category={topic}&limit={limit}&difficulty={difficulty}&single_answer_only=true',
+                f'https://quizapi.io/api/v1/questions?apiKey={DEVBRAIN_API_KEY}&category={topic}&limit={limit}&difficulty={difficulty}&single_answer_only=true',
                 timeout=5
             )
         except requests.RequestException as e:
