@@ -1,11 +1,13 @@
-import sqlite3
-from flask_session import Session
-from auth import login_required, get_db, auth, mail
-from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
 from flask import Flask, request, render_template, redirect, url_for, session
+from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
+from auth import login_required, get_db, auth, mail
 from flask_wtf import CSRFProtect
+from flask_session import Session
 from question import Questions
+from datetime import timedelta
+import sqlite3
 import smtplib
+import redis
 import os
 
 # database
@@ -15,7 +17,19 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 
 app.secret_key = SECRET_KEY
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "redis" 
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
+app.config["SESSION_USE_SIGNER"] = True
+app.config["SESSION_KEY_PREFIX"] = "quizapp:"
+
+try:
+    r = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
+    app.config["SESSION_REDIS"] = r
+except redis.exceptions.ConnectionError:
+    print("Redis not available. Sessions may not persist.")
+
+Session(app)
 
 brain = Questions() # Questions class instance
 
@@ -37,8 +51,18 @@ def after_request(response):
     return response
 
 # Registering auth routes
-csrf.exempt(auth)  # Exempt auth routes from CSRF protection since it's pre-login
+csrf.exempt(auth.login)
+csrf.exempt(auth.register)
+
 app.register_blueprint(auth)
+
+def init_db():
+    if not os.path.exists(DATABASE_PATH):
+        with sqlite3.connect(DATABASE_PATH) as conn:
+            with open("schema.sql", "r") as f:
+                conn.executescript(f.read())
+
+init_db()
 
 
 @app.route("/", methods=["GET", "POST"])
