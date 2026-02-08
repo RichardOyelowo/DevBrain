@@ -9,25 +9,13 @@ import smtplib
 import os
 
 # database
-DATABASE_PATH = "database.db"
-
-def init_db():
-    "creates a database if it doesn't exists"
-    if not os.path.exists(DATABASE_PATH):
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            with open("schema.sql", "r") as f:
-                conn.executescript(f.read())
-
-init_db()
+DATABASE_PATH = DATABASE_URL
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
-# Configure session to use filesystem (instead of signed cookies)
 app.secret_key = SECRET_KEY
 app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 
 brain = Questions() # Questions class instance
 
@@ -88,8 +76,9 @@ def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
     conn.close()
 
 def clear_quiz_session():
-    """Remove quiz data from session"""
     session.pop("questions", None)
+    session.pop("quiz_index", None)
+    session.pop("quiz_score", None)
     session.pop("quiz_data", None)
 
 
@@ -97,22 +86,35 @@ def clear_quiz_session():
 @csrf.exempt
 def quiz():
     if request.method == "POST":
-        score = request.form.get("score")
-        question_count = request.form.get("question_count")
-        
-        # Handle answer submission
-        if score and question_count:
-            score = int(score)
-            question_count = int(question_count)
-            
+
+        # 1️⃣ Answer submission
+        if "answer" in request.form:
+            selected = request.form.get("answer")
+
             questions = session.get("questions", [])
+            index = session.get("quiz_index", 0)
+            score = session.get("quiz_score", 0)
             limit = session.get("quiz_data", {}).get("limit", 10)
-            
-            # Check if quiz is complete
-            if question_count >= limit or question_count >= len(questions):
+
+            if index >= len(questions):
+                return redirect(url_for("quiz"))
+
+            current = questions[index]
+
+            # ✅ server decides correctness
+            if selected == current.get("correct"):
+                score += 1
+
+            index += 1
+
+            # save updated state
+            session["quiz_index"] = index
+            session["quiz_score"] = score
+
+            # 2️⃣ Quiz finished
+            if index >= limit or index >= len(questions):
                 grade, percentage = calculate_grade(score, limit)
-                
-                # Save results for logged-in users
+
                 if "user_id" in session:
                     save_quiz_result(
                         session["user_id"],
@@ -122,48 +124,62 @@ def quiz():
                         score,
                         grade
                     )
-                
+
                 clear_quiz_session()
-                return render_template("results.html", score=score, total=limit, grade=grade, percentage=round(percentage, 2))
-            
-            # Load next question
-            next_question = questions[question_count]
-            next_question["score"] = score
-            next_question["question_count"] = question_count
-            
-            return render_template("quiz.html", data=next_question, answers=next_question.get("answers", []))
-        
-        # Handle quiz setup
+
+                return render_template(
+                    "results.html",
+                    score=score,
+                    total=limit,
+                    grade=grade,
+                    percentage=round(percentage, 2)
+                )
+
+            # 3️⃣ Next question
+            next_question = questions[index]
+            return render_template(
+                "quiz.html",
+                data=next_question,
+                answers=next_question.get("answers", [])
+            )
+
+        # 4️⃣ Quiz setup
         else:
-            user_data = { 
+            user_data = {
                 "topic": "&".join(request.form.getlist("topics")) or None,
                 "difficulty": request.form.get("difficulty") or None,
-                "limit": int(request.form.get("limit")) if request.form.get("limit") else None
+                "limit": int(request.form.get("limit")) if request.form.get("limit") else 10
             }
 
-            questions = brain.get_questions(**{k: v for k, v in user_data.items() if v is not None})
-            
-            # Check if questions were found
-            if not isinstance(questions, list) or len(questions) == 0:
-                return render_template("quiz.html", 
-                                     error="No questions found for the selected criteria.", 
-                                     topics=brain.DEFAULT_TOPICS)
+            questions = brain.get_questions(
+                **{k: v for k, v in user_data.items() if v is not None}
+            )
 
-            # Store quiz data in session
+            if not questions:
+                return render_template(
+                    "quiz.html",
+                    error="No questions found.",
+                    topics=brain.DEFAULT_TOPICS
+                )
+
             session["questions"] = questions
-            defaults = {"topic": "uncategorized", "limit": 10, "difficulty": "Easy"}
-            session["quiz_data"] = {**defaults, **{k: v for k, v in user_data.items() if v is not None}}
-            
-            # Set initial score and count
-            questions[0]["score"] = 0
-            questions[0]["question_count"] = 0
+            session["quiz_index"] = 0
+            session["quiz_score"] = 0
+            session["quiz_data"] = {
+                "topic": user_data["topic"] or "uncategorized",
+                "difficulty": user_data["difficulty"] or "Easy",
+                "limit": user_data["limit"]
+            }
 
-            return render_template("quiz.html", data=questions[0], 
-                                 answers=questions[0].get("answers", []))
+            first = questions[0]
+            return render_template(
+                "quiz.html",
+                data=first,
+                answers=first.get("answers", [])
+            )
 
-    # GET request - show topic selection
-    topics = brain.DEFAULT_TOPICS
-    return render_template("quiz.html", topics=topics)
+    # GET request
+    return render_template("quiz.html", topics=brain.DEFAULT_TOPICS)
 
 
 @app.route("/history", methods=["GET"])
@@ -199,7 +215,3 @@ def history():
 def about():
     return render_template("about.html")
 
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
