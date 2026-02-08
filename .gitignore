@@ -1,4 +1,3 @@
-config.py
 pycache/
 __pycache__/  
 flask_session/
@@ -13,3 +12,5 @@ env_*/
 .idea/
 database.db
 database_*.db
+*sqlite
+sqlite*
