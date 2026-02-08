@@ -16,9 +16,9 @@ class Questions:
                 f'https://quizapi.io/api/v1/questions?apiKey={API_KEY}&category={topic}&limit={limit}&difficulty={difficulty}&single_answer_only=true',
                 timeout=5
             )
-            response.raise_for_status()
         except requests.RequestException as e:
             return []
+
         questions_data = response.json()
 
         if not questions_data:
