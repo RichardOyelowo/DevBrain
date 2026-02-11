@@ -1,9 +1,9 @@
 import requests
-from config import DEVBRAIN_API_KEY
+from config import API_KEY
 
 class Questions:
 
-    DEFAULT_TOPICS = ["linux", "bash", "uncategorized", "docker", "sql",
+    DEFAULT_TOPICS = ["uncategorized", "linux", "bash", "docker", "sql",
         "cms", "code", "devops", "react", "laravel",
         "postgres", "django", "cpanel", "nodejs", "wordpress",
         "next-js", "vuejs", "apache-kafka", "html"
@@ -13,7 +13,7 @@ class Questions:
     def get_questions(self, topic: str = "uncategorized", limit: int = 10, difficulty: str = 'Easy') -> list:
         try:
             response = requests.get(
-                f'https://quizapi.io/api/v1/questions?apiKey={DEVBRAIN_API_KEY}&category={topic}&limit={limit}&difficulty={difficulty}&single_answer_only=true',
+                f'https://quizapi.io/api/v1/questions?apiKey={API_KEY}&category={topic}&limit={limit}&difficulty={difficulty}&single_answer_only=true',
                 timeout=5
             )
         except requests.RequestException as e:
@@ -25,8 +25,9 @@ class Questions:
             return []
 
         questions = []
+        print("1")
         for item in questions_data:
-            answers_list = {k: v for k, v in item.get("answers", {}).items() if v is not None}
+            answers_list = {k: v for k, v in item["answers"].items() if v is not None}
 
             correct_answer = None
             for key, value in item.get("correct_answers", {}).items():
