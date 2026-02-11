@@ -1,3 +1,16 @@
+from config import DATABASE_URL
+
+
+# database
+DATABASE_PATH = DATABASE_URL
+
+def init_db():
+    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+    if not os.path.exists(DATABASE_PATH):
+        with sqlite3.connect(DATABASE_PATH) as conn:
+            with open("schema.sql", "r") as f:
+                conn.executescript(f.read())
+                
 
 def calculate_grade(score, total):
     """Calculate grade based on percentage score"""
@@ -29,9 +42,3 @@ def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
     conn.commit()
     conn.close()
 
-
-def clear_quiz_session():
-    session.pop("questions", None)
-    session.pop("quiz_index", None)
-    session.pop("quiz_score", None)
-    session.pop("quiz_data", None)
