@@ -6,59 +6,55 @@
 
 {% block body %}
     {% if data %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let answer_list = document.querySelectorAll(".users_answer");
+                const correct_answer = "{{ data['correct_answer'] }}";
+                let score = parseInt("{{ data['score'] }}") || 0;
+                let question_count = parseInt("{{ data['question_count'] }}") || 0;
+                let answered = false;
+
+                for (var answer of answer_list) {
+                    answer.addEventListener("click", function() {
+
+                        if (answered)
+                            return;
+
+                        answered = true;
+                        answer_list.forEach(btn => btn.disabled = true);
+
+                        if (this.getAttribute("data-answer") === correct_answer.toLowerCase()) {
+                            this.style.background = "green";
+                            document.getElementById("user-answer").value = this.getAttribute("data-answer");
+                        }
+                        else {
+                            this.style.background = "red";
+
+                            answer_list.forEach(button => {
+                                if (button.getAttribute("data-answer") === correct_answer.toLowerCase()){
+                                    button.style.background = "green";
+                                }
+                            })
+                        }
+                        
+                        this.parentElement.querySelector(".feedback").innerHTML = "{{ data['explanation']}}"
+                        question_count++;
+
+                        document.getElementById("next-btn").style.display = "block";
+                    }); 
+                }
+            });
+        </script>
         <form action="/quiz" method="post">
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    let answer_list = document.querySelectorAll(".users_answer");
-                    const correct_answer = "{{ data['correct_answer'] }}";
-                    let score = parseInt("{{ data['score'] }}") || 0;
-                    let question_count = parseInt("{{ data['question_count'] }}") || 0;
-                    let answered = false;
-
-                    for (var answer of answer_list) {
-                        answer.addEventListener("click", function() {
-
-                            if (answered)
-                                return;
-
-                            answered = true;
-                            answer_list.forEach(btn => btn.disabled = true);
-
-                            if (this.textContent.trim().toLowerCase() == correct_answer.toLowerCase()) {
-                                this.style.background = "green";
-                                score++;
-                            }
-                            else {
-                                this.style.background = "red";
-
-                                answer_list.forEach(button => {
-                                    if (button.textContent.trim().toLowerCase() == correct_answer.toLowerCase()){
-                                        button.style.background = "green";
-                                    }
-                                })
-                            }
-                            this.parentElement.querySelector(".feedback").innerHTML = "{{ data['explanation']}}"
-                            question_count++;
-
-                            document.getElementById('score_value').value = score;
-                            document.getElementById('question_count_value').value = question_count;
-
-                            document.getElementById("next-btn").style.display = "block";
-                        }); 
-                    }
-                });
-            </script>
-
-            <input type="hidden" name="score" id="score_value" value="{{ data['score'] }}">
-            <input type="hidden" name="question_count" id="question_count_value" value="{{ data['question_count'] }}">
+            <input type="hidden" name="answer" id="user-answer" value="">
 
             <div class="Question-section">
                 <h4>{{ data["text"] }}</h4>
                 <p>{{ data["description"] }}</p>
                 <div class="d-grid gap-2">
                     {% for answer in answers %}
-                        <button type="button" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
+                        <button type="button" data-answer="{{ answer|lower }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
                     {% endfor %}
                     <p class="feedback mt-3"></p>
                 </div>
@@ -71,21 +67,40 @@
         <form action="/quiz" method="post">
             <div class="topic-section">
                 <h2>Choose a Topic:</h2>
-                    <input type="checkbox" name="topics" value="uncategorized"> Uncategorized
+                <div class="topic-grid">
                     {% for topic in topics %}
                         <label>
-                            <input type="checkbox" name="topics" value="{{ topic }}"> {{ topic.capitalize() }}
+                            <input type="checkbox" name="topics" value="{{ topic }}">
+                            <span class="topic-content">
+                                <span class="topic-name">{{ topic.capitalize() }}</span>
+                            </span>
                         </label>
                     {% endfor %}
+                </div>
             </div>
-
             <div class="difficulty-section">
                 <h2>Select Difficulty Level:</h2>
-                    <label><input type="radio" name="difficulty" value="Easy">Easy</label>
-                    <label><input type="radio" name="difficulty" value="Medium">Medium</label>
-                    <label><input type="radio" name="difficulty" value="Hard">Hard</label>
+                <div class="difficulty-grid">
+                    <label class="difficulty-easy">
+                        <input type="radio" name="difficulty" value="Easy">
+                        <span class="difficulty-content">
+                            <span class="difficulty-name">Easy</span>
+                        </span>
+                    </label>
+                    <label class="difficulty-medium">
+                        <input type="radio" name="difficulty" value="Medium">
+                        <span class="difficulty-content">
+                            <span class="difficulty-name">Medium</span>
+                        </span>
+                    </label>
+                    <label class="difficulty-hard">
+                        <input type="radio" name="difficulty" value="Hard">
+                        <span class="difficulty-content">
+                            <span class="difficulty-name">Hard</span>
+                        </span>
+                    </label>
+                </div>
             </div>
-
             <div class="count-sections">
                 <h2>Number of Questions:</h2>
                 <input type="number" name="limit" placeholder="Questions Count" min="1" max="50" required>
