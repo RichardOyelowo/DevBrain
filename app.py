@@ -1,46 +1,38 @@
 from flask import Flask, request, render_template, redirect, url_for, session
-from config import SECRET_KEY, DATABASE_URL, EMAIL, EMAIL_PASSWORD
+from utils import calculate_grade, save_quiz_result
+from config import SECRET_KEY, DATABASE_URL
 from auth import login_required, get_db, auth, mail
 from flask_wtf import CSRFProtect
-from flask_session import Session
-from question import Questions
 from datetime import timedelta
-import sqlite3
+from question import Questions
 import smtplib
+import sqlite3
 import redis
 import os
 
-# database
-DATABASE_PATH = DATABASE_URL
 
 app = Flask(__name__)
 csrf = CSRFProtect(app)
 
 app.secret_key = SECRET_KEY
-app.config["SESSION_TYPE"] = "redis" 
-app.config["SESSION_PERMANENT"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
-app.config["SESSION_USE_SIGNER"] = True
-app.config["SESSION_KEY_PREFIX"] = "quizapp:"
 
-try:
-    r = redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379/0"))
-    app.config["SESSION_REDIS"] = r
-except redis.exceptions.ConnectionError:
-    print("Redis not available. Sessions may not persist.")
-
-Session(app)
+# Session config
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True,
+)
 
 brain = Questions() # Questions class instance
 
-# configure mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# ---------------- Reset Email Utility ----------------
+app.config['MAIL_SERVER'] = MAIL_SERVER
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = EMAIL
-app.config['MAIL_PASSWORD'] = EMAIL_PASSWORD
+app.config['MAIL_USERNAME'] = MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 
-mail.init_app(app) # to configure the mail config to auth.py Mail instance
+mail = Mail()
 
 @app.after_request
 def after_request(response):
@@ -51,16 +43,9 @@ def after_request(response):
     return response
 
 # Registering auth routes
-csrf.exempt(auth.login)
-csrf.exempt(auth.register)
-
 app.register_blueprint(auth)
 
-def init_db():
-    if not os.path.exists(DATABASE_PATH):
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            with open("schema.sql", "r") as f:
-                conn.executescript(f.read())
+csrf.exempt(auth)
 
 init_db()
 
@@ -68,42 +53,6 @@ init_db()
 @app.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
-
-
-def calculate_grade(score, total):
-    """Calculate grade based on percentage score"""
-    percentage = (score / total) * 100
-    
-    if percentage < 40:
-        return "Needs Improvement", percentage
-    elif percentage < 60:
-        return "Fair", percentage
-    elif percentage < 75:
-        return "Average", percentage
-    elif percentage < 90:
-        return "Competent", percentage
-    else:
-        return "Mastery", percentage
-
-def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
-    """Save quiz results to database for logged-in users"""
-    conn = get_db()
-    cur = conn.cursor()
-    
-    #for multiple topics combined
-    if "&" in topic:
-        topic = topic.replace("&", ", ")
-
-    cur.execute("INSERT INTO quizzes (user_id, topic, difficulty, question_count, score, grade) VALUES (?, ?, ?, ?, ?, ?)", 
-        (user_id, topic, difficulty.upper(), limit, score, grade))
-    conn.commit()
-    conn.close()
-
-def clear_quiz_session():
-    session.pop("questions", None)
-    session.pop("quiz_index", None)
-    session.pop("quiz_score", None)
-    session.pop("quiz_data", None)
 
 
 @app.route("/quiz", methods=["GET", "POST"])
@@ -126,7 +75,7 @@ def quiz():
             current = questions[index]
 
             # ✅ server decides correctness
-            if selected == current.get("correct"):
+            if selected == current.get("correct_answer"):
                 score += 1
 
             index += 1
@@ -148,8 +97,9 @@ def quiz():
                         score,
                         grade
                     )
-
-                clear_quiz_session()
+                # clear current quiz data
+                for key in ("questions", "quiz_index", "quiz_score", "quiz_data"):
+                    session.pop(key, None)
 
                 return render_template(
                     "results.html",
@@ -174,6 +124,7 @@ def quiz():
                 "difficulty": request.form.get("difficulty") or None,
                 "limit": int(request.form.get("limit")) if request.form.get("limit") else 10
             }
+            print(user_data)
 
             questions = brain.get_questions(
                 **{k: v for k, v in user_data.items() if v is not None}
@@ -204,7 +155,6 @@ def quiz():
 
     # GET request
     return render_template("quiz.html", topics=brain.DEFAULT_TOPICS)
-
 
 @app.route("/history", methods=["GET"])
 @login_required
@@ -238,4 +188,8 @@ def history():
 @app.route("/about", methods=["GET"])
 def about():
     return render_template("about.html")
+
+
+if __name__=="__main__":
+    app.run(debug=True)
 
