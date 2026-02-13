@@ -1,12 +1,12 @@
 import requests
 from config import API_KEY
 
+
 class Questions:
 
-    DEFAULT_TOPICS = ["uncategorized", "linux", "bash", "docker", "sql",
-        "cms", "code", "devops", "react", "laravel",
-        "postgres", "django", "cpanel", "nodejs", "wordpress",
-        "next-js", "vuejs", "apache-kafka", "html"
+    DEFAULT_TOPICS = ["uncategorized", "linux", "bash", "docker", "sql", "cms", "code", 
+        "devops", "react", "laravel", "postgres", "django", "cpanel", "nodejs", 
+        "wordpress", "next-js", "vuejs", "apache-kafka", "html"
     ]
     
 

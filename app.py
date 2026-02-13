@@ -32,7 +32,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 
-mail = Mail()
+mail = Mail(app)
 
 @app.after_request
 def after_request(response):

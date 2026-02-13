@@ -1,32 +1,13 @@
-import sqlite3
 from flask import session, request, render_template, redirect, url_for, Blueprint, current_app
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
-from config import DATABASE_URL, MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD
-from functools import wraps
+from app.config import DATABASE_URL, MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD
+from app.extensions import login_required, get_db, send_reset_email
 from flask_mail import Message
 import smtplib
 
 
 auth = Blueprint("auth", __name__)
-
-
-def get_db():
-    conn = sqlite3.connect(DATABASE_URL)
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
-
-def login_required(f):
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
-            return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
-
-    return decorated_function
 
 
 def send_reset_email(mail, to_email, reset_link, sender_email):

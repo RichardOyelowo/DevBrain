@@ -1,4 +1,5 @@
 from config import DATABASE_URL
+from app import current_app
 
 
 # database
