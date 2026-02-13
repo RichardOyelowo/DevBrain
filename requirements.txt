@@ -1,7 +1,12 @@
 Flask==3.1.2
-Flask-WTF==1.2.2
 Flask-Mail==0.9.1
+Flask-WTF==1.2.2
+Werkzeug==3.1.5
+WTForms==3.2.1
+email-validator
 requests==2.32.5
+click==8.3.1
+dotenv==0.9.9
 itsdangerous==2.2.0
 Jinja2==3.1.6
 gunicorn==21.2.0
