@@ -1,90 +1,96 @@
-from flask import session, request, render_template, redirect, url_for, Blueprint, current_app
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
-from .config import DATABASE_URL, MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD
-from .extensions import login_required, get_db, send_reset_email
+from .extensions import mail, login_required
+from .forms import Register, Login, ForgotPassword, ResetPassword
 from flask_mail import Message
+from .db import get_db
+from flask import (
+    Blueprint, render_template, request,
+    redirect, url_for, session, flash, current_app
+)
 
 
 auth = Blueprint("auth", __name__)
 
 
-def send_reset_email(mail, to_email, reset_link, sender_email):
-    
+# ---------------- Reset Email Utility ----------------
+def send_reset_email(to_email, reset_link):
+    """Send password reset email using Flask-Mail and app config"""
+
     msg = Message(
-        subject="DevBrain Password Reset link",
+        subject="DevBrain Password Reset Link",
         recipients=[to_email],
         body=f"Reset your password: {reset_link}",
-        sender=sender_email
+        sender=current_app.config["MAIL_USERNAME"]
     )
-
     mail.send(msg)
-    
+
+
+def get_serializer():
+    """Helper to get URLSafeTimedSerializer using app's SECRET_KEY"""
+    return URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+
 
 # ---------------- Registration ----------------
 @auth.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        email = request.form.get("email")
-        username = request.form.get("username") or None
-        password = request.form.get("password")
-        confirmation = request.form.get("confirmation")
+    form = Register()
 
-        if not email or not password or not confirmation:
-            return render_template("register.html", error="Fill all details")
-
-        if password != confirmation:
-            return render_template("register.html", error="Passwords do not match")
+    if form.validate_on_submit():
+        email = form.email.data
+        username = form.username.data
+        password = form.password.data
 
         conn = get_db()
         cur = conn.cursor()
-
-        # Check if email exists
-        if cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone():
+        
+        if cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone():    
             conn.close()
-            return render_template("register.html", error="Email already exists")
+            flash("Email already exists","danger")
 
-        cur.execute("INSERT INTO users (email, username, password) VALUES (?, ?, ?)", 
-                    (email, username, generate_password_hash(password)))
+            return redirect(url_for("auth.login"))
+
+        cur.execute(
+            "INSERT INTO users (email, username, password) VALUES (?, ?, ?)",
+            (email, username, generate_password_hash(password))
+        )
         conn.commit()
         user_id = cur.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()["id"]
         conn.close()
 
         session["user_id"] = user_id
-        
-        return redirect(url_for("quiz"))
+        return redirect(url_for("main.quiz"))
 
-    return render_template("register.html")
+    return render_template("register.html", form=form)
 
 
 # ---------------- Login ----------------
 @auth.route("/login", methods=["GET", "POST"])
 def login():
-    
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
+    form = Login()
 
-        if not email or not password:
-            return render_template("login.html", error="Fill all details")
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
 
         conn = get_db()
         cur = conn.cursor()
         row = cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
         conn.close()
 
-        if row is None or not check_password_hash(row["password"], password):
-            return render_template("login.html", error="Invalid email or password")
+        if not row or not check_password_hash(row["password"], password):
+            flash("Invalid email or password", "info")
+            return render_template("login.html", form=form)
 
         session["user_id"] = row["id"]
+        return redirect(url_for("main.quiz"))
 
-        return redirect(url_for("quiz"))
-
-    return render_template("login.html", error=None)
+    return render_template("login.html", form=form)
 
 
 # ---------------- Logout ----------------
 @auth.route("/logout")
+@login_required
 def logout():
     session.clear()
     return redirect(url_for("auth.login"))
@@ -93,62 +99,60 @@ def logout():
 # ---------------- Forgot Password ----------------
 @auth.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
-    token = None
-    if request.method == "POST":
-        users_email = request.form.get("email")
-
-        if not users_email:
-            return render_template("forgot_password.html", form_type="forgot", token=token, error="Please enter your email.")
+    form = ForgotPassword()
+    
+    if form.validate_on_submit():
+        users_email = form.email.data
 
         conn = get_db()
         cur = conn.cursor()
         row = cur.execute("SELECT * FROM users WHERE email = ?", (users_email,)).fetchone()
         conn.close()
 
-        if row: # Send email only if user exists
-            s = URLSafeTimedSerializer(current_app.secret_key)
+        if row:
+            s = get_serializer()
             token = s.dumps(row["id"], salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
-
-            # Send reset email
             try:
-                send_reset_email(to_email=users_email, reset_link=reset_link, sender_email=EMAIL)
-            except:
-                return render_template("forgot_password.html", form_type="forgot", token=token, error="Please try again later, some error encountered.")
+                send_reset_email(to_email=users_email, reset_link=reset_link)
+            except Exception as e:
+                # You could log e here
+                return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.")
 
-        # Always show the same message for security
-        return render_template("forgot_password.html", form_type="sent_or_notfound", token=None, error=None)
+        return render_template("forgot_password.html", form_type="sent_or_notfound")
 
-    return render_template("forgot_password.html", form_type="forgot", token=None, error=None)
+    return render_template("forgot_password.html", form_type="forgot", form=form)
 
 
 # ---------------- Reset Password ----------------
 @auth.route("/reset_password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    s = URLSafeTimedSerializer(current_app.secret_key)
+    form = ResetPassword()
+
+    s = get_serializer()
     try:
         user_id = s.loads(token, salt="password-reset-salt", max_age=3600)
-    except Exception:
-        return render_template("forgot_password.html", form_type="forgot", token=None, error="The reset link is invalid or has expired.")
+    except (BadSignature, SignatureExpired):
+        return render_template("forgot_password.html", form_type="forgot", error="The reset link is invalid or expired.")
 
-    if request.method == "POST":
-        new_password = request.form.get("new_password")
-        confirm_password = request.form.get("confirm_password")
+    if form.validate_on_submit():
+        new_password = form.password.data
+        confirm_password = form.confirmation.data
 
         if not new_password or not confirm_password:
             return render_template("forgot_password.html", form_type="reset", token=token, error="Please fill in all fields.")
         if new_password != confirm_password:
             return render_template("forgot_password.html", form_type="reset", token=token, error="Passwords do not match.")
         if len(new_password) < 8:
-            return render_template("forgot_password.html", form_type="reset", token=token, error="Password must be at least 8 characters long.")
+            return render_template("forgot_password.html", form_type="reset", token=token, error="Password must be at least 8 characters.")
 
         conn = get_db()
         cur = conn.cursor()
-        cur.execute("UPDATE users SET password = ? WHERE id = ?", 
+        cur.execute("UPDATE users SET password = ? WHERE id = ?",
                     (generate_password_hash(new_password), user_id))
         conn.commit()
         conn.close()
 
-        return render_template("forgot_password.html", form_type="success", token=None, error=None)
+        return render_template("forgot_password.html", form_type="success")
 
-    return render_template("forgot_password.html", form_type="reset", token=token, error=None)
+    return render_template("forgot_password.html", form_type="reset", token=token, form=form)
