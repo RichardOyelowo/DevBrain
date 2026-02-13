@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    : Results
+{% endblock %}
+
+{% block body %}
+    <div class="results-details">
+        <h1>Your Quiz Results</h1>
+        <p>You scored {{ score }} out of {{ total }}.</p>
+        <p><strong>Percentage:</strong> {{ percentage }}%</p>
+        <p><strong>Grade:</strong> {{ grade }}</p>
+
+        <div class="actions">
+            <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg">Take Another Quiz</a>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('history') }}" class="btn btn-secondary btn-lg">View History</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

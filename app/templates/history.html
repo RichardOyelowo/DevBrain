@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    : History
+{% endblock %}
+
+{% block body %}
+    <div class="history-section container">
+        <h2>Your Quiz History</h2>
+
+        {% if history %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Topic</th>
+                        <th>Difficulty</th>
+                        <th>Questions</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for details in history %}
+                        <tr>
+                            <td>{{ details["date"] }}</td>
+                            <td>{{ details["topic"] }}</td>
+                            <td>{{ details["difficulty"] }}</td>
+                            <td>{{ details["question_count"] }}</td>
+                            <td>{{ details["score"] }}</td>
+                            <td>{{ details["grade"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h3>No quiz history available.</h3>
+            <a href="{{ url_for('quiz') }}" class="btn btn-primary">Take Your First Quiz</a>
+        {% endif %}
+    </div>
+{% endblock %}

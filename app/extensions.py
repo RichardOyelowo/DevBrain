@@ -1,6 +1,19 @@
 from flask_mail import Message, Mail
 from functools import wraps
+from flask_wtf import CSRFProtect
 import sqlite3
+
+
+csrf = CSRFProtect()
+mail = Mail()
+
+
+def create_db():
+    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+    if not os.path.exists(DATABASE_PATH):
+        with sqlite3.connect(DATABASE_PATH) as conn:
+            with open("schema.sql", "r") as f:
+                conn.executescript(f.read())
 
 
 def get_db():

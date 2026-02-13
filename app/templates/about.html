@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    : About
+{% endblock %}
+
+{% block body %}
+
+<main class="about-page">
+    <section class="about-header">
+        <h1>About DevBrain</h1>
+        <p>
+            DevBrain is a learning platform built around one core idea:
+            understanding improves when knowledge is tested.
+        </p>
+    </section>
+
+    <section class="about-mission">
+        <h2>Our Mission</h2>
+        <p>
+            We aim to help learners strengthen their understanding through interactive quizzes
+            that provide immediate feedback and measurable progress.
+        </p>
+        <p>Learning should be active, practical, and accessible — not passive or overwhelming.</p>
+    </section>
+
+    <section class="about-philosophy">
+        <h2>Our Philosophy</h2>
+        <p>Memorization fades. Understanding sticks.</p>
+        <p>
+            DevBrain focuses on clear questions, honest scoring, and meaningful feedback
+            so learners can identify gaps and improve efficiently.
+        </p>
+    </section>
+
+    <section class="about-vision">
+        <h2>Our Vision</h2>
+        <p>
+            We envision a learning experience where progress is continuous,
+            self-directed, and driven by curiosity rather than pressure.
+        </p>
+    </section>
+
+    <section class="about-who">
+        <h2>Who DevBrain Is For</h2>
+        <ul>
+            <li>Students learning programming and technical concepts</li>
+            <li>Developers refreshing fundamentals</li>
+            <li>Self-learners who want structured self-assessment</li>
+            <li>Anyone who learns best by testing their knowledge</li>
+        </ul>
+    </section>
+
+    <section class="about-cta">
+        <p>Ready to test what you know?</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Take a Quiz</a>
+    </section>
+</main>
+
+{% endblock %}

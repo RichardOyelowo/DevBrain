@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.config import DATABASE_URL, MAIL_SERVER, MAIL_USERNAME, MAIL_PASSWORD
 from app.extensions import login_required, get_db, send_reset_email
 from flask_mail import Message
-import smtplib
 
 
 auth = Blueprint("auth", __name__)
