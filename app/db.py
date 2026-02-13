@@ -9,10 +9,15 @@ def get_db():
 def create_db():
     import os
 
-    db_path = current_app.config["DATABASE_URL"]
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    db_path = current_app.config.get("DATABASE_URL")
+    if not db_path:
+        raise RuntimeError("DATABASE_URL not configured")
+
+    db_dir = os.path.dirname(db_path)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
 
     if not os.path.exists(db_path):
         with sqlite3.connect(db_path) as conn:
-            with open("app/schema.sql", "r") as f:
+            with open("app/schema.sql", "r", encoding="utf-8") as f:
                 conn.executescript(f.read())
