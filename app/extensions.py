@@ -1,34 +1,20 @@
-from flask_mail import Message, Mail
-from functools import wraps
+from flask import session, redirect, url_for
 from flask_wtf import CSRFProtect
-import sqlite3
+from functools import wraps
+from flask_mail import Mail
 
 
-csrf = CSRFProtect()
 mail = Mail()
+csrf = CSRFProtect()
 
 
-def create_db():
-    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
-    if not os.path.exists(DATABASE_PATH):
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            with open("schema.sql", "r") as f:
-                conn.executescript(f.read())
-
-
-def get_db():
-    conn = sqlite3.connect(DATABASE_URL)
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
-
+# ---------------- Login Required Decorator ----------------
 def login_required(f):
-
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    def decorated_function(*args,**kwargs):
         if session.get("user_id") is None:
             return redirect(url_for("auth.login"))
-        return f(*args, **kwargs)
+
+        return f(*args,**kwargs)
 
     return decorated_function
