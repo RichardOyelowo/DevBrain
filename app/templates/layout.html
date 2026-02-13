@@ -17,7 +17,7 @@
         <!--header/Navigation bar-->
         <header>
             <nav class="navbar text-white navbar-expand-lg">
-                <a class="navbar-brand" href="{{ url_for('index') }}">DevBrain</a>
+                <a class="navbar-brand" href="{{ url_for('main.index') }}">DevBrain</a>
                 
                  <!-- Toggler for mobile -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,8 +28,8 @@
                     <!-- Left Navigation Links -->
                     <ul class="navbar-nav">
                         {% if session.get("user_id") %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('quiz') }}">Quiz</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('history') }}">History</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.quiz') }}">Quiz</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.history') }}">History</a></li>
                         {% endif %}
                     </ul>
                     

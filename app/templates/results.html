@@ -12,9 +12,9 @@
         <p><strong>Grade:</strong> {{ grade }}</p>
 
         <div class="actions">
-            <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg">Take Another Quiz</a>
+            <a href="{{ url_for('main.quiz') }}" class="btn btn-primary btn-lg">Take Another Quiz</a>
             {% if session.get('user_id') %}
-                <a href="{{ url_for('history') }}" class="btn btn-secondary btn-lg">View History</a>
+                <a href="{{ url_for('main.history') }}" class="btn btn-secondary btn-lg">View History</a>
             {% endif %}
         </div>
     </div>
