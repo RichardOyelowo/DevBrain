@@ -2,6 +2,7 @@ import os
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    API_KEY = os.environ.get("DEVBRAIN_API_KEY")
     DATABASE_URL = os.environ.get("DATABASE_URL")
 
     MAIL_SERVER = "smtp.mailgun.org"
