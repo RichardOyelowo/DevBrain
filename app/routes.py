@@ -1,21 +1,20 @@
-from flask import Flask, request, render_template, redirect, url_for, session, Blueprint
-from .utils import csrf, calculate_grade, save_quiz_result
-from .auth import login_required, get_db, auth
-from .config import SECRET_KEY, DATABASE_URL
+from flask import Blueprint, render_template, request, session, redirect, url_for
+from .utils import calculate_grade, save_quiz_result
+from .db import get_db
+from .auth import login_required
 from .question import Questions
-import os
 
 
-appp = Blueprint('auth', __name__)
-brain = Questions() # Questions class instance
-csrf = csrf
+main = Blueprint("main", __name__)
+brain = Questions()
 
-@appp.route("/", methods=["GET", "POST"])
+
+@main.route("/", methods=["GET", "POST"])
 def index():
     return render_template("index.html")
 
 
-@app.route("/quiz", methods=["GET", "POST"])
+@main.route("/quiz", methods=["GET", "POST"])
 @csrf.exempt
 def quiz():
     if request.method == "POST":
@@ -115,7 +114,7 @@ def quiz():
     # GET request
     return render_template("quiz.html", topics=brain.DEFAULT_TOPICS)
 
-@app.route("/history", methods=["GET"])
+@main.route("/history", methods=["GET"])
 @login_required
 def history():
     conn = get_db()
@@ -144,7 +143,7 @@ def history():
     return render_template("history.html", history=history)
 
 
-@app.route("/about", methods=["GET"])
+@main.route("/about", methods=["GET"])
 def about():
     return render_template("about.html")
 
