@@ -1,16 +1,8 @@
-from config import DATABASE_URL
-from flask_wtf import CSRFProtect
-
-
-# database
-DATABASE_PATH = DATABASE_URL
-csrf = CSRFProtect()
-                
+from .db import get_db
 
 def calculate_grade(score, total):
-    """Calculate grade based on percentage score"""
     percentage = (score / total) * 100
-    
+
     if percentage < 40:
         return "Needs Improvement", percentage
     elif percentage < 60:
@@ -24,16 +16,18 @@ def calculate_grade(score, total):
 
 
 def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
-    """Save quiz results to database for logged-in users"""
     conn = get_db()
     cur = conn.cursor()
-    
-    #for multiple topics combined
+
     if "&" in topic:
         topic = topic.replace("&", ", ")
 
-    cur.execute("INSERT INTO quizzes (user_id, topic, difficulty, question_count, score, grade) VALUES (?, ?, ?, ?, ?, ?)", 
-        (user_id, topic, difficulty.upper(), limit, score, grade))
+    cur.execute(
+        """INSERT INTO quizzes 
+        (user_id, topic, difficulty, question_count, score, grade) 
+        VALUES (?, ?, ?, ?, ?, ?)""",
+        (user_id, topic, difficulty.upper(), limit, score, grade)
+    )
+
     conn.commit()
     conn.close()
-
