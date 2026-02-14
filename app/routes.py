@@ -1,12 +1,11 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
+from flask import Blueprint, render_template, request, session, redirect, url_for, current_app
 from .utils import calculate_grade, save_quiz_result
+from .extensions import csrf, login_required
 from .db import get_db
-from .auth import login_required
 from .question import Questions
 
 
 main = Blueprint("main", __name__)
-brain = Questions()
 
 
 @main.route("/", methods=["GET", "POST"])
@@ -17,6 +16,8 @@ def index():
 @main.route("/quiz", methods=["GET", "POST"])
 @csrf.exempt
 def quiz():
+    brain = Questions(current_app.config["API_KEY"])
+
     if request.method == "POST":
 
         # 1️⃣ Answer submission
@@ -87,7 +88,7 @@ def quiz():
             questions = brain.get_questions(
                 **{k: v for k, v in user_data.items() if v is not None}
             )
-
+            
             if not questions:
                 return render_template(
                     "quiz.html",
