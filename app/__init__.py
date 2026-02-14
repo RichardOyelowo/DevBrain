@@ -1,6 +1,7 @@
 from flask import Flask
 from .config import Config
 from .extensions import mail, csrf
+from .db import close_db
 from .routes import main
 from .auth import auth
 import os
@@ -18,5 +19,8 @@ def create_app():
 
     app.register_blueprint(main)
     app.register_blueprint(auth)
+
+    # helps with concurrency
+    app.teardown_appcontext(close_db)
 
     return app
