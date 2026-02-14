@@ -22,7 +22,7 @@ def quiz():
 
         # 1️⃣ Answer submission
         if "answer" in request.form:
-            selected = request.form.get("answer")
+            selected = request.form.get("answer").strip().lower()
 
             questions = session.get("questions", [])
             index = session.get("quiz_index", 0)
@@ -35,7 +35,7 @@ def quiz():
             current = questions[index]
 
             # ✅ server decides correctness
-            if selected == current.get("correct_answer"):
+            if selected == current.get("correct_answer").strip().lower():
                 score += 1
 
             index += 1
