@@ -1,7 +1,9 @@
 <div align=center>
 
 
-# DevBrain
+# <img src="images/full_logo.png" alt="DevBrain Logo" style="vertical-align: middle;"> 
+
+
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
 [![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
@@ -14,7 +16,6 @@ DevBrain is a simple web-based project focused on practicing and showcasing core
 
 ![Demo](images/screenshot.png)
 
-[**Video Demo**](<https://youtu.be/PJQcfZ2Tmg0>)
 
 ## Description
 
