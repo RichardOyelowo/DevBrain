@@ -21,18 +21,17 @@
                         answered = true;
                         answer_list.forEach(btn => btn.disabled = true);
 
-                        if (this.getAttribute("data-answer") === correct_answer.toLowerCase()) {
+                        document.getElementById("user-answer").value = this.getAttribute("data-answer").trim().toLowerCase()
+                        if (this.dataset.answer.trim().toLowerCase() === correct_answer.trim().toLowerCase()) {
                             this.style.background = "green";
-                            document.getElementById("user-answer").value = this.getAttribute("data-answer");
-                        }
-                        else {
+                        } else {
                             this.style.background = "red";
 
                             answer_list.forEach(button => {
-                                if (button.getAttribute("data-answer") === correct_answer.toLowerCase()){
+                                if (button.dataset.answer.trim().toLowerCase() === correct_answer.trim().toLowerCase()) {
                                     button.style.background = "green";
                                 }
-                            })
+                            });
                         }
                         
                         this.parentElement.querySelector(".feedback").innerHTML = "{{ data['explanation']}}"
@@ -52,7 +51,7 @@
                 <p>{{ data["description"] }}</p>
                 <div class="d-grid gap-2">
                     {% for answer in answers %}
-                        <button type="button" data-answer="{{ answer|lower }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
+                        <button type="button" data-answer="{{ answer|tojson }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
                     {% endfor %}
                     <p class="feedback mt-3"></p>
                 </div>
