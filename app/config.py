@@ -6,10 +6,14 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     API_KEY = os.environ.get("DEVBRAIN_API_KEY")
     DATABASE_URL = os.environ.get("DATABASE_URL")
+    
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
     MAIL_USERNAME = os.environ.get("EMAIL")
-    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
-    MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))  # Optional default
+    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
+    MAIL_DEFAULT_SENDER = ("DevBrain Support", MAIL_USERNAME)
 
     # Check all required env vars
     required_vars = {
