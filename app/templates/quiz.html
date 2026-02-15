@@ -6,40 +6,47 @@
     {% if data %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                let answer_list = document.querySelectorAll(".users_answer");
-                const correct_answer = "{{ data['correct_answer'] }}";
-                let score = parseInt("{{ data['score'] }}") || 0;
-                let question_count = parseInt("{{ data['question_count'] }}") || 0;
+                const answer_list = document.querySelectorAll(".users_answer");
+                
+                function decodeHTML(html) {
+                    const txt = document.createElement('textarea');
+                    txt.innerHTML = html;
+                    return txt.value;
+                }
+                
+                const correct_answer = decodeHTML("{{ data['correct_answer']|forceescape }}");
+                const explanation = decodeHTML("{{ data.get('explanation', 'No explanation available')|forceescape }}");
                 let answered = false;
 
-                for (var answer of answer_list) {
+                answer_list.forEach(answer => {
                     answer.addEventListener("click", function() {
-
-                        if (answered)
-                            return;
-
+                        if (answered) return;
                         answered = true;
-                        answer_list.forEach(btn => btn.disabled = true);
+                        
+                        answer_list.forEach(btn => {
+                            btn.style.pointerEvents = "none";
+                        });
 
-                        document.getElementById("user-answer").value = this.getAttribute("data-answer").trim().toLowerCase()
-                        if (this.dataset.answer.trim().toLowerCase() === correct_answer.trim().toLowerCase()) {
+                        const selectedAnswer = this.dataset.answer.trim();
+                        const correct = correct_answer.trim();
+
+                        document.getElementById("user-answer").value = selectedAnswer;
+
+                        if (selectedAnswer.toLowerCase() === correct.toLowerCase()) {
                             this.style.background = "green";
                         } else {
                             this.style.background = "red";
-
-                            answer_list.forEach(button => {
-                                if (button.dataset.answer.trim().toLowerCase() === correct_answer.trim().toLowerCase()) {
-                                    button.style.background = "green";
+                            answer_list.forEach(btn => {
+                                if (btn.dataset.answer.trim().toLowerCase() === correct.toLowerCase()) {
+                                    btn.style.background = "green";
                                 }
                             });
                         }
-                        
-                        this.parentElement.querySelector(".feedback").innerHTML = "{{ data['explanation']}}"
-                        question_count++;
 
+                        this.parentElement.querySelector(".feedback").innerHTML = explanation;
                         document.getElementById("next-btn").style.display = "block";
                     }); 
-                }
+                });
             });
         </script>
         <form action="/quiz" method="post">
@@ -48,10 +55,10 @@
 
             <div class="Question-section">
                 <h4>{{ data["text"] }}</h4>
-                <p>{{ data["description"] }}</p>
+                <p>{{ data.get('description', 'No description available') }}</p>
                 <div class="d-grid gap-2">
                     {% for answer in answers %}
-                        <button type="button" data-answer="{{ answer|tojson }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
+                        <button type="button" data-answer="{{ answer|e }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
                     {% endfor %}
                     <p class="feedback mt-3"></p>
                 </div>
