@@ -18,13 +18,12 @@ def send_reset_email(to_email, reset_link):
     """Send password reset email using Flask-Mail and app config"""
 
     msg = Message(
-        subject="DevBrain Password Reset Link",
-        recipients=[to_email],
-        body=f"Reset your password: {reset_link}",
-        sender=current_app.config["MAIL_USERNAME"]
+        subject="Reset Your DevBrain Password",
+        recipients= [to_email],
+        html=render_template("reset_email.html", reset_link=reset_link),
+        body=render_template("reset_email.txt", reset_link=reset_link)
     )
     mail.send(msg)
-
 
 def get_serializer():
     """Helper to get URLSafeTimedSerializer using app's SECRET_KEY"""
@@ -114,10 +113,9 @@ def forgot_password():
             token = s.dumps(row["id"], salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
             try:
-                send_reset_email(to_email=users_email, reset_link=reset_link)
+                send_reset_email(to_email=row["email"], reset_link=reset_link)
             except Exception as e:
-                # You could log e here
-                return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.")
+                return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.", form=form)
 
         return render_template("forgot_password.html", form_type="sent_or_notfound")
 
