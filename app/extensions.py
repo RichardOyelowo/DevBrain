@@ -19,12 +19,16 @@ def login_required(f):
     return decorated_function
 
 
-# ---------------- Redis Client for Quiz ----------------
+# ---------------- Redis Clients ----------------
 REDIS_URL = os.environ.get("REDIS_URL")
 
 if REDIS_URL:
-    redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
+    # Client for Flask-Session (binary data, NO decode_responses)
+    redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=False)
+    
+    # Client for quiz cache (JSON strings, WITH decode_responses)
+    quiz_cache = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 else:
-    redis_client = redis.Redis(host="localhost", port=6379, db=0)
-
-quiz_cache = redis_client
+    # Local Redis fallback
+    redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=False)
+    quiz_cache = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
