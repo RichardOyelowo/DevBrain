@@ -27,7 +27,6 @@ class Questions:
             return []
 
         questions = []
-        print("1")
         for item in questions_data:
             answers_list = {k: v for k, v in item["answers"].items() if v is not None}
 
