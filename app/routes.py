@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, current_app
 from .utils import calculate_grade, save_quiz_result
-from .extensions import csrf, login_required
-from .db import get_db
+from .extensions import csrf, login_required, quiz_cache
 from .question import Questions
+from uuid import uuid4
+from .db import get_db
+import json
 
 
 main = Blueprint("main", __name__)
@@ -18,33 +20,40 @@ def index():
 def quiz():
     brain = Questions(current_app.config["API_KEY"])
 
+    # Unique key for Redis
+    session_key = session.get("_quiz_cache_id")
+    if not session_key:
+        session_key = str(uuid4())
+        session["_quiz_cache_id"] = session_key
+
     if request.method == "POST":
 
-        # 1️⃣ Answer submission
         if "answer" in request.form:
             selected = request.form.get("answer").strip().lower()
 
-            questions = session.get("questions", [])
+            # Questions from Redis
+            questions_json = quiz_cache.get(f"quiz:{session_key}")
+            if not questions_json:
+                return redirect(url_for("main.quiz"))  # quiz expired or missing
+            questions = json.loads(questions_json)
+
             index = session.get("quiz_index", 0)
             score = session.get("quiz_score", 0)
             limit = session.get("quiz_data", {}).get("limit", 10)
 
             if index >= len(questions):
-                return redirect(url_for("quiz"))
+                return redirect(url_for("main.quiz"))
 
             current = questions[index]
-
-            # ✅ server decides correctness
-            if selected == current.get("correct_answer").strip().lower():
+            if selected == current.get("correct_answer", "").strip().lower():
                 score += 1
 
             index += 1
 
-            # save updated state
+            # Update session metadata
             session["quiz_index"] = index
             session["quiz_score"] = score
 
-            # 2️⃣ Quiz finished
             if index >= limit or index >= len(questions):
                 grade, percentage = calculate_grade(score, limit)
 
@@ -57,9 +66,13 @@ def quiz():
                         score,
                         grade
                     )
-                # clear current quiz data
-                for key in ("questions", "quiz_index", "quiz_score", "quiz_data"):
-                    session.pop(key, None)
+
+                # Clean-up
+                session.pop("quiz_index", None)
+                session.pop("quiz_score", None)
+                session.pop("quiz_data", None)
+                session.pop("_quiz_cache_id", None)
+                quiz_cache.delete(f"quiz:{session_key}")
 
                 return render_template(
                     "results.html",
@@ -69,7 +82,6 @@ def quiz():
                     percentage=round(percentage, 2)
                 )
 
-            # 3️⃣ Next question
             next_question = questions[index]
             return render_template(
                 "quiz.html",
@@ -77,7 +89,6 @@ def quiz():
                 answers=next_question.get("answers", [])
             )
 
-        # 4️⃣ Quiz setup
         else:
             user_data = {
                 "topic": "&".join(request.form.getlist("topics")) or None,
@@ -88,7 +99,7 @@ def quiz():
             questions = brain.get_questions(
                 **{k: v for k, v in user_data.items() if v is not None}
             )
-            
+
             if not questions:
                 return render_template(
                     "quiz.html",
@@ -96,7 +107,10 @@ def quiz():
                     topics=brain.DEFAULT_TOPICS
                 )
 
-            session["questions"] = questions
+            # Full questions stored in Redis (1 hr TTL)
+            quiz_cache.setex(f"quiz:{session_key}", 3600, json.dumps(questions))
+
+            # Only metadata in session
             session["quiz_index"] = 0
             session["quiz_score"] = 0
             session["quiz_data"] = {
@@ -112,8 +126,8 @@ def quiz():
                 answers=first.get("answers", [])
             )
 
-    # GET request
     return render_template("quiz.html", topics=brain.DEFAULT_TOPICS)
+
 
 @main.route("/history", methods=["GET"])
 @login_required
