@@ -135,14 +135,6 @@ def reset_password(token):
 
     if form.validate_on_submit():
         new_password = form.password.data
-        confirm_password = form.confirmation.data
-
-        if not new_password or not confirm_password:
-            return render_template("forgot_password.html", form_type="reset", token=token, error="Please fill in all fields.")
-        if new_password != confirm_password:
-            return render_template("forgot_password.html", form_type="reset", token=token, error="Passwords do not match.")
-        if len(new_password) < 8:
-            return render_template("forgot_password.html", form_type="reset", token=token, error="Password must be at least 8 characters.")
 
         conn = get_db()
         cur = conn.cursor()

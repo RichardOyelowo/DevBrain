@@ -386,6 +386,33 @@ footer {
     font-size: 1.2rem;
 }
 
+/* FORMS */
+.form-control,
+.form-select {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.938rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
 /* ----- Quiz Pages ----- */
 .Question-section {
     max-width: 100%;
