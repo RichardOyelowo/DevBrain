@@ -31,7 +31,7 @@
             <nav class="navbar text-white navbar-expand-lg">
                 {% if session.get("user_id") %}
                     <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.quiz') }}">
-                        <img src="{{ url_for('static', filename='cropped_logo.png') }}" 
+                        <img src="{{ url_for('static', filename='cropped_logo.svg') }}" 
                             alt="DevBrain Logo" 
                             height="40" 
                             width="40" 
@@ -43,7 +43,7 @@
                     </a>
                 {% else %}
                     <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                        <img src="{{ url_for('static', filename='cropped_logo.png') }}" 
+                        <img src="{{ url_for('static', filename='cropped_logo.svg') }}" 
                             alt="DevBrain Logo" 
                             height="40" 
                             width="40" 
