@@ -1,6 +1,6 @@
 <div align=center>
 
-# <img src="images/full_logo.png" alt="DevBrain Logo" style="vertical-align: middle;"> 
+# <img src="images/full_logo.svg" alt="DevBrain Logo" style="vertical-align: middle;"> 
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
@@ -12,7 +12,7 @@ DevBrain is a production-ready web quiz application for developers who want to a
 ---
 </div>
 
-![Demo](images/screenshot.png)
+![Demo](images/image.webp)
 
 ## Description
 
