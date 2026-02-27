@@ -50,6 +50,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    margin-bottom: 4rem;
     padding-bottom: 4rem;
 }
 
@@ -173,13 +174,8 @@ footer p {
     padding: 0;
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 1rem;
     flex-wrap: wrap;
-}
-
-.footer-list li {
-    color: var(--text-primary);
-    opacity: 0.8;
 }
 
 /* ----- Buttons ----- */
