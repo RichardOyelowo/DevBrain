@@ -145,10 +145,19 @@ header {
 footer {
     width: 100%;
     background: linear-gradient(to top, var(--bg-dark), #11111b);
-    padding: 2rem 15px;
-    text-align: center;
     border-top: 1px solid var(--border-subtle);
     margin-top: 4rem;
+    position: relative;
+    z-index: 10;
+    padding: 1.5rem 2rem;
+    text-align: center;
+}
+
+footer p {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(240,237,230,0.2);
+    text-transform: uppercase;
 }
 
 .footer-list {
