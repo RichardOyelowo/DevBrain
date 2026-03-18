@@ -18,7 +18,7 @@ class Questions:
                 "https://quizapi.io/api/v1/questions",
                 params={
                     "apiKey": self.api_key,
-                    "category": topic,
+                    "topics": topic,
                     "limit": limit,
                     "difficulty": difficulty,
                     "single_answer_only": "true",
