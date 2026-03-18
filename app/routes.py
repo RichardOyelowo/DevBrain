@@ -20,7 +20,6 @@ def index():
 def quiz():
     brain = Questions(current_app.config["API_KEY"])
 
-    # Unique key for Redis
     session_key = session.get("_quiz_cache_id")
     if not session_key:
         session_key = str(uuid4())
@@ -29,12 +28,11 @@ def quiz():
     if request.method == "POST":
 
         if "answer" in request.form:
-            selected = request.form.get("answer").strip().lower()
+            selected = (request.form.get("answer") or "").strip().lower()
 
-            # Questions from Redis
             questions_json = quiz_cache.get(f"quiz:{session_key}")
             if not questions_json:
-                return redirect(url_for("main.quiz"))  # quiz expired or missing
+                return redirect(url_for("main.quiz"))
             questions = json.loads(questions_json)
 
             index = session.get("quiz_index", 0)
@@ -50,7 +48,6 @@ def quiz():
 
             index += 1
 
-            # Update session metadata
             session["quiz_index"] = index
             session["quiz_score"] = score
 
@@ -67,7 +64,6 @@ def quiz():
                         grade
                     )
 
-                # Clean-up
                 session.pop("quiz_index", None)
                 session.pop("quiz_score", None)
                 session.pop("quiz_data", None)
@@ -107,16 +103,16 @@ def quiz():
                     topics=brain.DEFAULT_TOPICS
                 )
 
-            # Full questions stored in Redis (1 hr TTL)
+            limit = min(user_data["limit"], len(questions))
+
             quiz_cache.setex(f"quiz:{session_key}", 3600, json.dumps(questions))
 
-            # Only metadata in session
             session["quiz_index"] = 0
             session["quiz_score"] = 0
             session["quiz_data"] = {
                 "topic": user_data["topic"] or "uncategorized",
                 "difficulty": user_data["difficulty"] or "Easy",
-                "limit": user_data["limit"]
+                "limit": limit
             }
 
             first = questions[0]

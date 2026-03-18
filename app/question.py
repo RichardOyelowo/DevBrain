@@ -68,4 +68,6 @@ class Questions:
                 "explanation": item.get("explanation") or "No explanation available",
             })
 
+        print(questions)
+
         return questions
