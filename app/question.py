@@ -60,5 +60,5 @@ class Questions:
                 "explanation": item.get("explanation") or "No explanation available",  # stays string
             })
             
-        print(questions)
+            
         return questions
