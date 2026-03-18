@@ -44,31 +44,21 @@ class Questions:
             if not question_text:
                 continue
 
-            # Build answers as a dict with keys like "answer_1", "answer_2", ...
-            answers_raw = item.get("answers", [])
-            if not answers_raw:
-                    continue
-
-            answers_dict = {}
-            for idx, ans in enumerate(answers_raw, start=1):
-                ans_text = ans.get("text")
-                if ans_text is not None:
-                    answers_dict[f"answer_{idx}"] = ans_text
-
-            if not answers_dict:
-                continue
-
+            answers_dict = item.get("answers", [])
+            
+            answers_list = [ans.get("text") for ans in answers_dict]
             # Determine correct answer
-            correct_answer = next((ans.get("text") for ans in answers_raw if ans.get("isCorrect") is True), None)
+            correct_answer = next((ans.get("text") for ans in answers_dict if ans.get("isCorrect") is True), None)
             if not correct_answer:
                 continue
 
             questions.append({
                 "text": question_text,
                 "description": "",
-                "answers": answers_raw,
+                "answers": answers_list,
                 "correct_answer": correct_answer,
                 "explanation": item.get("explanation") or "No explanation available",  # stays string
             })
-
+            
+        print(questions)
         return questions
