@@ -66,10 +66,9 @@ class Questions:
             questions.append({
                 "text": question_text,
                 "description": "",
-                "answers": answers_dict,
+                "answers": answers_raw,
                 "correct_answer": correct_answer,
                 "explanation": item.get("explanation") or "No explanation available",  # stays string
             })
 
-        print(questions)
         return questions
