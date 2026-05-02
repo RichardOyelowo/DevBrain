@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}: Question{% endblock %}
+
+{% block body %}
+<form action="{{ url_for('main.quiz_question', attempt_id=attempt.id) }}" method="post" class="quiz-shell" data-quiz-form>
+    <input type="hidden" name="attempt_answer_id" value="{{ attempt_answer.id }}">
+    <input type="hidden" name="option_id" value="" data-option-input>
+
+    <section class="Question-section">
+        <div class="question-meta">
+            <span>{{ attempt_answer.position }} / {{ attempt.question_count }}</span>
+            <span>{{ attempt.topic_label }}</span>
+            <span>{{ attempt.difficulty.title() }}</span>
+        </div>
+        <div class="progress-track"><span style="width: {{ ((attempt_answer.position - 1) / attempt.question_count * 100)|round(0) }}%"></span></div>
+
+        <p class="eyebrow">Question</p>
+        <h1>{{ attempt_answer.question.prompt }}</h1>
+        {% if attempt_answer.question.description %}
+            <p class="question-description">{{ attempt_answer.question.description }}</p>
+        {% endif %}
+        {% if attempt_answer.question.code_snippet %}
+            <pre class="code-block"><code>{{ attempt_answer.question.code_snippet }}</code></pre>
+        {% endif %}
+
+        <div class="answer-grid">
+            {% for option in attempt_answer.question.options %}
+                <button type="button" data-option-id="{{ option.id }}" data-correct="{{ 'true' if option.is_correct else 'false' }}" class="users_answer">{{ option.text }}</button>
+            {% endfor %}
+        </div>
+
+        <p class="feedback" data-feedback hidden>{{ attempt_answer.question.explanation or "Answer saved." }}</p>
+        <button type="submit" class="button button-primary" data-next-button hidden>Next</button>
+    </section>
+</form>
+{% endblock %}

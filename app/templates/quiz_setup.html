@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block title %}: Quiz{% endblock %}
+
+{% block body %}
+<form action="{{ url_for('main.quiz_start') }}" method="post" class="quiz-builder setup-canvas">
+    <section class="builder-hero">
+        <p class="eyebrow">Quiz setup</p>
+        <h1>Configure a focused practice session.</h1>
+        <p>Select topics, difficulty, and question count. DevBrain now fills the session from the closest matching published questions first, then broadens the pool when a topic does not have enough exact matches.</p>
+    </section>
+
+    <div class="quota-banner">
+        {% if quota.is_unlimited %}
+            <strong>Unlimited practice enabled</strong>
+            <span>Start any number of quizzes from the current question bank.</span>
+        {% else %}
+            <strong>{{ quota.remaining }} of {{ quota.limit }} free weekly quizzes remaining</strong>
+            <span>Create focused attempts while keeping your dashboard, history, and reviews saved to your account.</span>
+        {% endif %}
+    </div>
+
+    <div class="setup-grid">
+        <div class="setup-main">
+            <div class="builder-note-grid">
+                <div class="builder-note">
+                    <strong>Topic-first selection</strong>
+                    <span>Your selected topics are prioritized before the app expands to nearby questions.</span>
+                </div>
+                <div class="builder-note">
+                    <strong>Code-reading support</strong>
+                    <span>Some prompts include snippets and explanations for review after the quiz.</span>
+                </div>
+                <div class="builder-note">
+                    <strong>Saved progress</strong>
+                    <span>Logged-in attempts update dashboard stats, history, and review pages.</span>
+                </div>
+            </div>
+
+            {% if topics %}
+                <div class="topic-section">
+                    <h2>Topics</h2>
+                    <div class="topic-grid">
+                        {% for topic in topics %}
+                            <label>
+                                <input type="checkbox" name="topics" value="{{ topic.id }}">
+                                <span class="topic-content">
+                                    <span class="topic-name">{{ topic.name }}</span>
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="difficulty-section">
+                    <h2>Difficulty</h2>
+                    <div class="difficulty-grid">
+                        {% for value, label, note in [("EASY", "Easy", "Fundamentals"), ("MEDIUM", "Medium", "Applied recall"), ("HARD", "Hard", "Tradeoffs")] %}
+                            <label>
+                                <input type="radio" name="difficulty" value="{{ value }}" {% if loop.first %}checked{% endif %}>
+                                <span class="difficulty-content">
+                                    <span class="difficulty-name">{{ label }}</span>
+                                    <span class="difficulty-note">{{ note }}</span>
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="count-sections">
+                    <label for="limit">Questions</label>
+                    <input id="limit" type="number" name="limit" value="5" min="1" max="25" required>
+                </div>
+
+                <button type="submit" class="button button-primary builder-submit" {% if not quota.is_unlimited and quota.remaining <= 0 %}disabled{% endif %}>Start Quiz</button>
+            {% else %}
+                <div class="empty-state">
+                    <h2>No published topics yet.</h2>
+                    <p class="muted">An admin needs to publish questions before quizzes can start.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <aside class="setup-side panel">
+            <p class="eyebrow">Session plan</p>
+            <h2>Build a run that matches your current goal.</h2>
+            <div class="path-list">
+                <div><span>01</span><strong>Choose topics</strong><small>Pick one area for precision or several for breadth.</small></div>
+                <div><span>02</span><strong>Set difficulty</strong><small>Easy checks fundamentals. Hard tests tradeoffs.</small></div>
+                <div><span>03</span><strong>Review after</strong><small>Your result and every explanation are saved.</small></div>
+            </div>
+        </aside>
+    </div>
+</form>
+{% endblock %}
