@@ -24,6 +24,15 @@
     background: rgba(69, 179, 157, 0.08);
     border-color: var(--line-strong);
 }
+.button-danger {
+    color: var(--danger);
+    background: rgba(255, 125, 115, 0.08);
+    border-color: rgba(255, 125, 115, 0.42);
+}
+.button-danger:hover {
+    color: var(--text);
+    background: rgba(255, 125, 115, 0.16);
+}
 .panel, .metric-card, .terminal-panel, .feature-card, .auth-container, .Question-section,
 .results-details, .table-card, .about-cta, .track-list, .empty-state {
     border: 1px solid var(--line);
