@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block title %}: Dashboard{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <section class="dashboard-hero">
+        <div>
+            <p class="eyebrow">Command center</p>
+            <h1>Welcome back, {{ current_user.username or "Developer" }}.</h1>
+            <p class="muted">Track quiz volume, average performance, recent attempts, and the topic that deserves the next focused session.</p>
+            <div class="hero-actions">
+                <a href="{{ url_for('main.quiz') }}" class="button button-primary">New Challenge</a>
+                <a href="{{ url_for('main.history') }}" class="button button-secondary">Review History</a>
+            </div>
+        </div>
+        <div class="score-ring" aria-label="Average score">
+            <div class="score-ring-inner">
+                <strong>{{ stats.average }}%</strong>
+                <span>Average</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="dashboard-top-grid">
+        <div class="quota-banner">
+            {% if quota.is_unlimited %}
+                <strong>Unlimited access</strong>
+                <span>Your account can start as many practice sessions as needed.</span>
+            {% else %}
+                <strong>{{ quota.remaining }} free quizzes left this week</strong>
+                <span>Free accounts include {{ quota.limit }} quiz attempts per rolling week. Unlimited monthly access is planned for the paid tier.</span>
+            {% endif %}
+        </div>
+        <div class="panel compact-panel">
+            <p class="eyebrow">Recommended next</p>
+            <strong>{{ stats.recommended }}</strong>
+            <span class="muted">Prioritize the topic with the weakest recent signal.</span>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <article class="metric-card">
+            <span>Total quizzes</span>
+            <strong>{{ stats.total }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Average score</span>
+            <strong>{{ stats.average }}%</strong>
+        </article>
+        <article class="metric-card">
+            <span>Strongest topic</span>
+            <strong>{{ stats.strongest }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Weakest topic</span>
+            <strong>{{ stats.weakest }}</strong>
+        </article>
+    </div>
+
+    <div class="dashboard-bento">
+        <section class="panel span-7">
+            <div class="panel-header">
+                <h2>Recent attempts</h2>
+                <a href="{{ url_for('main.history') }}">View all</a>
+            </div>
+            {% if stats.recent %}
+                <div class="attempt-list">
+                    {% for attempt in stats.recent %}
+                        <a class="attempt-row" href="{{ url_for('main.quiz_review', attempt_id=attempt.id) if attempt.id else url_for('main.history') }}">
+                            <span>{{ attempt.topic_label if attempt.topic_label is defined else attempt.topic }}</span>
+                            <strong>{{ attempt.score }} / {{ attempt.question_count }}</strong>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state compact">
+                    <h2>No history yet.</h2>
+                    <a href="{{ url_for('main.quiz') }}" class="button button-primary">Start a Quiz</a>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel span-5">
+            <div class="panel-header">
+                <h2>Launch practice</h2>
+            </div>
+            <p class="muted">Focus your next session on {{ stats.recommended }}.</p>
+            <form action="{{ url_for('main.quiz_start') }}" method="post" class="inline-form">
+                <select name="topics" class="form-control">
+                    {% for topic in topics %}
+                        <option value="{{ topic.id }}" {% if topic.name == stats.recommended %}selected{% endif %}>{{ topic.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="difficulty" class="form-control">
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HARD">Hard</option>
+                </select>
+                <input type="hidden" name="limit" value="5">
+                <button class="button button-primary" type="submit" {% if not quota.is_unlimited and quota.remaining <= 0 %}disabled{% endif %}>Start</button>
+            </form>
+        </section>
+
+        <section class="panel span-7">
+            <div class="panel-header">
+                <h2>Skill analysis</h2>
+                <span class="muted">Current signal</span>
+            </div>
+            <div class="skill-list">
+                <div class="skill-row">
+                    <div><span>{{ stats.strongest }}</span><strong>{{ stats.average if stats.total else 0 }}%</strong></div>
+                    <div class="progress-track"><span style="width: {{ stats.average if stats.total else 8 }}%"></span></div>
+                </div>
+                <div class="skill-row">
+                    <div><span>{{ stats.weakest }}</span><strong>{{ (stats.average - 12) if stats.total and stats.average > 12 else 0 }}%</strong></div>
+                    <div class="progress-track"><span style="width: {{ (stats.average - 12) if stats.total and stats.average > 12 else 8 }}%"></span></div>
+                </div>
+                <div class="skill-row">
+                    <div><span>Consistency</span><strong>{{ 100 if stats.total >= 5 else stats.total * 20 }}%</strong></div>
+                    <div class="progress-track"><span style="width: {{ 100 if stats.total >= 5 else stats.total * 20 }}%"></span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel span-5">
+            <div class="panel-header">
+                <h2>Learning path</h2>
+            </div>
+            <div class="path-list">
+                <div><span>01</span><strong>Take a focused quiz</strong><small>Choose one skill and answer carefully.</small></div>
+                <div><span>02</span><strong>Review mistakes</strong><small>Read explanations before starting another run.</small></div>
+                <div><span>03</span><strong>Repeat the weak topic</strong><small>Use history to confirm progress.</small></div>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}
