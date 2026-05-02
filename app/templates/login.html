@@ -3,41 +3,43 @@
 {% block title %}: Login{% endblock %}
 
 {% block body %}
-    <div class="login-section container">
-        <h2>Login to DevBrain</h2>
-        <div class="mb-3">
-            <!-- Display error message if it exists -->
-            {% if error %} 
-                <h2 class="error-message">{{ error }}</h2>
-            {% endif %}
-        </div>
-        <div>
-            {% if form.errors %}
+    <section class="auth-container">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Login to DevBrain</h1>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="form-errors">
                 {% for field, errors in form.errors.items() %}
                     {% for error in errors %}
-                        <div class="text-danger">{{ error }}</div>
+                        <div>{{ error }}</div>
                     {% endfor %}
                 {% endfor %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
 
         <form action="{{ url_for('auth.login') }}" method="post">
-             {{ form.hidden_tag() }}
+            {{ form.hidden_tag() }}
 
-            <div class="mb-3">
-                {{ form.email.label }}:
+            <div class="form-group">
+                {{ form.email.label }}
                 {{ form.email(class="form-control", autocomplete="email", autofocus=True) }}
             </div>
 
-            <div class="mb-3">
-                {{ form.password.label }}:
+            <div class="form-group">
+                {{ form.password.label }}
                 {{ form.password(class="form-control", autocomplete="new-password") }}
             </div>
 
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.submit(class="button button-primary form-submit") }}
         </form>
-        <p></p>
-        <p><a href="{{ url_for('auth.forgot_password') }}">Forgotten Password</a></p>
-        <p><a href="{{ url_for('auth.register') }}" style="color: wheat;">No account?</a></p>
-    </div>
+
+        <div class="auth-links">
+            <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+            <a href="{{ url_for('auth.register') }}">Create an account</a>
+        </div>
+    </section>
 {% endblock %}

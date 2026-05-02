@@ -1,99 +1,176 @@
 {% extends "layout.html" %}
 
-
 {% block body %}
-
-<main class="homepage">
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>Test Your Knowledge with DevBrain</h1>
-        <p>
-            DevBrain is an interactive quiz platform built to help developers and learners
-            test their understanding, identify gaps, and improve through practice.
+<section class="hero-section">
+    <div class="hero-copy">
+        <p class="eyebrow">Developer learning intelligence</p>
+        <h1>Practice like a developer who wants proof of progress.</h1>
+        <p class="hero-text">
+            DevBrain turns technical review into short, focused quiz sessions with saved results, explanations,
+            topic trends, and a dashboard that shows what to practice next.
         </p>
-        <p>
-            No passive learning. No fluff. Just clear questions, instant feedback,
-            and real progress tracking.
-        </p>
-
         <div class="hero-actions">
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>
-            <a href="{{ url_for('main.quiz') }}" class="btn btn-secondary">Try Demo</a>
+            <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
+            <a href="#pricing" class="button button-secondary">View Plans</a>
         </div>
-    </section>
+        <div class="hero-proof">
+            <span>5 free quizzes weekly</span>
+            <span>Saved reviews</span>
+            <span>Developer-focused topics</span>
+        </div>
+    </div>
 
-    <!-- What DevBrain Is -->
-    <section class="overview">
-        <h2>What Is DevBrain?</h2>
+    <div class="terminal-panel" aria-label="DevBrain quiz preview">
+        <div class="terminal-bar">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="terminal-body">
+            <p class="terminal-muted">session.new</p>
+            <h2>System Design Patterns</h2>
+            <div class="code-line"><span>topic</span><strong>Backend Architecture</strong></div>
+            <div class="code-line"><span>difficulty</span><strong>Hard</strong></div>
+            <div class="code-line"><span>feedback</span><strong>Instant explanation</strong></div>
+            <div class="code-line"><span>review</span><strong>Saved to dashboard</strong></div>
+            <div class="progress-track"><span style="width: 72%"></span></div>
+        </div>
+    </div>
+</section>
+
+<section class="marketing-stat-grid">
+    <article>
+        <strong>5/week</strong>
+        <span>Free quiz attempts for every account</span>
+    </article>
+    <article>
+        <strong>20+</strong>
+        <span>Starter questions across core developer categories</span>
+    </article>
+    <article>
+        <strong>Review</strong>
+        <span>Every completed quiz becomes a saved learning artifact</span>
+    </article>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Why DevBrain</p>
+        <h2>Passive tutorials feel productive. Active recall proves what stuck.</h2>
+        <p class="muted">The platform is designed for learners who want a clean loop: choose a focus area, answer under light pressure, review mistakes, and return to the weakest topic next time.</p>
+    </div>
+    <div class="feature-grid three">
+        <article class="feature-card">
+            <span class="feature-index">01</span>
+            <h3>Practice deliberately</h3>
+            <p>Pick topics and difficulty instead of taking random trivia. Sessions stay short enough for daily repetition.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">02</span>
+            <h3>Review with context</h3>
+            <p>Answers include explanations and code-reading prompts where useful, so the review page teaches after scoring.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">03</span>
+            <h3>Track what matters</h3>
+            <p>Your dashboard summarizes attempts, average score, strongest topic, weakest topic, and recommended next work.</p>
+        </article>
+    </div>
+</section>
+
+<section class="split-section">
+    <div>
+        <p class="eyebrow">Specializations</p>
+        <h2>Built for practical developer learning, not generic trivia.</h2>
         <p>
-            DevBrain is designed for learners who want to actively test what they know.
-            Whether you're studying programming fundamentals or sharpening technical concepts,
-            DevBrain turns learning into measurable progress.
+            DevBrain starts with programming, web, databases, infrastructure, security, testing, and architecture.
+            The question bank is owned and editable, so it can grow into deeper tracks over time instead of depending
+            on a third-party feed.
         </p>
-        <p>
-            You can take quizzes instantly without an account, or sign up to save your results
-            and track your improvement over time.
-        </p>
-    </section>
+        <a href="{{ url_for('auth.register') }}" class="button button-primary">Create Free Account</a>
+    </div>
+    <div class="track-list">
+        <div><span>Programming</span><strong>Python, JavaScript, code reading</strong></div>
+        <div><span>Web</span><strong>HTTP, APIs, auth, caching</strong></div>
+        <div><span>Systems</span><strong>Git, Docker, deployment basics</strong></div>
+        <div><span>Data</span><strong>SQL, indexing, transactions</strong></div>
+        <div><span>Quality</span><strong>Testing, security, architecture</strong></div>
+    </div>
+</section>
 
-    <!-- How It Works -->
-    <section class="how-it-works">
-        <h2>How It Works</h2>
-        <ul class="cards-list">
-            <li><strong>Choose a Topic</strong> – Select a subject and difficulty level.</li>
-            <li><strong>Take the Quiz</strong> – Answer carefully crafted questions.</li>
-            <li><strong>Get Instant Feedback</strong> – See your score and explanations immediately.</li>
-            <li><strong>Track Progress</strong> – Registered users can review past attempts and growth.</li>
-        </ul>
-    </section>
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Product loop</p>
+        <h2>A weekly rhythm for sharper technical recall.</h2>
+    </div>
+    <div class="workflow-list">
+        <article>
+            <span>1</span>
+            <div>
+                <h3>Choose the skill</h3>
+                <p>Select one or more categories and the difficulty that matches your current target.</p>
+            </div>
+        </article>
+        <article>
+            <span>2</span>
+            <div>
+                <h3>Answer and learn</h3>
+                <p>See feedback after each question, including explanations and code snippets when relevant.</p>
+            </div>
+        </article>
+        <article>
+            <span>3</span>
+            <div>
+                <h3>Review the attempt</h3>
+                <p>Open a saved review showing your answer, the correct answer, and why it matters.</p>
+            </div>
+        </article>
+        <article>
+            <span>4</span>
+            <div>
+                <h3>Return to the gap</h3>
+                <p>Use dashboard recommendations to spend the next session where it will actually help.</p>
+            </div>
+        </article>
+    </div>
+</section>
 
-    <!-- Key Features -->
-    <section class="features">
-        <h2>Key Features</h2>
-        <ul class="cards-list">
-            <li><strong>Wide Topic Coverage</strong> – Programming concepts, fundamentals, and more.</li>
-            <li><strong>Multiple Difficulty Levels</strong> – Beginner to advanced.</li>
-            <li><strong>Instant Scoring</strong> – Know where you stand right away.</li>
-            <li><strong>Progress Tracking</strong> – View your quiz history when logged in.</li>
-            <li><strong>Simple, Focused Design</strong> – Learning without distractions.</li>
-        </ul>
-    </section>
+<section class="section-band" id="pricing">
+    <div class="section-heading">
+        <p class="eyebrow">Plans</p>
+        <h2>Start free. Upgrade when practice becomes a habit.</h2>
+    </div>
+    <div class="pricing-grid">
+        <article class="pricing-card">
+            <p class="eyebrow">Free</p>
+            <h3>$0</h3>
+            <p>For learners who want to try the full app experience before committing.</p>
+            <ul>
+                <li>5 quiz attempts per rolling week</li>
+                <li>Dashboard, history, and review pages</li>
+                <li>Access to published starter categories</li>
+            </ul>
+            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Create Account</a>
+        </article>
+        <article class="pricing-card featured">
+            <p class="eyebrow">Unlimited</p>
+            <h3>Monthly</h3>
+            <p>For consistent learners, interview prep, and developers building a practice routine.</p>
+            <ul>
+                <li>Unlimited quiz attempts</li>
+                <li>All current and future categories</li>
+                <li>Deeper question sets as the bank grows</li>
+            </ul>
+            <a href="{{ url_for('auth.register') }}" class="button button-primary">Join Waitlist</a>
+        </article>
+    </div>
+</section>
 
-    <!-- Demo vs Account -->
-    <section class="demo-info">
-        <h2>Try Before You Commit</h2>
-        <p>You can take quizzes without creating an account to explore how DevBrain works.</p>
-        <p>
-            Creating an account unlocks progress tracking, saved results,
-            and a more personalized learning experience.
-        </p>
-    </section>
-
-    <!-- Vision -->
-    <section class="vision">
-        <h2>Our Vision</h2>
-        <p>
-            DevBrain aims to make learning continuous, practical, and honest.
-            Improvement starts by knowing what you don’t know — and fixing it.
-        </p>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <h2>What Our Users Say</h2>
-        <ul class="cards-list">
-            <li>"DevBrain has transformed how I study coding – fun and effective!" – Alex, Student</li>
-            <li>"I love tracking my progress and reviewing my results." – Maria, Developer</li>
-            <li>"Instant feedback helps me understand my mistakes immediately." – John, Learner</li>
-        </ul>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="cta">
-        <h2>Start Learning Smarter</h2>
-        <p>Test your knowledge today and build confidence through practice.</p>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
-    </section>
-</main>
-
+<section class="about-cta">
+    <div>
+        <p class="eyebrow">Get started</p>
+        <h2>Make your next study session measurable.</h2>
+    </div>
+    <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
+</section>
 {% endblock %}

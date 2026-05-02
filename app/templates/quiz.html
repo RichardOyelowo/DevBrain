@@ -7,13 +7,13 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const answer_list = document.querySelectorAll(".users_answer");
-                
+
                 function decodeHTML(html) {
                     const txt = document.createElement('textarea');
                     txt.innerHTML = html;
                     return txt.value;
                 }
-                
+
                 const correct_answer = decodeHTML("{{ data['correct_answer']|forceescape }}");
                 const explanation = decodeHTML("{{ data.get('explanation', 'No explanation available')|forceescape }}");
                 let answered = false;
@@ -22,7 +22,7 @@
                     answer.addEventListener("click", function() {
                         if (answered) return;
                         answered = true;
-                        
+
                         answer_list.forEach(btn => {
                             btn.style.pointerEvents = "none";
                         });
@@ -33,44 +33,52 @@
                         document.getElementById("user-answer").value = selectedAnswer;
 
                         if (selectedAnswer.toLowerCase() === correct.toLowerCase()) {
-                            this.style.background = "green";
+                            this.classList.add("answer-correct");
                         } else {
-                            this.style.background = "red";
+                            this.classList.add("answer-wrong");
                             answer_list.forEach(btn => {
                                 if (btn.dataset.answer.trim().toLowerCase() === correct.toLowerCase()) {
-                                    btn.style.background = "green";
+                                    btn.classList.add("answer-correct");
                                 }
                             });
                         }
 
                         this.parentElement.querySelector(".feedback").innerHTML = explanation;
-                        document.getElementById("next-btn").style.display = "block";
-                    }); 
+                        document.getElementById("next-btn").style.display = "inline-flex";
+                    });
                 });
             });
         </script>
-        <form action="/quiz" method="post">
 
+        <form action="/quiz" method="post" class="quiz-shell">
             <input type="hidden" name="answer" id="user-answer" value="">
 
             <div class="Question-section">
-                <h4>{{ data["text"] }}</h4>
-                <p>{{ data.get('description', 'No description available') }}</p>
-                <div class="d-grid gap-2">
+                <p class="eyebrow">Question</p>
+                <h1>{{ data["text"] }}</h1>
+                <p class="question-description">{{ data.get('description', 'No description available') }}</p>
+
+                <div class="answer-grid">
                     {% for answer in answers %}
-                        <button type="button" data-answer="{{ answer|e }}" class="users_answer btn btn-primary btn-lg">{{ answer.capitalize() }}</button>
+                        <button type="button" data-answer="{{ answer|e }}" class="users_answer">{{ answer.capitalize() }}</button>
                     {% endfor %}
-                    <p class="feedback mt-3"></p>
+                    <p class="feedback"></p>
                 </div>
 
-                <button type="submit" id="next-btn" class="btn btn-success mt-3" style="display: none;">Next Question</button>
+                <button type="submit" id="next-btn" class="button button-primary" style="display: none;">Next Question</button>
             </div>
         </form>
 
     {% elif topics %}
-        <form action="/quiz" method="post">
+        <form action="/quiz" method="post" class="quiz-builder">
+            <section class="builder-hero">
+                <p class="eyebrow">Quiz builder</p>
+                <h1>Configure your practice session.</h1>
+                <p>Select topics, difficulty, and question count. You can combine topics for a broader challenge.</p>
+            </section>
+
             <div class="topic-section">
-                <h2>Choose a Topic:</h2>
+                <h2>Choose Topics</h2>
                 <div class="topic-grid">
                     {% for topic in topics %}
                         <label>
@@ -82,35 +90,45 @@
                     {% endfor %}
                 </div>
             </div>
+
             <div class="difficulty-section">
-                <h2>Select Difficulty Level:</h2>
+                <h2>Select Difficulty</h2>
                 <div class="difficulty-grid">
                     <label class="difficulty-easy">
                         <input type="radio" name="difficulty" value="Easy">
                         <span class="difficulty-content">
                             <span class="difficulty-name">Easy</span>
+                            <span class="difficulty-note">Fundamentals</span>
                         </span>
                     </label>
                     <label class="difficulty-medium">
                         <input type="radio" name="difficulty" value="Medium">
                         <span class="difficulty-content">
                             <span class="difficulty-name">Medium</span>
+                            <span class="difficulty-note">Applied knowledge</span>
                         </span>
                     </label>
                     <label class="difficulty-hard">
                         <input type="radio" name="difficulty" value="Hard">
                         <span class="difficulty-content">
                             <span class="difficulty-name">Hard</span>
+                            <span class="difficulty-note">Deep recall</span>
                         </span>
                     </label>
                 </div>
             </div>
+
             <div class="count-sections">
-                <h2>Number of Questions:</h2>
-                <input type="number" name="limit" placeholder="Questions Count" min="1" max="50" required>
+                <label for="limit">Number of Questions</label>
+                <input id="limit" type="number" name="limit" placeholder="10" min="1" max="50" required>
             </div>
 
-            <button type="submit" class="btn btn-primary fw-bold">Start Quiz</button>
+            <button type="submit" class="button button-primary builder-submit">Start Quiz</button>
         </form>
+    {% elif error %}
+        <section class="empty-state">
+            <h1>{{ error }}</h1>
+            <a href="{{ url_for('main.quiz') }}" class="button button-primary">Try Again</a>
+        </section>
     {% endif %}
 {% endblock %}

@@ -3,59 +3,91 @@
 {% block title %}: History{% endblock %}
 
 {% block body %}
-    <div class="history-section container">
-        <div class="table-responsive">
-            <h2>Grading Scale</h2>
-            <table class="table" style="text-align: center;">
-                <thead>
-                    <tr>
-                        <th>Mastery</th>
-                        <th>Competent</th>
-                        <th>Average</th>
-                        <th>Fair</th>
-                        <th>Needs Improvement</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <td>90+</td>
-                    <td>75 - 89</td>
-                    <td>60 - 74</td>
-                    <td>40 - 59</td>
-                    <td>0 - 39</td>
-                </tbody>
-            </table>
+    <section class="history-section">
+        <div class="section-heading">
+            <p class="eyebrow">Performance archive</p>
+            <h1>Quiz History</h1>
+            <p class="muted">Filter completed attempts, reopen reviews, and compare score quality across topics and difficulty levels.</p>
         </div>
 
-        <div class="table-responsive">
-            {% if history %}
+        <div class="table-card">
+            <h2>Grading Scale</h2>
+            <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Topic</th>
-                            <th>Difficulty</th>
-                            <th>Questions</th>
-                            <th>Score</th>
-                            <th>Grade</th>
+                            <th>Mastery</th>
+                            <th>Competent</th>
+                            <th>Average</th>
+                            <th>Fair</th>
+                            <th>Needs Improvement</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for details in history %}
-                            <tr>
-                                <td>{{ details["date"] }}</td>
-                                <td>{{ details["topic"] }}</td>
-                                <td>{{ details["difficulty"] }}</td>
-                                <td>{{ details["question_count"] }}</td>
-                                <td>{{ details["score"] }}</td>
-                                <td>{{ details["grade"] }}</td>
-                            </tr>
-                        {% endfor %}
+                        <tr>
+                            <td data-label="Mastery">90+</td>
+                            <td data-label="Competent">75 - 89</td>
+                            <td data-label="Average">60 - 74</td>
+                            <td data-label="Fair">40 - 59</td>
+                            <td data-label="Needs Improvement">0 - 39</td>
+                        </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <form class="filter-bar" method="get">
+            <select name="topic" class="form-control">
+                <option value="">All topics</option>
+                {% for topic in topics %}
+                    <option value="{{ topic.name }}" {% if request.args.get('topic') == topic.name %}selected{% endif %}>{{ topic.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="difficulty" class="form-control">
+                <option value="">All difficulties</option>
+                {% for value in ["EASY", "MEDIUM", "HARD"] %}
+                    <option value="{{ value }}" {% if request.args.get('difficulty') == value %}selected{% endif %}>{{ value.title() }}</option>
+                {% endfor %}
+            </select>
+            <button class="button button-secondary" type="submit">Filter</button>
+        </form>
+
+        <div class="table-card">
+            {% if attempts %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Topic</th>
+                                <th>Difficulty</th>
+                                <th>Questions</th>
+                                <th>Score</th>
+                                <th>Grade</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in attempts %}
+                                <tr>
+                                    <td data-label="Date">{{ attempt.completed_at.strftime("%Y-%m-%d") if attempt.completed_at else "" }}</td>
+                                    <td data-label="Topic">{{ attempt.topic_label }}</td>
+                                    <td data-label="Difficulty">{{ attempt.difficulty.title() }}</td>
+                                    <td data-label="Questions">{{ attempt.question_count }}</td>
+                                    <td data-label="Score">{{ attempt.score }}</td>
+                                    <td data-label="Grade">{{ attempt.grade }}</td>
+                                    <td data-label="Action"><a href="{{ url_for('main.quiz_review', attempt_id=attempt.id) }}">Review</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
-                <h3>No quiz history available.</h3>
-                <a href="{{ url_for('main.quiz') }}" class="btn btn-primary">Take Your First Quiz</a>
+                <div class="empty-state">
+                    <h2>No quiz history available.</h2>
+                    <a href="{{ url_for('main.quiz') }}" class="button button-primary">Take Your First Quiz</a>
+                </div>
             {% endif %}
         </div>
-    </div>
+    </section>
 {% endblock %}

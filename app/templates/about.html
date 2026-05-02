@@ -1,56 +1,88 @@
 {% extends "layout.html" %}
 
+{% block title %}: About{% endblock %}
+
 {% block body %}
-
-<main class="about-page">
-    <section class="about-header">
-        <h1>About DevBrain</h1>
+<section class="about-page">
+    <div class="about-header">
+        <p class="eyebrow">About DevBrain</p>
+        <h1>Active practice for developers who want measurable learning, not vague confidence.</h1>
         <p>
-            DevBrain is a learning platform built around one core idea:
-            understanding improves when knowledge is tested.
+            DevBrain is built around a simple idea: understanding improves when knowledge is tested,
+            reviewed, and tested again. The app gives learners a structured way to find weak spots and return to them.
         </p>
-    </section>
+    </div>
 
-    <section class="about-mission">
-        <h2>Our Mission</h2>
-        <p>
-            We aim to help learners strengthen their understanding through interactive quizzes
-            that provide immediate feedback and measurable progress.
-        </p>
-        <p>Learning should be active, practical, and accessible — not passive or overwhelming.</p>
-    </section>
+    <div class="feature-grid two">
+        <article class="feature-card">
+            <h2>Mission</h2>
+            <p>Help learners strengthen technical understanding through focused quizzes, immediate feedback, and saved progress they can actually inspect.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Philosophy</h2>
+            <p>Memorization fades. Clear questions, honest scoring, and meaningful explanations make learning stick.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Vision</h2>
+            <p>A self-directed learning experience where progress is continuous and grounded in practical recall.</p>
+        </article>
+        <article class="feature-card">
+            <h2>Who It Is For</h2>
+            <p>Students, developers, self-learners, and anyone who learns best by testing what they know.</p>
+        </article>
+    </div>
 
-    <section class="about-philosophy">
-        <h2>Our Philosophy</h2>
-        <p>Memorization fades. Understanding sticks.</p>
-        <p>
-            DevBrain focuses on clear questions, honest scoring, and meaningful feedback
-            so learners can identify gaps and improve efficiently.
-        </p>
-    </section>
+    <div class="section-heading">
+        <p class="eyebrow">What makes it different</p>
+        <h2>DevBrain is designed around an owned learning loop.</h2>
+        <p class="muted">Questions live in the app, can be reviewed by admins, and can expand into deeper categories without depending on an external quiz feed.</p>
+    </div>
 
-    <section class="about-vision">
-        <h2>Our Vision</h2>
-        <p>
-            We envision a learning experience where progress is continuous,
-            self-directed, and driven by curiosity rather than pressure.
-        </p>
-    </section>
+    <div class="workflow-list">
+        <article>
+            <span>01</span>
+            <div>
+                <h3>Account-based progress</h3>
+                <p>Every quiz attempt belongs to a learner, which makes the dashboard and history useful from day one.</p>
+            </div>
+        </article>
+        <article>
+            <span>02</span>
+            <div>
+                <h3>Practical categories</h3>
+                <p>The bank can grow across Python, JavaScript, SQL, HTTP, Git, Docker, security, testing, and architecture.</p>
+            </div>
+        </article>
+        <article>
+            <span>03</span>
+            <div>
+                <h3>Freemium by design</h3>
+                <p>Free users get the complete experience with a weekly limit. Paid users can later unlock unlimited practice.</p>
+            </div>
+        </article>
+    </div>
 
-    <section class="about-who">
-        <h2>Who DevBrain Is For</h2>
-        <ul>
-            <li>Students learning programming and technical concepts</li>
-            <li>Developers refreshing fundamentals</li>
-            <li>Self-learners who want structured self-assessment</li>
-            <li>Anyone who learns best by testing their knowledge</li>
-        </ul>
-    </section>
+    <div class="feature-grid three">
+        <article class="feature-card">
+            <h2>For interview prep</h2>
+            <p>Use short sessions to expose gaps before they show up in a technical conversation.</p>
+        </article>
+        <article class="feature-card">
+            <h2>For fundamentals</h2>
+            <p>Revisit core language, web, database, and tooling concepts until recall becomes reliable.</p>
+        </article>
+        <article class="feature-card">
+            <h2>For consistency</h2>
+            <p>Five free weekly quizzes encourage a habit without hiding the product behind a paywall.</p>
+        </article>
+    </div>
 
-    <section class="about-cta">
-        <p>Ready to test what you know?</p>
-        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Take a Quiz</a>
-    </section>
-</main>
-
+    <div class="about-cta">
+        <div>
+            <p class="eyebrow">Start learning</p>
+            <h2>Ready to test what you know?</h2>
+        </div>
+        <a href="{{ url_for('auth.register') }}" class="button button-primary">Create Account</a>
+    </div>
+</section>
 {% endblock %}

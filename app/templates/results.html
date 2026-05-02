@@ -3,17 +3,31 @@
 {% block title %}: Results{% endblock %}
 
 {% block body %}
-    <div class="results-details">
+    <section class="results-details">
+        <p class="eyebrow">Quiz complete</p>
         <h1>Your Quiz Results</h1>
-        <p>You scored {{ score }} out of {{ total }}.</p>
-        <p><strong>Percentage:</strong> {{ percentage }}%</p>
-        <p><strong>Grade:</strong> {{ grade }}</p>
+
+        <div class="score-panel">
+            <div>
+                <span>Score</span>
+                <strong>{{ attempt.score }} / {{ attempt.question_count }}</strong>
+            </div>
+            <div>
+                <span>Percentage</span>
+                <strong>{{ attempt.percentage }}%</strong>
+            </div>
+            <div>
+                <span>Grade</span>
+                <strong>{{ attempt.grade }}</strong>
+            </div>
+        </div>
 
         <div class="actions">
-            <a href="{{ url_for('main.quiz') }}" class="btn btn-primary btn-lg">Take Another Quiz</a>
+            <a href="{{ url_for('main.quiz') }}" class="button button-primary">Take Another Quiz</a>
+            <a href="{{ url_for('main.quiz_review', attempt_id=attempt.id) }}" class="button button-secondary">Review Answers</a>
             {% if session.get('user_id') %}
-                <a href="{{ url_for('main.history') }}" class="btn btn-secondary btn-lg">View History</a>
+                <a href="{{ url_for('main.history') }}" class="button button-secondary">View History</a>
             {% endif %}
         </div>
-    </div>
+    </section>
 {% endblock %}
