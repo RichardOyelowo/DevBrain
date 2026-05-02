@@ -1,0 +1,225 @@
+.button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-sm);
+    padding: 0 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.button-primary { color: var(--primary-text); background: var(--primary); }
+.button-primary:hover { color: var(--primary-text); background: var(--primary-strong); }
+.button:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+}
+.button-secondary, .button-ghost {
+    color: var(--primary);
+    background: rgba(69, 179, 157, 0.08);
+    border-color: var(--line-strong);
+}
+.panel, .metric-card, .terminal-panel, .feature-card, .auth-container, .Question-section,
+.results-details, .table-card, .about-cta, .track-list, .empty-state {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(16, 23, 34, 0.88);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+}
+.panel { padding: 22px; display: grid; gap: 18px; }
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+.metric-card { padding: 18px; }
+.quota-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    background: rgba(69, 179, 157, 0.1);
+}
+.quota-banner strong {
+    font-family: var(--font-display);
+}
+.quota-banner span {
+    color: var(--text-soft);
+    font-size: 0.94rem;
+}
+.metric-card span, .score-panel span { color: var(--text-muted); font-size: 0.88rem; }
+.metric-card strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+}
+.alert, .error-message, .form-errors {
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    background: rgba(68, 226, 205, 0.12);
+}
+.alert-danger, .form-errors, .error-message {
+    border-color: rgba(255, 143, 134, 0.5);
+    background: rgba(255, 143, 134, 0.11);
+}
+.form-group { display: grid; gap: 8px; }
+.form-group label, .count-sections label, .form-group {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+.form-control, .count-sections input[type="number"] {
+    width: 100%;
+    min-height: 46px;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: rgba(0, 15, 33, 0.44);
+    padding: 0 14px;
+    outline: none;
+}
+.textarea { min-height: 110px; padding-top: 12px; resize: vertical; }
+.code-input, .code-block { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.form-control:focus, .count-sections input[type="number"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(69, 179, 157, 0.14);
+}
+.form-submit, .builder-submit { width: 100%; }
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.form-grid .full { grid-column: 1 / -1; }
+.check-row { align-content: center; grid-template-columns: auto 1fr; display: grid; }
+.table-card { padding: 22px; }
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.table-responsive::-webkit-scrollbar {
+    display: none;
+}
+.table { width: 100%; min-width: 720px; border-collapse: collapse; }
+.table th, .table td { padding: 13px 14px; border-bottom: 1px solid var(--line); }
+.table th {
+    color: var(--primary);
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+.table td { color: var(--text-soft); text-align: center; }
+.empty-state {
+    padding: 30px;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+}
+.empty-state.compact { padding: 22px; }
+.filter-bar, .inline-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.filter-bar .form-control, .inline-form .form-control { width: auto; min-width: 180px; }
+@media (max-width: 860px) {
+    .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .form-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+    .metric-grid, .score-panel, .difficulty-grid { grid-template-columns: 1fr; }
+    .panel, .auth-container, .Question-section, .results-details, .table-card { padding: 18px; }
+    .filter-bar .form-control, .inline-form .form-control, .filter-bar .button, .inline-form .button { width: 100%; }
+    .quota-banner { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 720px) {
+    .table-responsive {
+        overflow-x: visible;
+    }
+
+    .table {
+        min-width: 0;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tbody {
+        display: grid;
+        gap: 12px;
+    }
+
+    .table tr {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+    }
+
+    .table td:last-child {
+        border-bottom: 0;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        color: var(--text-muted);
+        font-family: var(--font-display);
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .table td[colspan] {
+        display: block;
+        text-align: center;
+    }
+
+    .table td[colspan]::before {
+        content: "";
+    }
+}
