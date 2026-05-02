@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}: Admin{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="page-heading">
+        <p class="eyebrow">Admin</p>
+        <h1>Question bank</h1>
+    </div>
+
+    <div class="metric-grid">
+        <article class="metric-card"><span>Topics</span><strong>{{ stats.topics }}</strong></article>
+        <article class="metric-card"><span>Published</span><strong>{{ stats.published }}</strong></article>
+        <article class="metric-card"><span>Drafts</span><strong>{{ stats.drafts }}</strong></article>
+        <article class="metric-card"><span>AI requests</span><strong>{{ stats.ai_requests }}</strong></article>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('main.admin_questions') }}" class="button button-primary">Questions</a>
+        <a href="{{ url_for('main.admin_question_new') }}" class="button button-secondary">New Question</a>
+        <a href="{{ url_for('main.admin_topics') }}" class="button button-secondary">Topics</a>
+        <a href="{{ url_for('main.admin_ai_drafts') }}" class="button button-secondary">AI Drafts</a>
+    </div>
+</section>
+{% endblock %}

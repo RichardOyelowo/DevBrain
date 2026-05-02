@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}: Admin Questions{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="panel-header">
+        <div>
+            <p class="eyebrow">Admin</p>
+            <h1>Questions</h1>
+        </div>
+        <a href="{{ url_for('main.admin_question_new') }}" class="button button-primary">New</a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Topic</th>
+                        <th>Difficulty</th>
+                        <th>Status</th>
+                        <th>Source</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                        <tr>
+                            <td data-label="Question">{{ question.prompt[:90] }}{% if question.prompt|length > 90 %}...{% endif %}</td>
+                            <td data-label="Topic">{{ question.topic.name }}</td>
+                            <td data-label="Difficulty">{{ question.difficulty.title() }}</td>
+                            <td data-label="Status">{{ "Archived" if question.is_archived else question.status.title() }}</td>
+                            <td data-label="Source">{{ question.source }}</td>
+                            <td data-label="Action"><a href="{{ url_for('main.admin_question_edit', question_id=question.id) }}">Edit</a></td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6">No questions yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

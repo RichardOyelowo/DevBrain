@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}: AI Drafts{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="page-heading">
+        <p class="eyebrow">Admin</p>
+        <h1>AI drafts</h1>
+        <p class="muted">Drafts are saved unpublished so admins can edit before release.</p>
+    </div>
+
+    <form method="post" class="panel form-grid">
+        <label class="form-group">Topic
+            <select name="topic_id" class="form-control">
+                {% for topic in topics %}
+                    <option value="{{ topic.id }}">{{ topic.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="form-group">Difficulty
+            <select name="difficulty" class="form-control">
+                <option value="EASY">Easy</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HARD">Hard</option>
+            </select>
+        </label>
+        <label class="form-group">Count
+            <input name="count" type="number" min="1" max="10" value="3" class="form-control">
+        </label>
+        <label class="form-group">Code style
+            <input name="code_style" placeholder="python" class="form-control">
+        </label>
+        <button class="button button-primary" type="submit">Create Drafts</button>
+    </form>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Date</th><th>Topic</th><th>Difficulty</th><th>Count</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for item in requests %}
+                        <tr>
+                            <td data-label="Date">{{ item.created_at.strftime("%Y-%m-%d") }}</td>
+                            <td data-label="Topic">{{ item.topic.name }}</td>
+                            <td data-label="Difficulty">{{ item.difficulty.title() }}</td>
+                            <td data-label="Count">{{ item.count }}</td>
+                            <td data-label="Status">{{ item.status.title() }}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5">No draft requests yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

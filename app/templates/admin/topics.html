@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}: Admin Topics{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="page-heading">
+        <p class="eyebrow">Admin</p>
+        <h1>Topics</h1>
+    </div>
+
+    <form method="post" class="panel form-grid">
+        <label class="form-group">Name
+            <input name="name" class="form-control" required>
+        </label>
+        <label class="form-group full">Description
+            <textarea name="description" class="form-control textarea"></textarea>
+        </label>
+        <label class="form-group check-row full">
+            <input type="checkbox" name="is_active" value="1" checked>
+            Active
+        </label>
+        <button class="button button-primary" type="submit">Save Topic</button>
+    </form>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead><tr><th>Name</th><th>Slug</th><th>Status</th><th>Questions</th></tr></thead>
+                <tbody>
+                    {% for topic in topics %}
+                        <tr>
+                            <td data-label="Name">{{ topic.name }}</td>
+                            <td data-label="Slug">{{ topic.slug }}</td>
+                            <td data-label="Status">{{ "Active" if topic.is_active else "Inactive" }}</td>
+                            <td data-label="Questions">{{ topic.questions|length }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
