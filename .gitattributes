@@ -1,5 +1,4 @@
 *.html linguist-vendored
 *.css linguist-detectable=false
 
-static/* linguist-vendored
 templates/* linguist-vendored
