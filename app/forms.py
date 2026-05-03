@@ -4,14 +4,14 @@ from wtforms.validators import DataRequired, Email, Length, Regexp, EqualTo
 
 
 class Login(FlaskForm):
-    email = StringField("Email", render_kw={"placeholder": "John Doe"}, validators=[DataRequired(), Email(message="Please enter a valid email address")])
+    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email(message="Please enter a valid email address")])
     password = PasswordField("Password", validators=[DataRequired(), Length(max=50)])
     submit = SubmitField("Login")
 
 
 class Register(FlaskForm):
-    email = StringField("Name", render_kw={"placeholder": "John Doe"}, validators=[DataRequired(), Email()])
-    username = StringField("Username", validators=[Length(max=40)])
+    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email()])
+    username = StringField("Display name", render_kw={"placeholder": "Richard"}, validators=[Length(max=40)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=20), 
         Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$', 
             message='Password must contain at least 1 letter, 1 number and 1 symbol')])
