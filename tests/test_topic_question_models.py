@@ -1,4 +1,5 @@
 from app.extensions import db
+from app.db import ensure_starter_catalog
 from app.learning import get_active_topics, save_question_from_form, slugify
 from app.models import AnswerOption, Language, Question, QuizPreset, Topic
 from tests.base import DevBrainTestCase
@@ -38,6 +39,18 @@ class TopicModelTest(DevBrainTestCase):
 
     def test_seed_bank_creates_editable_quiz_presets(self):
         self.assertGreaterEqual(QuizPreset.query.filter_by(is_active=True).count(), 4)
+
+    def test_startup_catalog_command_seeds_empty_database(self):
+        db.drop_all()
+        db.create_all()
+
+        seeded = ensure_starter_catalog()
+
+        self.assertTrue(seeded)
+        self.assertGreaterEqual(Topic.query.filter_by(is_active=True).count(), 20)
+        self.assertGreaterEqual(Language.query.filter_by(is_active=True).count(), 10)
+        self.assertGreaterEqual(QuizPreset.query.filter_by(is_active=True).count(), 4)
+        self.assertGreaterEqual(Question.query.filter_by(source="seed").count(), 1)
 
 
 class QuestionModelTest(DevBrainTestCase):

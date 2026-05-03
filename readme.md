@@ -208,24 +208,6 @@ python run.py
 
 Visit `http://localhost:5000`
 
-### Railway start command
-
-Railway can run the app with:
-
-```bash
-bash start.sh
-```
-
-`start.sh` runs database migrations with `flask db upgrade`, then starts Gunicorn. It does not drop tables.
-
-Seeding is optional on deploy. For a first deploy or when you intentionally want to restore missing starter categories, languages, presets, and seed questions, set:
-
-```env
-RUN_SEED_ON_START=1
-```
-
-After the first seed, remove that variable or set it to `0` so future deploys do not re-add starter catalog items you deleted or changed from the admin UI.
-
 The first account you register becomes the admin. Every account after that is a regular user.
 
 ---
@@ -623,7 +605,6 @@ Once you have weekly quotas, question selection logic, scoring, grade calculatio
 - More questions per topic and difficulty
 - Stronger dashboard insights with long-term trend views
 - Stripe or similar billing for unlimited plan
-- CI/CD pipeline
 
 **Medium-term**
 - Topic-based recommendations driven by weak area data

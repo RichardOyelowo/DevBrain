@@ -2,7 +2,7 @@ from flask_session import Session
 from flask import Flask
 from .config import Config
 from .extensions import db as sa_db, mail, csrf, migrate, redis_client
-from .db import close_db, ensure_database_ready
+from .db import close_db, ensure_database_ready, ensure_starter_catalog
 from .routes import main
 from .auth import auth
 from .admin import admin
@@ -40,6 +40,14 @@ def create_app():
     def init_db_command():
         ensure_database_ready()
         print("Initialized DevBrain database and seed question bank.")
+
+    @app.cli.command("ensure-catalog")
+    def ensure_catalog_command():
+        seeded = ensure_starter_catalog()
+        if seeded:
+            print("Seeded DevBrain starter catalog.")
+        else:
+            print("DevBrain starter catalog already exists.")
 
     # ------------------ Redis Session ------------------
     REDIS_URL = os.environ.get("REDIS_URL")

@@ -30,6 +30,22 @@ def ensure_database_ready(seed=True):
         seed_question_bank()
 
 
+def ensure_starter_catalog():
+    from .models import Language, Question, QuizPreset, Topic
+    from .seed import seed_question_bank
+
+    missing_catalog = (
+        Topic.query.count() == 0
+        or Language.query.count() == 0
+        or QuizPreset.query.count() == 0
+        or Question.query.filter_by(source="seed").count() == 0
+    )
+    if missing_catalog:
+        seed_question_bank()
+        return True
+    return False
+
+
 def _patch_existing_sqlite_schema():
     if db.engine.dialect.name != "sqlite":
         return
