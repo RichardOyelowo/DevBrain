@@ -20,20 +20,43 @@
         </div>
     </div>
 
-    <div class="terminal-panel" aria-label="DevBrain quiz preview">
+    <div class="terminal-panel quiz-sample" aria-label="DevBrain quiz preview">
         <div class="terminal-bar">
             <span></span>
             <span></span>
             <span></span>
         </div>
         <div class="terminal-body">
-            <p class="terminal-muted">session.new</p>
-            <h2>System Design Patterns</h2>
-            <div class="code-line"><span>topic</span><strong>Backend Architecture</strong></div>
-            <div class="code-line"><span>difficulty</span><strong>Hard</strong></div>
-            <div class="code-line"><span>feedback</span><strong>Instant explanation</strong></div>
-            <div class="code-line"><span>review</span><strong>Saved to dashboard</strong></div>
-            <div class="progress-track"><span style="width: 72%"></span></div>
+            <p class="terminal-muted">Quiz preview</p>
+            <h2>Two ways DevBrain checks understanding.</h2>
+            <div class="hero-sample-stack">
+                <article class="sample-question active">
+                    <span>Code snippet example</span>
+                    <h3>What does this print?</h3>
+                    <pre class="sample-code"><code>items = ["api", "db", "ui"]
+print(len(items))</code></pre>
+                    <div class="sample-answer-grid">
+                        <span>2</span>
+                        <span class="is-correct">3</span>
+                        <span>api</span>
+                        <span>Error</span>
+                    </div>
+                </article>
+                <article class="sample-question">
+                    <span>Normal concept question</span>
+                    <h3>Why should APIs paginate large collections?</h3>
+                    <div class="sample-answer-grid">
+                        <span class="is-correct">Bound response size</span>
+                        <span>Disable auth</span>
+                        <span>Force table scans</span>
+                        <span>Remove filtering</span>
+                    </div>
+                </article>
+                <div class="sample-feedback">
+                    <strong>Each answer saves a review trail.</strong>
+                    <p>Users see the correct answer, their choice, and a short explanation after the attempt.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -44,13 +67,54 @@
         <span>Free quiz attempts for every account</span>
     </article>
     <article>
-        <strong>20+</strong>
-        <span>Starter questions across core developer categories</span>
+        <strong>20</strong>
+        <span>Editable non-language categories for focused practice</span>
     </article>
     <article>
-        <strong>Review</strong>
-        <span>Every completed quiz becomes a saved learning artifact</span>
+        <strong>15</strong>
+        <span>Separate language filters for code-reading questions</span>
     </article>
+    <article>
+        <strong>Admin</strong>
+        <span>Question bank, categories, languages, and presets are editable</span>
+    </article>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Question styles</p>
+        <h2>DevBrain supports code-reading prompts and normal concept checks.</h2>
+        <p class="muted">Some learning gaps show up when reading code. Others show up when explaining a system decision. The MVP supports both from the same question bank.</p>
+    </div>
+    <div class="example-grid">
+        <article class="question-example-card">
+            <span class="feature-index">Code</span>
+            <h3>Read a snippet and choose the result</h3>
+            <pre class="sample-code"><code>const users = ["Ada", "Linus"];
+console.log(users.length);</code></pre>
+            <div class="sample-answer-grid compact">
+                <span>1</span>
+                <span class="is-correct">2</span>
+                <span>users</span>
+                <span>undefined</span>
+            </div>
+            <p>These questions use an optional `language` and `code_snippet`, so learners can practice syntax-specific reading without turning language into a general category.</p>
+        </article>
+        <article class="question-example-card">
+            <span class="feature-index">Concept</span>
+            <h3>Answer a practical development question</h3>
+            <div class="concept-question">
+                <strong>What is the main value of a CI pipeline?</strong>
+                <div class="sample-answer-grid compact">
+                    <span class="is-correct">Repeatable checks</span>
+                    <span>Remove testing</span>
+                    <span>Hide deploys</span>
+                    <span>Edit production data</span>
+                </div>
+            </div>
+            <p>These questions focus on judgement, vocabulary, architecture, tooling, security, and habits developers use in real projects.</p>
+        </article>
+    </div>
 </section>
 
 <section class="section-band">
@@ -78,6 +142,84 @@
     </div>
 </section>
 
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Learning signal</p>
+        <h2>The app is built around what learners can inspect after a quiz.</h2>
+        <p class="muted">A quiz should not end with only a score. DevBrain treats every attempt as a saved learning record that can be reviewed, filtered, and used to pick the next session.</p>
+    </div>
+    <div class="signal-grid">
+        <article>
+            <span>Attempt</span>
+            <strong>Topic, difficulty, count, score, grade, and completion time are saved.</strong>
+        </article>
+        <article>
+            <span>Answer</span>
+            <strong>Each selected answer is stored against the correct answer and explanation.</strong>
+        </article>
+        <article>
+            <span>Dashboard</span>
+            <strong>Progress stats summarize total quizzes, average score, strongest topic, and weakest topic.</strong>
+        </article>
+        <article>
+            <span>History</span>
+            <strong>Completed attempts can be filtered and reopened for review instead of disappearing.</strong>
+        </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Content model</p>
+        <h2>Categories and languages are separate, so practice stays flexible.</h2>
+        <p class="muted">A category describes the skill being tested. A language describes the syntax used in a code snippet. That means Data Structures can include Python today, JavaScript tomorrow, and another language later without rebuilding the quiz flow.</p>
+    </div>
+    <div class="taxonomy-grid">
+        <article>
+            <span>Categories</span>
+            <strong>Data Structures, Algorithms, Web APIs, Backend, Databases, Security, Testing, DevOps, Cloud, Architecture, Performance, and frameworks.</strong>
+        </article>
+        <article>
+            <span>Languages</span>
+            <strong>Python, JavaScript, TypeScript, SQL, PHP, Java, C#, C++, C, Go, Ruby, Rust, Swift, Kotlin, and Shell.</strong>
+        </article>
+        <article>
+            <span>Fast starts</span>
+            <strong>Editable preset cards help learners begin with common tracks without rebuilding the setup form.</strong>
+        </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Category strategy</p>
+        <h2>Twenty broad categories keep the MVP useful without making it shallow.</h2>
+        <p class="muted">The category list is intentionally broad. It includes fundamentals, web development, frameworks, infrastructure, quality, and architecture. Languages live in a separate filter so a topic can later be practiced in different syntaxes.</p>
+    </div>
+    <div class="category-cloud">
+        <span>Data Structures</span>
+        <span>Algorithms</span>
+        <span>Web APIs</span>
+        <span>Frontend</span>
+        <span>Backend</span>
+        <span>Databases</span>
+        <span>React</span>
+        <span>Next.js</span>
+        <span>Django</span>
+        <span>Flask</span>
+        <span>Laravel</span>
+        <span>Express</span>
+        <span>Git</span>
+        <span>Docker</span>
+        <span>DevOps</span>
+        <span>Cloud</span>
+        <span>Security</span>
+        <span>Testing</span>
+        <span>Architecture</span>
+        <span>Performance</span>
+    </div>
+</section>
+
 <section class="split-section">
     <div>
         <p class="eyebrow">Specializations</p>
@@ -90,11 +232,87 @@
         <a href="{{ url_for('auth.register') }}" class="button button-primary">Create Free Account</a>
     </div>
     <div class="track-list">
-        <div><span>Programming</span><strong>Python, JavaScript, code reading</strong></div>
-        <div><span>Web</span><strong>HTTP, APIs, auth, caching</strong></div>
-        <div><span>Systems</span><strong>Git, Docker, deployment basics</strong></div>
-        <div><span>Data</span><strong>SQL, indexing, transactions</strong></div>
-        <div><span>Quality</span><strong>Testing, security, architecture</strong></div>
+        <div><span>Core CS</span><strong>Data structures, algorithms, complexity</strong></div>
+        <div><span>Web</span><strong>Frontend, backend, Web APIs, auth, caching</strong></div>
+        <div><span>Frameworks</span><strong>React, Next.js, Django, Flask, Laravel, Express</strong></div>
+        <div><span>Systems</span><strong>Git, Docker, DevOps, cloud basics</strong></div>
+        <div><span>Quality</span><strong>Testing, security, architecture, performance</strong></div>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Built for the MVP stage</p>
+        <h2>The product keeps the architecture simple while still feeling like a real app.</h2>
+        <p class="muted">DevBrain uses Flask, Jinja, SQLAlchemy, migrations, and a small amount of JavaScript. That keeps the MVP easy to reason about while still supporting accounts, dashboards, admin tools, imports, and saved quiz attempts.</p>
+    </div>
+    <div class="feature-grid three">
+        <article class="feature-card">
+            <span class="feature-index">Server-rendered</span>
+            <h3>No frontend build step</h3>
+            <p>Templates and CSS carry the product experience without adding a second frontend app too early.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">Database-owned</span>
+            <h3>No external quiz dependency</h3>
+            <p>Published questions come from DevBrain's own database, so content quality stays under admin control.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">Admin-ready</span>
+            <h3>Content can grow from the UI</h3>
+            <p>Categories, languages, questions, imports, and fast starts are editable without manual database work.</p>
+        </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Question bank</p>
+        <h2>Owned content instead of a random external feed.</h2>
+        <p class="muted">Every question is stored in the database with a category, difficulty, explanation, answer options, optional language, and optional code snippet. Admins can import batches as drafts, review them, and publish only the questions that fit the product.</p>
+    </div>
+    <div class="feature-grid three">
+        <article class="feature-card">
+            <span class="feature-index">Draft</span>
+            <h3>Import without publishing</h3>
+            <p>Batch imports enter the library as drafts, which keeps quality review in the admin workflow.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">Pick</span>
+            <h3>Randomized from the database</h3>
+            <p>Quiz questions are selected from published matches and shuffled so sessions do not simply follow entry order.</p>
+        </article>
+        <article class="feature-card">
+            <span class="feature-index">Grow</span>
+            <h3>Designed for deeper tracks</h3>
+            <p>The same model can support broad review now and language-specific coding tracks later.</p>
+        </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">User experience</p>
+        <h2>A focused app shell for repeated practice.</h2>
+        <p class="muted">Once logged in, the app is intentionally quieter than the homepage. The dashboard, quiz setup, history, review, profile, and admin pages are designed for scanning and repeated use.</p>
+    </div>
+    <div class="ux-grid">
+        <article>
+            <h3>Dashboard first</h3>
+            <p>Logged-in users land on progress, quota, recent attempts, and the next recommended practice area.</p>
+        </article>
+        <article>
+            <h3>Mobile-aware quiz flow</h3>
+            <p>Question setup, answer options, result summaries, and review pages are designed to fit smaller screens.</p>
+        </article>
+        <article>
+            <h3>Admin only where it belongs</h3>
+            <p>Admin tools are behind role checks and now live in a dedicated admin blueprint.</p>
+        </article>
+        <article>
+            <h3>Useful empty states</h3>
+            <p>The app handles missing history, unavailable questions, and quota limits with clear next actions.</p>
+        </article>
     </div>
 </section>
 
@@ -135,6 +353,58 @@
     </div>
 </section>
 
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">For admins</p>
+        <h2>The platform can grow without touching the database manually.</h2>
+        <p class="muted">The first account becomes the admin. From there, the admin can create questions, edit categories, manage language filters, update fast-start cards, and import new question batches from JSON.</p>
+    </div>
+    <div class="admin-marketing-grid">
+        <div><span>01</span><strong>Create and publish questions</strong></div>
+        <div><span>02</span><strong>Edit categories and language filters</strong></div>
+        <div><span>03</span><strong>Control fast-start quiz cards</strong></div>
+        <div><span>04</span><strong>Review imported drafts before users see them</strong></div>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Quality loop</p>
+        <h2>Questions are drafted, reviewed, published, and measured.</h2>
+        <p class="muted">The import workflow is intentionally conservative. Imported questions become drafts first, so admins can fix wording, difficulty, answers, explanations, language tags, and snippets before users see them.</p>
+    </div>
+    <div class="workflow-list">
+        <article>
+            <span>1</span>
+            <div>
+                <h3>Import or create</h3>
+                <p>Add questions manually or paste a structured JSON batch into the admin importer.</p>
+            </div>
+        </article>
+        <article>
+            <span>2</span>
+            <div>
+                <h3>Review as draft</h3>
+                <p>Drafts stay out of quizzes until the admin checks answer quality and explanations.</p>
+            </div>
+        </article>
+        <article>
+            <span>3</span>
+            <div>
+                <h3>Publish to the bank</h3>
+                <p>Published questions become eligible for topic, difficulty, and language-based quiz selection.</p>
+            </div>
+        </article>
+        <article>
+            <span>4</span>
+            <div>
+                <h3>Improve from usage</h3>
+                <p>As attempts build up, weak areas and thin categories become easier to spot.</p>
+            </div>
+        </article>
+    </div>
+</section>
+
 <section class="section-band" id="pricing">
     <div class="section-heading">
         <p class="eyebrow">Plans</p>
@@ -163,6 +433,19 @@
             </ul>
             <a href="{{ url_for('auth.register') }}" class="button button-primary">Join Waitlist</a>
         </article>
+    </div>
+</section>
+
+<section class="section-band">
+    <div class="section-heading">
+        <p class="eyebrow">Road ahead</p>
+        <h2>The MVP is structured for deeper question sets and paid unlimited practice.</h2>
+        <p class="muted">The current product proves the full loop: account, quiz, answer, results, review, history, dashboard, admin management, and imports. The next work is mostly depth: more questions, richer stats, stronger recommendations, and billing when the free limit is ready to become a real plan.</p>
+    </div>
+    <div class="roadmap-strip">
+        <div><span>Now</span><strong>Owned bank, admin tools, saved attempts</strong></div>
+        <div><span>Next</span><strong>More questions per category and difficulty</strong></div>
+        <div><span>Later</span><strong>Billing, learning paths, and deeper analytics</strong></div>
     </div>
 </section>
 

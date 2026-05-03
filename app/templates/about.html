@@ -13,6 +13,15 @@
         </p>
     </div>
 
+    <div class="section-heading">
+        <p class="eyebrow">Project context</p>
+        <h2>DevBrain grew from a quiz demo into a full MVP learning platform.</h2>
+        <p class="muted">
+            The original version proved that a quiz app could work. This version focuses on the parts that make it feel like a real product:
+            accounts, saved attempts, review pages, dashboard stats, admin tools, database-backed questions, import workflows, and a design that works on desktop and mobile.
+        </p>
+    </div>
+
     <div class="feature-grid two">
         <article class="feature-card">
             <h2>Mission</h2>
@@ -50,7 +59,7 @@
             <span>02</span>
             <div>
                 <h3>Practical categories</h3>
-                <p>The bank can grow across Python, JavaScript, SQL, HTTP, Git, Docker, security, testing, and architecture.</p>
+                <p>The bank can grow across data structures, algorithms, Web APIs, frameworks, databases, DevOps, security, testing, architecture, and performance.</p>
             </div>
         </article>
         <article>
@@ -59,6 +68,61 @@
                 <h3>Freemium by design</h3>
                 <p>Free users get the complete experience with a weekly limit. Paid users can later unlock unlimited practice.</p>
             </div>
+        </article>
+        <article>
+            <span>04</span>
+            <div>
+                <h3>Editable content system</h3>
+                <p>Admins can manage categories, languages, fast starts, questions, and imports from the UI.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="section-heading">
+        <p class="eyebrow">Question types</p>
+        <h2>The app supports both code-reading and normal concept questions.</h2>
+        <p class="muted">That matters because developer knowledge is not one shape. Sometimes the user needs to read code. Sometimes they need to understand a web, database, security, or architecture decision.</p>
+    </div>
+
+    <div class="example-grid">
+        <article class="question-example-card">
+            <span class="feature-index">Code snippet</span>
+            <h3>Practice reading syntax</h3>
+            <pre class="sample-code"><code>items = [1, 2, 3]
+print(len(items))</code></pre>
+            <p>A question can include a language and a code snippet. The language filter helps users focus on the syntax they care about.</p>
+        </article>
+        <article class="question-example-card">
+            <span class="feature-index">Concept</span>
+            <h3>Practice developer judgement</h3>
+            <div class="concept-question">
+                <strong>What is the purpose of CSRF protection in web forms?</strong>
+                <p>Questions like this test practical understanding, not just memorized syntax.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="section-heading">
+        <p class="eyebrow">Architecture</p>
+        <h2>The MVP keeps the stack pragmatic.</h2>
+        <p class="muted">
+            DevBrain is a Flask monolith with server-rendered Jinja templates, SQLAlchemy models, migrations, and focused CSS.
+            That keeps the app easy to deploy and reason about while still supporting the full learning flow.
+        </p>
+    </div>
+
+    <div class="taxonomy-grid">
+        <article>
+            <span>Backend</span>
+            <strong>Flask routes, auth, admin blueprint, service logic, quota checks, and quiz attempt storage.</strong>
+        </article>
+        <article>
+            <span>Data</span>
+            <strong>Users, categories, languages, presets, questions, answer options, attempts, answers, and import batches.</strong>
+        </article>
+        <article>
+            <span>Frontend</span>
+            <strong>Jinja templates, dark app shell, responsive layouts, quiz screens, dashboard, and admin pages.</strong>
         </article>
     </div>
 
@@ -75,6 +139,35 @@
             <h2>For consistency</h2>
             <p>Five free weekly quizzes encourage a habit without hiding the product behind a paywall.</p>
         </article>
+    </div>
+
+    <div class="section-heading">
+        <p class="eyebrow">What the MVP proves</p>
+        <h2>DevBrain is more than a static portfolio page.</h2>
+        <p class="muted">
+            It has real product behavior: authentication, first-user admin, role-gated admin screens, saved quiz attempts, editable question content, JSON imports, migrations, tests, and responsive UI. The next stage is content depth and stronger analytics.
+        </p>
+    </div>
+
+    <div class="admin-marketing-grid">
+        <div><span>01</span><strong>Register, log in, and keep progress tied to an account</strong></div>
+        <div><span>02</span><strong>Take quizzes from an owned database question bank</strong></div>
+        <div><span>03</span><strong>Review every answer with explanations after the result</strong></div>
+        <div><span>04</span><strong>Manage learning content through protected admin tools</strong></div>
+    </div>
+
+    <div class="section-heading">
+        <p class="eyebrow">Direction</p>
+        <h2>The long-term goal is a deeper developer practice platform.</h2>
+        <p class="muted">
+            The current version creates the foundation. From here, DevBrain can grow into larger question sets, better recommendations, learning paths, paid unlimited access, and language-specific tracks under each category.
+        </p>
+    </div>
+
+    <div class="roadmap-strip">
+        <div><span>Short term</span><strong>More questions per category and difficulty</strong></div>
+        <div><span>Medium term</span><strong>Better dashboards, trend charts, and recommendations</strong></div>
+        <div><span>Long term</span><strong>Billing, learning paths, and deeper language-specific practice</strong></div>
     </div>
 
     <div class="about-cta">
