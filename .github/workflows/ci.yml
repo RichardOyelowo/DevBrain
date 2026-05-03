@@ -27,10 +27,10 @@ jobs:
 
       - name: Run tests
         env:
-          SECRET_KEY: test
-          DATABASE_URL: sqlite:///:memory:
-          EMAIL: test@example.com
-          EMAIL_PASSWORD: test
-          MAIL_SERVER: localhost
-          FLASK_ENV: development
+          SECRET_KEY: "test"
+          DATABASE_URL: "sqlite:///:memory:"
+          EMAIL: "test@example.com"
+          EMAIL_PASSWORD: "test"
+          MAIL_SERVER: "localhost"
+          FLASK_ENV: "development"
         run: python -m unittest discover -s tests -v
