@@ -7,7 +7,7 @@
     <section class="builder-hero">
         <p class="eyebrow">Quiz setup</p>
         <h1>Configure a focused practice session.</h1>
-        <p>Select topics, difficulty, and question count. DevBrain now fills the session from the closest matching published questions first, then broadens the pool when a topic does not have enough exact matches.</p>
+        <p>Select topics, optional language, difficulty, and question count. DevBrain prioritizes the closest matching questions first, then broadens the pool when it needs to fill the session.</p>
     </section>
 
     <div class="quota-banner">
@@ -25,11 +25,11 @@
             <div class="builder-note-grid">
                 <div class="builder-note">
                     <strong>Topic-first selection</strong>
-                    <span>Your selected topics are prioritized before the app expands to nearby questions.</span>
+                    <span>Categories like Data Structures or DevOps are prioritized before the app expands.</span>
                 </div>
                 <div class="builder-note">
-                    <strong>Code-reading support</strong>
-                    <span>Some prompts include snippets and explanations for review after the quiz.</span>
+                    <strong>Optional language focus</strong>
+                    <span>Language filters prioritize code snippets without replacing the category.</span>
                 </div>
                 <div class="builder-note">
                     <strong>Saved progress</strong>
@@ -38,19 +38,62 @@
             </div>
 
             {% if topics %}
+                {% if presets %}
+                    <div class="preset-section">
+                        <div>
+                            <h2>Fast starts</h2>
+                            <p class="muted">Use a preset or build your own setup below.</p>
+                        </div>
+                        <div class="preset-grid">
+                            {% for preset in presets %}
+                                <button type="submit" name="preset" value="{{ preset.slug }}" class="preset-card preset-{{ preset.accent }}" {% if not quota.is_unlimited and quota.remaining <= 0 %}disabled{% endif %}>
+                                    <span class="preset-thumb" aria-hidden="true"><span></span></span>
+                                    <span class="preset-copy">
+                                        <strong>{{ preset.title }}</strong>
+                                        <small>{{ preset.description }}</small>
+                                        <em>{{ preset.limit }} questions / {{ preset.difficulty.title() }}{% if preset.language %} / {{ preset.language.title() }}{% endif %}</em>
+                                    </span>
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="topic-section">
-                    <h2>Topics</h2>
+                    <h2>Categories</h2>
                     <div class="topic-grid">
                         {% for topic in topics %}
                             <label>
                                 <input type="checkbox" name="topics" value="{{ topic.id }}">
                                 <span class="topic-content">
                                     <span class="topic-name">{{ topic.name }}</span>
+                                    {% if topic.description %}
+                                        <span class="topic-description">{{ topic.description }}</span>
+                                    {% endif %}
                                 </span>
                             </label>
                         {% endfor %}
                     </div>
                 </div>
+
+                {% if languages %}
+                    <div class="language-section">
+                        <h2>Language focus</h2>
+                        <p class="muted">Optional. Pick a language when you want code-reading questions in that syntax.</p>
+                        <div class="language-grid">
+                            <label>
+                                <input type="radio" name="language" value="" checked>
+                                <span class="language-content">Any language</span>
+                            </label>
+                            {% for language in languages %}
+                                <label>
+                                    <input type="radio" name="language" value="{{ language.slug }}">
+                                    <span class="language-content">{{ language.name }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="difficulty-section">
                     <h2>Difficulty</h2>
@@ -86,8 +129,9 @@
             <h2>Build a run that matches your current goal.</h2>
             <div class="path-list">
                 <div><span>01</span><strong>Choose topics</strong><small>Pick one area for precision or several for breadth.</small></div>
-                <div><span>02</span><strong>Set difficulty</strong><small>Easy checks fundamentals. Hard tests tradeoffs.</small></div>
-                <div><span>03</span><strong>Review after</strong><small>Your result and every explanation are saved.</small></div>
+                <div><span>02</span><strong>Add language</strong><small>Optional filter for Python, JavaScript, SQL, and future code tracks.</small></div>
+                <div><span>03</span><strong>Set difficulty</strong><small>Easy checks fundamentals. Hard tests tradeoffs.</small></div>
+                <div><span>04</span><strong>Review after</strong><small>Your result and every explanation are saved.</small></div>
             </div>
         </aside>
     </div>

@@ -25,7 +25,7 @@
                 <div><span>Plan</span><strong>{{ "Unlimited" if quota.is_unlimited else "Free" }}</strong></div>
             </div>
             {% if user.is_admin %}
-                <a href="{{ url_for('main.admin_home') }}" class="button button-secondary">Open Admin Tools</a>
+                <a href="{{ url_for('admin.home') }}" class="button button-secondary">Open Admin Tools</a>
             {% endif %}
         </section>
 
