@@ -193,7 +193,7 @@
 .marketing-mode .site-main,
 .marketing-mode .site-footer,
 .marketing-mode .site-nav {
-    width: min(1320px, calc(100% - 32px));
+    width: min(1500px, calc(100% - 32px));
 }
 @media (max-width: 860px) {
     .app-mode {

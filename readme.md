@@ -1,941 +1,662 @@
-<div align=center>
+<div align="center">
 
-# <img src="images/full_logo.svg" alt="DevBrain Logo" style="vertical-align: middle;"> 
+# <img src="images/full_logo.svg" alt="DevBrain" height="150">
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
-[![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
+[![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![Status](https://img.shields.io/badge/Status-Active-success.svg)](https://github.com/RichardOyelowo/DevBrain)
 
-DevBrain is a production-ready web quiz application for developers who want to actually test their programming knowledge. Built with Flask, Redis, and SQLite, featuring multi-worker support and real-time feedback.
-
----
 </div>
 
-![Demo](images/image.webp)
+DevBrain is a developer learning and quiz platform built for active practice. You register, pick a topic and difficulty, take a focused quiz, review what you got wrong with full explanations, and watch your progress build up over time. Admins manage the question bank directly from the site using a structured JSON import workflow. No external quiz API involved.
 
-## Description
+---
 
-DevBrain is a quiz app I built because I got tired of passively consuming programming tutorials without really knowing if anything stuck. Most learning platforms focus on watching and reading—there's no real way to test yourself beyond toy exercises that don't reflect actual knowledge gaps.
-
-So I made something different: a straightforward quiz platform with instant feedback, optional account tracking, and the ability to actually see your progress over time. You can jump in without registering, or create an account if you want to track your performance across multiple sessions.
-
-The big architectural shift from the original version: **Redis-backed state management and multi-worker support**. Questions are cached in Redis so they're only fetched once, and sessions are stored in Redis instead of the filesystem, making the whole thing actually scalable. You can now run this with multiple Gunicorn workers without quiz state getting messed up.
+![Demo](images/devbrain.png)
 
 ---
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
+- [Description](#description)
+- [Current MVP](#current-mvp)
 - [Features](#features)
-- [Tech Stack & Architecture](#tech-stack--architecture)
-  - [Why This Stack?](#why-this-stack)
-  - [Architecture Overview](#architecture-overview)
-- [Installation & Setup](#installation--setup)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
 - [Configuration](#configuration)
-- [Usage](#usage)
-  - [Grade Scale](#grade-scale)
+- [Architecture Overview](#architecture-overview)
+- [Database and Models](#database-and-models)
+- [Question Import Format](#question-import-format)
+- [User Flow](#user-flow)
+- [Admin Flow](#admin-flow)
+- [Routes](#routes)
+- [Frontend Structure](#frontend-structure)
+- [Testing](#testing)
 - [Project Structure](#project-structure)
-- [Key Routes](#key-routes)
-- [Database](#database)
-  - [Schema](#database-schema)
-  - [WAL Mode for Concurrency](#wal-mode-for-concurrency)
-- [Redis Architecture](#redis-architecture)
-  - [Quiz Question Cache](#1-quiz-question-cache)
-  - [Session Storage](#2-session-storage)
-- [Security Features](#security-features)
-- [Production Deployment](#production-deployment)
-  - [Gunicorn Configuration](#gunicorn-configuration)
-  - [Reverse Proxy Setup](#reverse-proxy-setup-nginx-example)
 - [Architecture Decisions](#architecture-decisions)
+- [Security Notes](#security-notes)
 - [Known Limitations](#known-limitations)
-- [Future Improvements](#future-improvements)
 - [What I Learned](#what-i-learned)
-- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
 - [Author](#author)
 - [License](#license)
 
 ---
 
-## Quick Start
-```bash
-# Clone and setup
-git clone <repository-url>
-cd project
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
+## Description
 
-# Setup environment variables (create .env file)
-cat > .env << EOF
-SECRET_KEY=$(python -c "import secrets; print(secrets.token_hex(32))")
-DEVBRAIN_API_KEY=your-api-key-here
-DATABASE_URL=instance/devbrain.db
-REDIS_URL=redis://localhost:6379/0
-EMAIL=your-email@gmail.com
-EMAIL_PASSWORD=your-app-password
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-FLASK_ENV=development
-EOF
+DevBrain started as my CS50 Final Project -- a basic quiz app that pulled questions from an external API. That version worked but it had real problems. The quiz experience depended on a third-party API staying up. There was no control over what questions users saw. No history, no review, no admin tools. It was a demo, not a product.
 
-# Start Redis (must be running)
-redis-server  # or brew services start redis on macOS
+This MVP is a completely different thing. The question bank is owned and stored in the database. Admins import questions through a structured JSON workflow, review drafts before publishing, and manage categories, languages, and fast-start presets from dedicated admin pages. Users register, take quizzes by topic and difficulty, get instant feedback on every answer, review their mistakes with explanations, and build a visible history of their progress.
 
-# Initialize database and run
-python run.py
+The idea behind DevBrain is that most developer learning is passive. You watch a course, read a doc, follow a tutorial, and feel like you understand something. That feeling does not always hold up when you sit down and have to answer questions without the material in front of you. DevBrain is built around the idea that active testing is part of learning, not separate from it.
 
-# For production with multiple workers
-gunicorn run:app
+---
 
-# You might need to explicitly call the config file on your end
-gunicorn --config gunicorn.conf.py run:app
-```
+## Current MVP
 
-Visit `http://localhost:5000` (dev) or `http://localhost:8000` (production)
+The MVP is a Flask monolith with server-rendered Jinja templates. No external quiz API. No separate frontend framework. Questions live in the database and the admin controls them completely.
+
+The current access model:
+
+- Users have to register before taking quizzes
+- Free accounts get 5 quiz attempts per rolling week
+- Admin accounts have unlimited access
+- The first account registered automatically becomes the admin
+- Every account after the first is a regular user
+
+Payments are not implemented yet -- the 5-quiz limit is enforced in app logic for now.
 
 ---
 
 ## Features
 
-- ✅ **Multi-topic quizzes** – Mix and match topics, choose difficulty levels  
-- ✅ **Instant feedback** – Know immediately if you're right or wrong  
-- ✅ **Anonymous or registered** – Try quizzes without an account, or register to save history  
-- ✅ **Performance tracking** – See all past attempts, scores, and grades over time  
-- ✅ **Password reset via email** – Secure token-based password recovery  
-- ✅ **Production-ready** – Multi-worker support with Gunicorn + Redis  
-- ✅ **Concurrent database access** – SQLite in WAL mode handles multiple workers  
-- ✅ **Special character support** – Fixed HTML entity issues for quotes/apostrophes in answers  
+**Backend**
+- SQLAlchemy models with Flask-Migrate support
+- Database-backed learning tables: topics, languages, presets, questions, answer_options, quiz_attempts, quiz_attempt_answers, question_import_batches
+- Legacy quizzes table kept for older summaries
+- First registered user automatically becomes admin
+- User roles: admin and normal user
+- Free user quota enforced at 5 quiz attempts per rolling week
+- Quiz generation from owned published questions, not external API
+- Fallback question selection so quizzes still fill even when exact topic/difficulty matches are low
+- Quiz selection ignores inactive and deprecated language topics, only picks from active categories
+- Case-insensitive language matching at query time -- Python, python, and PYTHON all hit the same filter
+- Seeded question bank with starter topics, languages, and presets via `flask init-db`
+- PostgreSQL/Supabase-compatible config with `postgres://` to `postgresql://` normalization
+- Removed stale QuizAPI helper and hardcoded topic source
+
+**Question Import**
+- Admins import questions by pasting JSON or uploading a `.json` file at `/admin/import`
+- Imported questions are always saved as draft with `source="import"` for manual review before publishing
+- Topics matched by `topic_id` or auto-created from a `topic` name field
+- Supports options with `is_correct` flags or a `correct_option` index
+- Import history tracked in the `question_import_batches` table with batch metadata
+- Full validation on import payload with clear error messages
+- `sample_question_import.json` included in the repo for testing the import flow
+
+**Categories and Languages**
+- 20 active non-language quiz categories
+- 15 editable language filters: Python, JavaScript, TypeScript, SQL, PHP, Java, C#, C++, C, Go, Ruby, Rust, Swift, Kotlin, Shell
+- Languages are separate from quiz categories and managed independently
+- Fast-start quiz presets are database-driven, not hardcoded
+- Category delete behavior: empty categories get deleted, categories with linked questions or presets get deactivated instead so existing content is not broken
+- Language delete behavior: deletes the filter entry only, existing questions are not affected
+
+**User App**
+- Dashboard as the main logged-in landing page with total quizzes, average score, strongest topic, weakest topic, recent attempts, recommended practice, and quota status
+- Full quiz flow: setup, question, results, review
+- Saved answer tracking per attempt
+- Instant answer feedback after each question
+- Final results page with score, percentage, and grade
+- Full review page showing your answer, the correct answer, and the explanation
+- History page with filters by topic and difficulty and review links per attempt
+- Profile page with account details, role, quota status, stats, and password change
+- Login required for all quiz features
+
+**Admin**
+- Admin routes in a dedicated blueprint at `app/admin.py`, separated from general app routes
+- Admin dashboard showing question bank stats: total topics, published questions, drafts, import batches
+- Question import workflow at `/admin/import` -- paste JSON or upload a file
+- Full question library with create and edit flows
+- Category management at `/admin/topics` with delete/deactivate behavior
+- Language management at `/admin/languages` with delete behavior
+- Fast-start preset management at `/admin/presets`
+- Question states: draft, published, archived
+- Code-reading question support with language and code snippet fields
+- Admin sidebar entry only visible to admin users; routes protected server-side
+
+**Frontend**
+- Split CSS architecture: base, layout, components, pages
+- Logged-in app shell with desktop sidebar and mobile navigation
+- Wide page layouts so quiz, history, profile, and admin screens are not cramped
+- Mobile table behavior converts wide tables into readable card layouts
+- Dark theme refined to feel more like a real product
+- Homepage expanded with both quiz example types (code snippet and concept question), question styles section, learning signals, category strategy, MVP architecture overview, UX breakdown, question bank quality loop, and roadmap direction -- roughly 2-3x the previous marketing content
+- About page expanded with project context, architecture breakdown, and MVP proof section
+- New CSS styles for quiz examples, category cloud, signal grid, UX grid, and roadmap strips with responsive behavior
+
+**Tests**
+- 36 tests passing across 5 test files covering models, import workflow, services, quiz logic, dashboard stats, quota checks, editable catalogs, delete behavior, case-insensitive language filtering, and admin role behavior
 
 ---
 
-## Tech Stack & Architecture
-
-### Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Backend** | Python, Flask | Web framework |
-| **Frontend** | HTML, Jinja2, Bootstrap | Templates and styling |
-| **Database** | SQLite (WAL mode) | User accounts and quiz history |
-| **Cache/Sessions** | Redis | Quiz cache + session store |
-| **Server** | Gunicorn | Production WSGI server (multi-worker) |
-| **Forms** | Flask-WTF, WTForms | Form handling and CSRF protection |
-| **Security** | Werkzeug, itsdangerous | Password hashing, secure tokens |
-| **Email** | Flask-Mail | Password reset emails |
-
-### Why This Stack?
-
-**Flask** – Lightweight, doesn't force opinions, perfect for this scope  
-**SQLite + WAL** – Zero configuration, WAL mode enables concurrent access  
-**Redis** – Solves multi-worker state synchronization elegantly  
-**Gunicorn** – Battle-tested production server with worker process management  
-
-The combination of Redis for ephemeral state and SQLite for persistent data is perfect for this use case. Redis keeps quiz questions cached and sessions synchronized across workers, while SQLite handles user accounts and quiz history with zero configuration overhead.
-
-### Architecture Overview
-```
-┌─────────────┐
-│   Client    │
-│  (Browser)  │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────────────────────┐
-│         nginx (reverse proxy)    │
-└──────┬──────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────┐
-│      Gunicorn (4 workers)        │
-│  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐│
-│  │ W1  │ │ W2  │ │ W3  │ │ W4  ││
-│  └─────┘ └─────┘ └─────┘ └─────┘│
-└────┬──────────────┬──────────────┘
-     │              │
-     │              │
-┌────▼─────┐   ┌───▼──────────┐
-│  Redis   │   │ SQLite (WAL) │
-│          │   │              │
-│ Sessions │   │ Users        │
-│ Quiz     │   │ Quiz History │
-│ Cache    │   │              │
-└──────────┘   └──────────────┘
-```
-
-**Key Design Points:**
-- **Stateless workers:** All state lives in Redis or SQLite, not in worker memory
-- **Shared quiz cache:** Questions fetched once, used by all workers (1-hour TTL)
-- **WAL mode:** SQLite allows concurrent reads/writes across workers
-- **Redis sessions:** Sessions work correctly regardless of which worker handles the request
+|---|---|---|
+| Backend | Python, Flask | Main web application |
+| Templates | Jinja2 | Server-rendered pages |
+| ORM | SQLAlchemy | Models and queries |
+| Migrations | Flask-Migrate, Alembic | Schema changes |
+| Local DB | SQLite | Development |
+| Production DB | PostgreSQL | Hosted persistence |
+| Forms | Flask-WTF, WTForms | Login, register, reset, profile |
+| Email | Flask-Mail | Password reset emails |
+| Sessions | Flask sessions | User login state |
+| Frontend | HTML, CSS, JavaScript | UI without a build step |
+| Server | Gunicorn | WSGI production server |
+| Tests | Python unittest | Model and service coverage |
 
 ---
 
-## Installation & Setup
+## Quick Start
 
-### Prerequisites
+### 1. Clone the project
 
-- Python 3.7+
-- Redis server
-- Git
-
-### Step 1: Clone and Setup Virtual Environment
 ```bash
-git clone <repository-url>
-cd project
-
-# Create virtual environment
-python -m venv venv
-
-# Activate it
-source venv/bin/activate   # macOS/Linux
-venv\Scripts\activate      # Windows
+git clone https://github.com/RichardOyelowo/DevBrain.git
+cd DevBrain
 ```
 
-### Step 2: Install Dependencies
+### 2. Create and activate a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: Setup Redis
+### 4. Set up environment variables
 
-**Option A: Local Redis**
 ```bash
-# macOS
-brew install redis
-brew services start redis
-
-# Ubuntu/Debian
-sudo apt-get install redis-server
-sudo systemctl start redis
-
-# Windows
-# Download from https://github.com/microsoftarchive/redis/releases
+cp .env.example .env
 ```
 
-**Option B: Redis Cloud (recommended for production)**
-- Sign up at [redislabs.com](https://redislabs.com) or use your cloud provider's Redis service
-- Get your Redis connection URL (format: `redis://user:password@host:port`)
+Edit `.env` with your local config. See [Configuration](#configuration) for all variables.
 
-**Verify Redis is running:**
+### 5. Run migrations and seed the database
+
 ```bash
-redis-cli ping
-# Should return: PONG
+flask --app run.py db upgrade
+flask --app run.py init-db
 ```
 
-### Step 4: Configure Environment Variables
+The seed command creates starter topics, languages, presets, and published questions so the app is usable right after setup. Without it you will have an empty question bank.
 
-Create a `.env` file in the project root:
-```bash
-SECRET_KEY=your-secret-key-here  # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
-DEVBRAIN_API_KEY=your-quiz-api-key-from-quizapi.io
-DATABASE_URL=instance/devbrain.db
-REDIS_URL=redis://localhost:6379/0  # or your Redis Cloud URL
-EMAIL=your-email@gmail.com
-EMAIL_PASSWORD=your-gmail-app-password
-MAIL_SERVER=smtp.gmail.com
-MAIL_PORT=587
-FLASK_ENV=development  # or production
-```
+### 6. Start the app
 
-**Getting a Gmail App Password:**
-1. Enable 2FA on your Google account
-2. Go to Google Account → Security → 2-Step Verification → App passwords
-3. Generate a new app password for "Mail"
-4. Use that password (not your regular Gmail password)
-
-### Step 5: Initialize Database
 ```bash
 python run.py
 ```
 
-This automatically creates the database file and tables if they don't exist.
+Visit `http://localhost:5000`
 
-### Step 6: Run the Application
+### Railway start command
 
-**Development mode (single worker):**
+Railway can run the app with:
+
 ```bash
-python run.py
-# Visit http://localhost:5000
+bash start.sh
 ```
 
-**Production mode (multi-worker with Gunicorn):**
-```bash
-gunicorn --config gunicorn.conf.py run:app
-# Visit http://localhost:8000
+`start.sh` runs database migrations with `flask db upgrade`, then starts Gunicorn. It does not drop tables.
+
+Seeding is optional on deploy. For a first deploy or when you intentionally want to restore missing starter categories, languages, presets, and seed questions, set:
+
+```env
+RUN_SEED_ON_START=1
 ```
+
+After the first seed, remove that variable or set it to `0` so future deploys do not re-add starter catalog items you deleted or changed from the admin UI.
+
+The first account you register becomes the admin. Every account after that is a regular user.
 
 ---
 
 ## Configuration
 
-All configuration lives in `app/config.py` and pulls from environment variables.
+| Variable | Required | Description |
+|---|---|---|
+| `SECRET_KEY` | Yes | Flask session signing key |
+| `DATABASE_URL` | Yes | SQLAlchemy database URL |
+| `EMAIL` | For password reset | Sender email address |
+| `EMAIL_PASSWORD` | For password reset | SMTP password or app password |
+| `MAIL_SERVER` | For password reset | SMTP server host |
+| `MAIL_PORT` | For password reset | SMTP server port |
+| `REDIS_URL` | Optional | Redis-backed sessions if needed |
+| `FLASK_ENV` | Optional | Set to `development` locally |
 
-### Required Environment Variables
+Example local `.env`:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `SECRET_KEY` | Flask session encryption key | `abc123...` (64 chars) |
-| `DEVBRAIN_API_KEY` | API key from quizapi.io | Get from [quizapi.io](https://quizapi.io) |
-| `DATABASE_URL` | Path to SQLite database | `instance/devbrain.db` |
-| `EMAIL` | Email address for sending password resets | `yourapp@gmail.com` |
-| `EMAIL_PASSWORD` | App-specific password for email | Gmail app password |
-| `MAIL_SERVER` | SMTP server address | `smtp.gmail.com` |
+```env
+SECRET_KEY=change-me
+DATABASE_URL=sqlite:///instance/devbrain.db
+EMAIL=devbrain@example.com
+EMAIL_PASSWORD=change-me
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+FLASK_ENV=development
+```
 
-### Optional Environment Variables
+For production use PostgreSQL. If your host gives you a URL starting with `postgres://`, the app normalizes it to `postgresql://` automatically.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `REDIS_URL` | `redis://localhost:6379/0` | Redis connection URL |
-| `MAIL_PORT` | `587` | SMTP port |
-| `FLASK_ENV` | `production` | Set to `development` to auto-load `.env` |
+---
 
-The config class validates all required variables on startup and raises a clear error if anything's missing:
-```python
-missing_vars = [name for name, val in required_vars.items() if not val]
-if missing_vars:
-    raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
+## Architecture Overview
+
+```
+Browser
+  |
+  v
+Flask routes (main blueprint + admin blueprint)
+  |
+  v
+Jinja templates + app services
+  |
+  v
+SQLAlchemy models
+  |
+  v
+SQLite (local) / PostgreSQL (production)
+```
+
+DevBrain owns its question bank entirely. Nothing depends on an external service being available. Published questions live in the database and are selected by the backend when a user starts a quiz. The admin controls the full content lifecycle from import through draft review to publishing.
+
+---
+
+## Database and Models
+
+| Table | Purpose |
+|---|---|
+| `users` | Accounts and roles |
+| `topics` | Quiz categories (20 active) |
+| `languages` | Language filters (15) |
+| `presets` | Fast-start quiz cards (database-driven) |
+| `questions` | The question bank |
+| `answer_options` | Answer choices per question |
+| `quiz_attempts` | Each quiz session |
+| `quiz_attempt_answers` | Each individual answer within a session |
+| `question_import_batches` | Import history and batch metadata |
+| `quizzes` | Legacy table kept for older summaries |
+
+The question model supports topic, difficulty, prompt, explanation, draft/published/archived status, and optional language and code snippet fields for code-reading questions. Each question has multiple answer options with exactly one marked correct.
+
+When a user starts a quiz, DevBrain selects published questions matching the chosen topic and difficulty. If there are not enough exact matches it broadens the pool automatically so the quiz fills the requested count rather than failing. Language matching is case-insensitive so variations in casing never break question selection.
+
+---
+
+## Question Import Format
+
+Admins import questions at `/admin/import` by pasting JSON or uploading a `.json` file. Imported questions are always saved as draft with `source="import"` for review before publishing. A sample import file is included at `sample_question_import.json`.
+
+```json
+[
+  {
+    "topic": "Python",
+    "difficulty": "EASY",
+    "prompt": "What does len(items) return?",
+    "description": "Assume items is a list.",
+    "explanation": "len(items) returns the number of elements in the list.",
+    "language": "python",
+    "code_snippet": "items = [1, 2, 3]\nprint(len(items))",
+    "options": [
+      { "text": "3", "is_correct": true },
+      { "text": "2", "is_correct": false },
+      { "text": "1", "is_correct": false },
+      { "text": "It raises an error", "is_correct": false }
+    ]
+  }
+]
+```
+
+Topics are matched by `topic_id` or auto-created from the `topic` name field. Options support both `is_correct` flags and a `correct_option` index. Each import run is tracked in `question_import_batches` with metadata.
+
+Before using the importer on a fresh local setup, run:
+
+```bash
+flask --app run.py db upgrade
 ```
 
 ---
 
-## Usage
+## User Flow
 
-### Taking a Quiz
+1. Visit the homepage -- logged-in users are redirected straight to the dashboard
+2. Register an account or log in
+3. Dashboard shows progress stats, quota status, recent attempts, and recommended practice
+4. Open quiz setup, choose topic, difficulty, and how many questions
+5. Answer each question and get instant feedback after each one
+6. Final results page shows total score, percentage, and grade
+7. Review page shows every question with your answer, the correct answer, and the explanation
+8. History and dashboard update automatically from the saved attempt
 
-1. Visit the homepage at `http://localhost:5000` or `http://localhost:8000`
-2. Click **"Start Quiz"**
-3. Select one or more topics from the list
-4. Choose difficulty: Easy, Medium, or Hard
-5. Set number of questions (1-50)
-6. Click **"Start Quiz"**
-7. Answer each question and get instant feedback
-8. See your final score, percentage, and grade
+---
 
-### Creating an Account (Optional)
+## Admin Flow
 
-1. Click **"Register"** in the navigation
-2. Enter your email, username, and password
-3. Confirm your password
-4. Click **"Register"**
-5. You'll be automatically logged in and redirected to the quiz page
+The first account registered becomes the admin automatically. No setup command needed. Admins see an extra sidebar entry that regular users never see. Admin routes are in a dedicated blueprint and protected server-side so visiting them without the right role returns a 403.
 
-**Why register?**
-- All completed quizzes are saved to your history
-- Track your performance over time
-- See which topics you're strongest/weakest in
-- View detailed statistics per quiz attempt
+Admins can:
 
-### Viewing Quiz History
+- View the admin dashboard with question bank health stats
+- Import questions via JSON paste or file upload at `/admin/import`
+- Review and publish imported drafts from the question library
+- Create and edit questions manually
+- Move questions between draft, published, and archived states
+- Manage quiz categories at `/admin/topics` -- delete empty ones, deactivate ones with linked content
+- Manage language filters at `/admin/languages` -- delete filter entries without affecting existing questions
+- Manage fast-start presets at `/admin/presets`
 
-1. Log in to your account
-2. Click **"History"** in the navigation
-3. See all past quiz attempts with:
-   - Date and time
-   - Topic(s) covered
-   - Difficulty level
-   - Number of questions
-   - Score and percentage
-   - Grade received
+---
 
-### Password Reset
+## Routes
 
-1. Click **"Forgot Password?"** on the login page
-2. Enter your email address
-3. Check your email for a reset link (valid for 1 hour)
-4. Click the link and enter your new password
-5. You'll be redirected to login with your new password
+### Public
 
-### Grade Scale
+| Route | Purpose |
+|---|---|
+| `GET /` | Homepage -- redirects to dashboard if logged in |
+| `GET /about` | About page |
+| `GET /login` | Login page |
+| `POST /login` | Process login |
+| `GET /register` | Registration page |
+| `POST /register` | Process registration |
+| `GET /forgot_password` | Password reset request |
+| `POST /forgot_password` | Send reset email |
+| `GET /reset_password/<token>` | Reset form |
+| `POST /reset_password/<token>` | Update password |
 
-| Grade | Percentage | Meaning |
-|-------|-----------|---------|
-| **Mastery** | 90-100% | Excellent understanding |
-| **Competent** | 75-89% | Strong grasp of the material |
-| **Average** | 60-74% | Decent understanding, room for improvement |
-| **Fair** | 40-59% | Basic knowledge, needs more practice |
-| **Needs Improvement** | 0-39% | Significant gaps, review recommended |
+### Authenticated
+
+| Route | Purpose |
+|---|---|
+| `GET /dashboard` | Progress dashboard |
+| `GET /quiz` | Quiz setup with categories, languages, presets |
+| `POST /quiz/start` | Validate quota and create attempt |
+| `GET /quiz/<id>/question` | Active quiz question |
+| `POST /quiz/<id>/question` | Submit answer and advance |
+| `GET /quiz/<id>/results` | Final score and grade |
+| `GET /quiz/<id>/review` | Full review with answers and explanations |
+| `GET /history` | Quiz history with filters |
+| `GET /profile` | Account details, quota, stats, password change |
+| `GET /logout` | Clear session |
+
+### Admin
+
+| Route | Purpose |
+|---|---|
+| `GET /admin` | Admin dashboard |
+| `GET /admin/questions` | Full question library |
+| `GET/POST /admin/questions/new` | Create question |
+| `GET/POST /admin/questions/<id>/edit` | Edit question |
+| `GET/POST /admin/topics` | Category management |
+| `POST /admin/topics/<id>/delete` | Delete or deactivate category |
+| `GET/POST /admin/languages` | Language filter management |
+| `POST /admin/languages/<id>/delete` | Delete language filter |
+| `GET/POST /admin/presets` | Fast-start preset management |
+| `GET/POST /admin/import` | Question import workflow |
+
+---
+
+## Frontend Structure
+
+No npm build step and no frontend framework. HTML, CSS, and a small amount of JavaScript.
+
+```
+app/static/
+  css/
+    base.css        # Reset, variables, typography
+    layout.css      # App shell, sidebar, mobile nav
+    components.css  # Buttons, cards, badges, tables
+    pages.css       # Page-specific overrides, quiz examples, category cloud, signal grid, roadmap strips
+  js/
+    app.js          # Lightweight UI behavior
+```
+
+The design is a dark SaaS-style interface. The logged-in app uses a sidebar on desktop and a collapsible mobile nav on smaller screens. Wide tables convert into readable card layouts on mobile. The homepage now has both quiz example types, a question styles section, category and language breakdowns, and several sections explaining the platform, the admin workflow, and the product direction.
+
+---
+
+## Testing
+
+Run the full test suite:
+
+```bash
+SECRET_KEY=test \
+DATABASE_URL=sqlite:///:memory: \
+EMAIL=test@example.com \
+EMAIL_PASSWORD=test \
+MAIL_SERVER=localhost \
+FLASK_ENV=development \
+venv/bin/python -m unittest discover -s tests
+```
+
+Test files:
+
+```
+tests/
+  base.py                         # Shared test setup and app context
+  test_user_model.py              # User creation, password hashing, role logic, first-user admin
+  test_topic_question_models.py   # Topics, questions, answer options, status transitions, delete/deactivate behavior
+  test_quiz_attempt_models.py     # Attempt creation, answer saving, scoring, grade calculation
+  test_question_import_model.py   # Import batch model, validation, draft creation, source tracking
+  test_learning_services.py       # Question selection, fallback logic, case-insensitive language filtering, quota checks, dashboard stats, editable presets
+```
+
+Last known test run: **36 tests OK**
 
 ---
 
 ## Project Structure
+
 ```
-project/
-│
-├── app/                        # Main application package
-│   ├── __init__.py            # Application factory (create_app)
-│   ├── routes.py              # Main routes (quiz, history, about)
-│   ├── auth.py                # Authentication routes (login, register, password reset)
-│   ├── question.py            # Questions class for API interaction
-│   ├── config.py              # Configuration from environment variables
-│   ├── db.py                  # Database connection and initialization
-│   ├── extensions.py          # Flask extensions (mail, CSRF, Redis)
-│   ├── forms.py               # WTForms for login/register/password reset
-│   ├── utils.py               # Helper functions (grading, saving results)
-│   ├── schema.sql             # Database schema (users, quizzes tables)
-│   │
-│   ├── templates/             # Jinja2 HTML templates
-│   │   ├── base.html         # Base template with navbar
-│   │   ├── index.html        # Homepage
-│   │   ├── quiz.html         # Quiz interface
-│   │   ├── results.html      # Quiz results page
-│   │   ├── history.html      # Quiz history (logged-in users)
-│   │   ├── login.html        # Login form
-│   │   ├── register.html     # Registration form
-│   │   ├── forgot_password.html  # Password reset (multiple states)
-│   │   ├── reset_email.html  # Password reset email template (HTML)
-│   │   ├── reset_email.txt   # Password reset email template (plain text)
-│   │   └── about.html        # About page
-│   │
-│   └── static/               # CSS, JavaScript, images
-│       ├── css/
-│       │   └── styles.css   # Main stylesheet
-│       └── js/
-│           └── quiz.js      # Quiz interaction logic
-│
-├── instance/                 # Instance-specific files (created at runtime)
-│   └── devbrain.db          # SQLite database (auto-generated)
-│
-├── venv/                    # Virtual environment (gitignored)
-│
-├── run.py                   # Application entry point
-├── gunicorn.conf.py         # Gunicorn configuration for production
-├── requirements.txt         # Python dependencies
-├── .env                     # Environment variables (gitignored)
-├── readme.md               # This file
-└── images/                 # Screenshots and assets
-    ├── full_logo.png
-    └── screenshot.png
-```
-
----
-
-## Key Routes
-
-### Public Routes (no login required)
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| `GET` | `/` | Homepage |
-| `GET` | `/about` | About page |
-| `GET` | `/quiz` | Quiz topic selection page |
-| `POST` | `/quiz` | Start quiz or submit answer |
-| `GET` | `/login` | Login page |
-| `POST` | `/login` | Process login form |
-| `GET` | `/register` | Registration page |
-| `POST` | `/register` | Process registration form |
-| `GET` | `/forgot_password` | Password reset request page |
-| `POST` | `/forgot_password` | Send password reset email |
-| `GET` | `/reset_password/<token>` | Password reset form |
-| `POST` | `/reset_password/<token>` | Update password |
-
-### Protected Routes (login required)
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| `GET` | `/history` | View quiz history |
-| `GET` | `/logout` | Clear session and log out |
-
----
-
-## Database
-
-The app uses **SQLite with WAL (Write-Ahead Logging) mode** for concurrent access. The database file is automatically created on first run using the schema in `app/schema.sql`.
-
-### Database Initialization
-
-In `run.py`:
-```python
-from app import create_app
-from app.db import create_db
-
-app = create_app()
-
-with app.app_context():
-    create_db()  # Creates database if it doesn't exist
-```
-
-### WAL Mode for Concurrency
-
-Every database connection enables WAL mode:
-```python
-g.db.execute("PRAGMA journal_mode=WAL;")
-```
-
-**Why WAL mode?**
-- Allows multiple workers to read simultaneously
-- Writers don't block readers
-- Atomic commits prevent corruption
-- Critical for Gunicorn multi-worker deployments
-
-### Database Schema
-
-**users table:**
-```sql
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    username TEXT,
-    password TEXT NOT NULL  -- Hashed with Werkzeug
-);
-```
-
-**quizzes table:**
-```sql
-CREATE TABLE IF NOT EXISTS quizzes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    topic TEXT,  -- Comma-separated if multiple topics
-    difficulty TEXT CHECK(difficulty IN ('EASY', 'MEDIUM', 'HARD')),
-    question_count INTEGER NOT NULL DEFAULT 0,
-    score INTEGER NOT NULL,
-    grade TEXT NOT NULL CHECK (
-        grade IN ('Needs Improvement', 'Fair', 'Average', 'Competent', 'Mastery')
-    ),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_quizzes_user_id ON quizzes(user_id);
-```
-
----
-
-## Redis Architecture
-
-Redis handles two critical pieces of state in a multi-worker environment:
-
-### 1. Quiz Question Cache
-
-When a user starts a quiz, questions are fetched from the external API once and stored in Redis with a 1-hour TTL:
-```python
-# In app/routes.py
-quiz_cache.setex(f"quiz:{session_key}", 3600, json.dumps(questions))
-```
-
-**Benefits:**
-- Questions fetched only once, regardless of number of workers
-- Prevents API rate limiting
-- Improves response time (no repeated API calls)
-- Consistent quiz experience (same questions throughout the session)
-
-**Key format:** `quiz:{session_key}`  
-**TTL:** 3600 seconds (1 hour)  
-**Data:** JSON-serialized list of question objects
-
-### 2. Session Storage
-
-Flask-Session is configured to use Redis instead of filesystem:
-```python
-# In app/__init__.py
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = redis_client
-app.config['SESSION_PERMANENT'] = False
-app.config['SESSION_USE_SIGNER'] = True
-Session(app)
-```
-
-**Why Redis sessions?**
-- **Multi-worker compatibility:** Any worker can read any session
-- **No filesystem locks:** Eliminates race conditions
-- **Automatic expiration:** Sessions auto-expire based on config
-- **Scalability:** Easy to add more workers without session issues
-
-**Without Redis sessions:**
-- Worker A creates session file
-- Worker B can't read Worker A's session file
-- User loses quiz progress randomly
-- Shopping cart analogy: imagine your cart disappearing when the load balancer routes you to a different server
-
----
-
-## Security Features
-
-- ✅ **Password hashing** – Werkzeug's `generate_password_hash` with salt
-- ✅ **CSRF protection** – Flask-WTF on all authenticated routes
-- ✅ **Secure password reset** – Time-limited tokens (1 hour) using `itsdangerous`
-- ✅ **HTTPOnly cookies** – Session cookies not accessible via JavaScript
-- ✅ **SameSite cookies** – Set to `Lax` to prevent CSRF attacks
-- ✅ **Secure flag in production** – Cookies only sent over HTTPS
-- ✅ **Redis session encryption** – Sessions signed with `SECRET_KEY`
-- ✅ **Email obfuscation** – Password reset always shows "email sent" (prevents user enumeration)
-- ✅ **SQL injection protection** – All queries use parameterized statements
-- ✅ **XSS protection** – Jinja2 auto-escapes all variables by default
-- ✅ **No secrets in code** – All sensitive config in environment variables
-
----
-
-## Production Deployment
-
-### Gunicorn Configuration
-
-The included `gunicorn.conf.py` has production-ready defaults:
-```python
-workers = 4  # Adjust based on CPU cores (recommended: 2-4 × num_cores)
-bind = "0.0.0.0:8000"
-worker_class = "sync"
-timeout = 30
-accesslog = "-"  # Log to stdout
-errorlog = "-"   # Log to stderr
-loglevel = "info"
-```
-
-**Starting with Gunicorn:**
-```bash
-gunicorn --config gunicorn.conf.py run:app
-```
-
-### Environment Variables for Production
-
-Set these in your production environment (not in `.env` file):
-```bash
-export FLASK_ENV=production
-export SECRET_KEY="generate-a-new-secure-key"
-export SESSION_COOKIE_SECURE=True
-export REDIS_URL="redis://your-production-redis:6379/0"
-export DATABASE_URL="/var/www/devbrain/instance/devbrain.db"
-export DEVBRAIN_API_KEY="your-api-key"
-export EMAIL="noreply@yourdomain.com"
-export EMAIL_PASSWORD="your-production-smtp-password"
-export MAIL_SERVER="smtp.your-email-provider.com"
-```
-
-**Security checklist:**
-- [ ] Generate a new `SECRET_KEY` (don't reuse dev key)
-- [ ] Set `SESSION_COOKIE_SECURE=True` (requires HTTPS)
-- [ ] Use a production Redis instance (not localhost)
-- [ ] Ensure database file is writable by Gunicorn user
-- [ ] Configure firewall to only allow nginx → Gunicorn traffic
-
-### Reverse Proxy Setup (nginx example)
-```nginx
-upstream devbrain {
-    server 127.0.0.1:8000;
-}
-
-server {
-    listen 80;
-    server_name yourdomain.com www.yourdomain.com;
-    return 301 https://$server_name$request_uri;  # Force HTTPS
-}
-
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com www.yourdomain.com;
-
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-
-    location / {
-        proxy_pass http://devbrain;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # Timeouts
-        proxy_connect_timeout 30s;
-        proxy_send_timeout 30s;
-        proxy_read_timeout 30s;
-    }
-
-    location /static {
-        alias /var/www/devbrain/app/static;
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-    }
-}
-```
-
-**Get SSL certificate (Let's Encrypt):**
-```bash
-sudo apt-get install certbot python3-certbot-nginx
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+DevBrain/
+  app/
+    __init__.py          # App factory, extension setup, blueprint registration
+    admin.py             # Admin blueprint -- question bank and catalog management
+    auth.py              # Login, register, password reset
+    config.py            # Config from environment variables
+    db.py                # Database initialization
+    extensions.py        # Flask extensions, login_required, admin_required decorators
+    forms.py             # WTForms definitions
+    learning.py          # Core business logic -- quiz, quota, scoring, import
+    models.py            # SQLAlchemy models
+    routes.py            # Main routes blueprint
+    seed.py              # Starter data for fresh installs
+    static/
+      css/
+        base.css
+        layout.css
+        components.css
+        pages.css
+      js/
+        app.js
+      favicon/
+    templates/
+      admin/
+        import_questions.html
+        index.html
+        languages.html
+        presets.html
+        question_form.html
+        questions.html
+        topics.html
+      about.html
+      dashboard.html
+      history.html
+      index.html
+      layout.html
+      login.html
+      profile.html
+      quiz_question.html
+      quiz_setup.html
+      register.html
+      results.html
+      review.html
+  migrations/
+    versions/
+      20260502_0002_question_import_batches.py
+      20260502_0003_languages_and_quiz_presets.py
+  tests/
+    base.py
+    test_user_model.py
+    test_topic_question_models.py
+    test_quiz_attempt_models.py
+    test_question_import_model.py
+    test_learning_services.py
+  images/
+  gunicorn.conf.py
+  requirements.txt
+  run.py
+  sample_question_import.json
+  readme.md
 ```
 
 ---
 
 ## Architecture Decisions
 
-This section explains why certain technical choices were made.
+### Admin Blueprint Separate from Main Routes
 
-### Application Factory Pattern
+Admin routes moved out of `routes.py` into a dedicated `admin.py` blueprint. The browser URLs stayed the same so nothing external broke. This keeps the main app routes focused on the user-facing experience and the admin routes in one place that is easier to reason about and extend.
 
-The app uses Flask's application factory pattern (`create_app()` in `__init__.py`):
-```python
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    
-    mail.init_app(app)
-    csrf.init_app(app)
-    
-    app.register_blueprint(main)
-    app.register_blueprint(auth)
-    
-    if REDIS_URL:
-        app.config['SESSION_TYPE'] = 'redis'
-        app.config['SESSION_REDIS'] = redis_client
-        Session(app)
-    
-    return app
-```
+### JSON Import Instead of AI Draft Generation
 
-**Benefits:**
-- Configuration can be injected at runtime
-- Multiple app instances can be created for testing
-- Extensions are initialized in the correct order
-- Follows Flask best practices
+The AI draft feature was removed from the active app. AI-generated questions were inconsistent in quality and needed the same manual review as any other content anyway. The JSON import workflow replaced it with something the admin fully controls. Questions are predictable, the source is tracked per question, and the review process is consistent regardless of where the content came from.
 
-### Why Redis for Both Sessions and Cache?
+### Category Delete vs Deactivate
 
-Initially I tried filesystem sessions (Flask-Session's default), but it caused weird issues with multiple Gunicorn workers. Sessions would disappear between requests because worker A couldn't read worker B's session files.
+Deleting a category that has linked questions or presets would break existing quiz history and content references. Empty categories get deleted cleanly. Categories with linked content get deactivated instead so the data stays intact but the category stops appearing in quiz setup.
 
-Redis solves this elegantly:
-- **Sessions:** Shared across all workers, no state sync issues
-- **Quiz cache:** Questions fetched once, used by all workers
-- **Single dependency:** One Redis instance handles both use cases
+### Language Delete Without Cascading
 
-The alternative would've been memcached for caching + database for sessions, but Redis is simpler and works out of the box for both.
+Language filter entries are separate from questions. Deleting a language filter removes it from the admin catalog but leaves existing questions untouched. This means you can clean up the language list without accidentally removing content.
 
-### SQLite with WAL Mode
+### Case-Insensitive Language Matching
 
-Using SQLite in production is controversial, but WAL mode makes it viable:
+Language matching at query time is case-insensitive. Python, python, and PYTHON all resolve to the same filter. This prevents quiz selection from breaking because of inconsistent casing in imported questions.
 
-**Advantages:**
-- Zero configuration (no connection strings, users, permissions)
-- File-based (easy backups, easy to move)
-- Surprisingly fast for <100 concurrent users
-- Built into Python (no extra dependencies)
+### Owned Question Bank Instead of External API
 
-**How WAL mode helps:**
-- Concurrent reads don't block each other
-- Writes don't block reads
-- Atomic commits prevent corruption
+The original version called an external quiz API every time a user started a quiz. Moving to a database-backed question bank fixed the reliability problem and gave the admin full control over content quality.
 
-**When to migrate to Postgres:**
-- 100+ concurrent users
-- Geographic distribution (multiple data centers)
-- Complex queries that need advanced indexes
-- Need for replication/high availability
+### Fallback Question Selection
 
-For a side project or small team, SQLite + WAL is honestly perfect.
+Rather than returning an error when exact topic and difficulty matches are low, the app broadens the pool to fill the requested count. This keeps the quiz experience smooth while the question bank is still being built out.
 
-### The Special Characters Bug Fix
+### First User Becomes Admin
 
-This was painful to debug. Original code used `|tojson` on button attributes:
-```html
-<button data-answer="{{ answer|tojson }}">
-```
+No separate admin setup command. The first account registered automatically gets the admin role so the owner can register first and start managing the site immediately.
 
-**Problems this caused:**
-1. `|tojson` adds literal quote characters: `"Use 'chmod'"` instead of `Use 'chmod'`
-2. Special characters get HTML-encoded: `'` becomes `&#39;`
+### Dashboard and Profile as Separate Pages
 
-**Result:**
-- `data-answer` attribute: Browser auto-decodes to `Use 'chmod'`
-- Correct answer from Jinja: `Use &#39;chmod&#39;`
-- JavaScript comparison fails even though they're logically identical
+Dashboard is for understanding your progress and deciding what to practice. Profile is for account settings. Keeping them separate makes both more focused.
 
-**The fix (three-part):**
-1. Use `|e` instead of `|tojson` (escapes without adding quotes)
-2. Decode HTML entities in JavaScript:
-```javascript
-function decodeHTML(html) {
-    const txt = document.createElement('textarea');
-    txt.innerHTML = html;
-    return txt.value;
-}
-```
-3. Use `html.unescape()` on form submissions in Python
+---
 
-Now answers with special characters work correctly everywhere.
+## Security Notes
 
-### CSRF Protection Strategy
+- Passwords hashed with Werkzeug
+- Password reset uses signed time-limited tokens
+- Jinja autoescaping protects all template output
+- Admin routes check role server-side -- not just hidden from the sidebar
+- Session cookies are HTTP-only
+- Secure cookies enabled in production over HTTPS
 
-CSRF is enabled globally but `/quiz` route is exempted:
-```python
-@main.route("/quiz", methods=["GET", "POST"])
-@csrf.exempt
-def quiz():
-```
-
-**Why?**
-- Quiz needs to work for anonymous users
-- Anonymous users don't have sessions yet
-- Enforcing CSRF tokens would break the initial quiz submission
-
-Once you're logged in, CSRF protection applies to `/history` and `/logout`.
-
-### The Single-Template Password Reset
-
-`forgot_password.html` handles four states using a `form_type` parameter:
-1. **"forgot"** – Initial email input
-2. **"sent_or_notfound"** – Confirmation (always shown)
-3. **"reset"** – Password reset form
-4. **"success"** – Password updated confirmation
-
-This saves creating four separate templates for what's essentially the same page. The routes are separate (`/forgot_password` and `/reset_password/<token>`), but they render the same template with different parameters.
+Still needs before serious production use: rate limiting on auth routes, a thorough CSRF audit across admin forms, and billing enforcement once payments are added.
 
 ---
 
 ## Known Limitations
 
-- ⚠️ **Email only works with Gmail by default** – Other SMTP providers need config changes
-- ⚠️ **Depends on external API** – If quizapi.io is down, the app doesn't work
-- ⚠️ **No admin panel** – Can't add/edit questions through the UI
-- ⚠️ **SQLite not suitable for huge scale** – WAL mode helps, but 1000+ concurrent users need Postgres
-- ⚠️ **No question explanations displayed** – API provides them, but UI doesn't show them yet
-
----
-
-## Future Improvements
-
-- [ ] Display question explanations after answers
-- [ ] Add custom quiz creation (user-generated questions)
-- [ ] Optional leaderboard system
-- [ ] Support multiple quiz APIs (not just quizapi.io)
-- [ ] Better mobile styling (current design is functional but not optimized)
-- [ ] Export quiz history as CSV or PDF
-- [ ] "Practice weak topics" feature (auto-generate quizzes from worst categories)
-- [ ] Real-time multiplayer quiz rooms (would require WebSockets)
-- [ ] Dark mode toggle
-- [ ] Quiz sharing (share specific quiz configurations with others)
+- Payments not implemented -- the 5-quiz weekly limit is app logic only
+- The question bank needs significantly more questions per topic to feel deep
+- Dashboard can grow with better charts and longer-term trend analysis
+- Redis is optional and not required for the core quiz path
 
 ---
 
 ## What I Learned
 
-### The Multi-Worker Realization
+### The Difference Between a Demo and a Product
 
-The original version worked fine in development (single process), but completely broke in production with `gunicorn -w 4`:
-- Quiz questions fetched 4 times (once per worker)
-- Sessions randomly disappeared (worker A couldn't read worker B's files)
-- Race conditions in SQLite (before WAL mode)
+The original version got questions from an API, showed you a quiz, and stopped there. Building the MVP taught me how much more a real product needs -- accounts, persistence, history, review pages, admin tools, role checks, seed data, migrations, and a UI that holds up across screen sizes.
 
-Adding Redis solved all of these. Good lesson: **what works in dev doesn't always work in prod.**
+### Separation of Concerns Matters in Routes Too
 
-### The HTML Entity Nightmare
+Keeping all admin routes inside the main routes file worked at first but got harder to navigate as the admin surface grew. Moving them into a dedicated blueprint made the codebase easier to read, easier to test, and easier to extend without touching the user-facing routes at all.
 
-Debugging why `Use 'chmod'` wasn't matching took way too long. The issue was subtle—both looked correct in HTML source, but one had `&#39;` in JavaScript.
+### Delete Behavior Needs to Be Thought Through
 
-Required understanding:
-1. How Jinja filters work (`|tojson` vs `|e` vs `|safe`)
-2. How browsers decode HTML attributes automatically
-3. How to decode HTML entities in JavaScript
-4. When to use `html.unescape()` in Python
+A naive delete on a category that has linked questions breaks quiz history. Thinking through when to delete and when to deactivate, and building that behavior explicitly, is the kind of thing that matters in a real product but is easy to skip in a demo.
 
-Now I always test with special characters during development.
+### Import Workflows Are More Reliable Than AI Generation
 
-### SQLite Can Be Production-Ready
+AI draft generation felt powerful at first but the quality was inconsistent and it still needed the same review as any other content. The JSON import workflow replaced it with something predictable and fully in the admin's control.
 
-I was skeptical, but WAL mode changed my mind. For apps with <100 concurrent users (most side projects):
-- Zero configuration
-- File-based (easy backups)
-- Surprisingly fast
-- Built into Python
+### Testing Matters When Business Rules Are Real
 
-The key is enabling WAL mode and using `check_same_thread=False`.
-
-### Session Management Is Nuanced
-
-Initially I tried signed cookies (size limits with full quiz questions), then filesystem sessions (multi-worker issues), then Redis (perfect).
-
-Trade-offs matter. **There's no one-size-fits-all solution.**
+Once you have weekly quotas, question selection logic, scoring, grade calculation, delete behavior, and role-based access, those are product rules that need tests. Catching a broken quota check or a bad delete cascade through a test is much better than catching it through a user report.
 
 ---
 
-## Troubleshooting
+## Roadmap
 
-### "ModuleNotFoundError: No module named 'app'"
-**Problem:** Running Python from wrong directory  
-**Solution:** Make sure you're in the project root (where `run.py` is)
-```bash
-cd /path/to/project
-python run.py
-```
+**Short-term**
+- More questions per topic and difficulty
+- Stronger dashboard insights with long-term trend views
+- Stripe or similar billing for unlimited plan
+- CI/CD pipeline
 
-### "RuntimeError: Missing required environment variables"
-**Problem:** Environment variables not set  
-**Solution:** Check your `.env` file has all required vars:
-```bash
-# Required:
-SECRET_KEY=...
-DEVBRAIN_API_KEY=...
-DATABASE_URL=...
-EMAIL=...
-EMAIL_PASSWORD=...
-MAIL_SERVER=...
-```
+**Medium-term**
+- Topic-based recommendations driven by weak area data
+- Better admin draft review and bulk edit workflow
 
-### "Connection refused" when connecting to Redis
-**Problem:** Redis not running or wrong URL  
-**Solution:**
-```bash
-# Check if Redis is running
-redis-cli ping  # Should return PONG
-
-# Start Redis if not running
-redis-server  # or brew services start redis
-```
-
-### Quiz questions not appearing
-**Problem:** API key invalid or rate limited  
-**Solution:**
-```bash
-# Test API directly
-curl "https://quizapi.io/api/v1/questions?apiKey=YOUR_KEY&limit=1"
-
-# If rate limited, wait a few minutes
-# If invalid key, get a new one from quizapi.io
-```
-
-### Sessions not persisting
-**Problem:** Redis not accessible or misconfigured  
-**Solution:**
-1. Verify Redis is running: `redis-cli ping`
-2. Check `REDIS_URL` environment variable
-3. Test connection:
-```python
-import redis
-r = redis.Redis.from_url('redis://localhost:6379/0', decode_responses=True)
-r.ping()  # Should return True
-```
-
-### "Database is locked" errors
-**Problem:** WAL mode not enabled or using network filesystem  
-**Solution:**
-1. Check `db.py` enables WAL: `g.db.execute("PRAGMA journal_mode=WAL;")`
-2. Verify database is on local filesystem (not NFS/network mount)
-3. Check file permissions (database file must be writable)
-
-### Workers crashing or timing out
-**Problem:** Incorrect Gunicorn configuration  
-**Solution:**
-```python
-# In gunicorn.conf.py
-workers = 4  # Too many workers can cause issues
-timeout = 30  # Increase if API calls are slow
-worker_class = "sync"  # Don't use async workers with SQLite
-```
+**Long-term**
+- Public learning paths
+- Team or classroom accounts
+- Mobile app wrapper if usage justifies it
 
 ---
 
 ## Author
 
-Built by Richard as an evolution of my CS50 Final Project.
+Built by [Richard Oyelowo](https://linkedin.com/in/richard-oyelowo) as an evolution of my CS50 Final Project.
 
-The original version was a single-file Flask app perfect for learning, but not production-ready. This version demonstrates:
-- Application factory pattern
-- Multi-worker architecture
-- Redis integration
-- Production deployment best practices
-- Proper separation of concerns
+What started as a single-file Flask quiz app using a third-party API grew into a full product with an owned question bank, structured import workflow, dedicated admin blueprint, account management, and a test suite. The goal was to build something that actually works as a learning tool, not just something that looks like one.
 
-If you have questions, find bugs, or want to contribute, feel free to open an issue or reach out.
+GitHub: [github.com/RichardOyelowo](https://github.com/RichardOyelowo)
+Email: richardadebowale.oye@gmail.com
 
 ---
 
 ## License
 
-MIT License – use it, modify it, break it, deploy it, whatever.
+This software is proprietary. You may view and read the source code for personal learning. Deploying, distributing, modifying, or using any part of this software for any purpose without explicit written permission from the author is not allowed.
+
+---
+
+<div align="center">
+
+Built with love for development by Richard Oyelowo
+
+[See full terms](LICENSE) &copy; All Rights Reserved
+
+</div>

@@ -147,29 +147,9 @@ def upgrade():
         op.create_index("ix_quiz_attempt_answers_attempt_id", "quiz_attempt_answers", ["attempt_id"], unique=False)
         op.create_index("ix_quiz_attempt_answers_question_id", "quiz_attempt_answers", ["question_id"], unique=False)
 
-    if "ai_generation_requests" not in existing_tables:
-        op.create_table(
-            "ai_generation_requests",
-            sa.Column("id", sa.Integer(), nullable=False),
-            sa.Column("user_id", sa.Integer(), nullable=False),
-            sa.Column("topic_id", sa.Integer(), nullable=False),
-            sa.Column("difficulty", sa.String(length=20), nullable=False),
-            sa.Column("count", sa.Integer(), nullable=False),
-            sa.Column("code_style", sa.String(length=80), nullable=True),
-            sa.Column("provider", sa.String(length=80), nullable=True),
-            sa.Column("status", sa.String(length=20), nullable=False),
-            sa.Column("error_message", sa.Text(), nullable=True),
-            sa.Column("created_at", sa.DateTime(), nullable=False),
-            sa.ForeignKeyConstraint(["topic_id"], ["topics.id"]),
-            sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-            sa.PrimaryKeyConstraint("id"),
-        )
-        op.create_index("ix_ai_generation_requests_user_id", "ai_generation_requests", ["user_id"], unique=False)
-
 
 def downgrade():
     for table_name in [
-        "ai_generation_requests",
         "quiz_attempt_answers",
         "quiz_attempts",
         "answer_options",
