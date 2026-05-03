@@ -1,46 +1,50 @@
-import sqlite3
 import os
+from sqlalchemy import inspect, text
 from flask import current_app, g
 
+from .extensions import db
+
 def get_db():
-    """
-    Get a per-request SQLite connection.
-    Uses WAL mode and check_same_thread=False for multi-worker safety.
-    """
-    if "db" not in g:
-        db_path = current_app.config["DATABASE_URL"]
-        g.db = sqlite3.connect(
-            db_path,
-            detect_types=sqlite3.PARSE_DECLTYPES,
-            check_same_thread=False  # allow multiple threads/workers
-        )
-        g.db.row_factory = sqlite3.Row
-        # Enable WAL mode for concurrent reads/writes
-        g.db.execute("PRAGMA journal_mode=WAL;")
-    return g.db
+    return db.session.connection()
 
 def close_db(e=None):
-    """
-    Close the per-request database connection.
-    """
-    db = g.pop("db", None)
-    if db is not None:
-        db.close()
+    g.pop("db", None)
 
 def create_db():
-    """
-    Create the database file and tables if they don't exist.
-    Keeps your exact schema and logic.
-    """
-    db_path = current_app.config.get("DATABASE_URL")
-    if not db_path:
-        raise RuntimeError("DATABASE_URL not configured")
+    ensure_database_ready()
 
-    db_dir = os.path.dirname(db_path)
-    if db_dir:
-        os.makedirs(db_dir, exist_ok=True)
 
-    if not os.path.exists(db_path):
-        with sqlite3.connect(db_path) as conn:
-            with open("app/schema.sql", "r", encoding="utf-8") as f:
-                conn.executescript(f.read())
+def ensure_database_ready(seed=True):
+    uri = current_app.config["SQLALCHEMY_DATABASE_URI"]
+    if uri.startswith("sqlite:///"):
+        db_path = uri.replace("sqlite:///", "", 1)
+        if db_path != ":memory:":
+            os.makedirs(os.path.dirname(db_path) or ".", exist_ok=True)
+
+    db.create_all()
+    _patch_existing_sqlite_schema()
+
+    if seed:
+        from .seed import seed_question_bank
+
+        seed_question_bank()
+
+
+def _patch_existing_sqlite_schema():
+    if db.engine.dialect.name != "sqlite":
+        return
+
+    inspector = inspect(db.engine)
+    if "users" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("users")}
+        if "role" not in columns:
+            db.session.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user'"))
+        if "created_at" not in columns:
+            db.session.execute(text("ALTER TABLE users ADD COLUMN created_at DATETIME"))
+
+    if "quizzes" in inspector.get_table_names():
+        columns = {column["name"] for column in inspector.get_columns("quizzes")}
+        if "date" not in columns:
+            db.session.execute(text("ALTER TABLE quizzes ADD COLUMN date DATETIME"))
+
+    db.session.commit()
