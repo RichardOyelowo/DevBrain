@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 
-{% block title %}: Admin Topics{% endblock %}
+{% block title %}: Admin Languages{% endblock %}
 
 {% block body %}
 <section class="app-page">
     <div class="page-heading">
         <p class="eyebrow">Admin</p>
-        <h1>Categories</h1>
-        <p class="muted">Edit the non-language topics shown on quiz setup. Languages are managed separately.</p>
+        <h1>Languages</h1>
+        <p class="muted">Languages power the optional code-snippet filter. They are not general quiz categories.</p>
     </div>
 
     <form method="post" class="panel form-grid">
@@ -21,32 +21,29 @@
             <input type="checkbox" name="is_active" value="1" checked>
             Active
         </label>
-        <button class="button button-primary" name="action" value="save" type="submit">Add Category</button>
+        <button class="button button-primary" name="action" value="save" type="submit">Add Language</button>
     </form>
 
     <div class="admin-edit-list">
-        {% for topic in topics %}
+        {% for language in languages %}
             <form method="post" class="panel form-grid compact-edit">
-                <input type="hidden" name="topic_id" value="{{ topic.id }}">
+                <input type="hidden" name="language_id" value="{{ language.id }}">
                 <label class="form-group">Name
-                    <input name="name" class="form-control" value="{{ topic.name }}" required>
+                    <input name="name" class="form-control" value="{{ language.name }}" required>
                 </label>
                 <label class="form-group">Slug
-                    <input class="form-control" value="{{ topic.slug }}" disabled>
+                    <input class="form-control" value="{{ language.slug }}" disabled>
                 </label>
                 <label class="form-group full">Description
-                    <textarea name="description" class="form-control textarea">{{ topic.description }}</textarea>
+                    <textarea name="description" class="form-control textarea">{{ language.description }}</textarea>
                 </label>
                 <label class="form-group check-row">
-                    <input type="checkbox" name="is_active" value="1" {% if topic.is_active %}checked{% endif %}>
+                    <input type="checkbox" name="is_active" value="1" {% if language.is_active %}checked{% endif %}>
                     Active
                 </label>
-                <div class="form-group">
-                    <span class="muted">{{ topic.questions|length }} questions</span>
-                </div>
                 <div class="actions">
                     <button class="button button-secondary" name="action" value="save" type="submit">Save</button>
-                    <button class="button button-danger" name="action" value="delete" type="submit" onclick="return confirm('Delete this category? Categories with linked content will be deactivated instead.');">Delete</button>
+                    <button class="button button-danger" name="action" value="delete" type="submit" onclick="return confirm('Delete this language from the filter list? Existing questions are not deleted.');">Delete</button>
                 </div>
             </form>
         {% endfor %}

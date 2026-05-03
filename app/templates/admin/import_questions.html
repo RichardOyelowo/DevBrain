@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}: Import Questions{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="page-heading">
+        <p class="eyebrow">Admin</p>
+        <h1>Import questions</h1>
+        <p class="muted">Paste JSON or upload a JSON file. Topic is the learning category, while language is only for code snippets.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="panel form-grid">
+        <label class="form-group full">Question JSON
+            <textarea name="payload" class="form-control textarea code-input" rows="18" spellcheck="false">[
+  {
+    "topic": "Data Structures",
+    "difficulty": "EASY",
+    "prompt": "What does len(items) return?",
+    "description": "Assume items is a list.",
+    "explanation": "len(items) returns the number of elements in the list.",
+    "language": "python",
+    "code_snippet": "items = [1, 2, 3]\nprint(len(items))",
+    "options": [
+      { "text": "3", "is_correct": true },
+      { "text": "2", "is_correct": false },
+      { "text": "1", "is_correct": false },
+      { "text": "It raises an error", "is_correct": false }
+    ]
+  }
+]</textarea>
+        </label>
+        <label class="form-group full">Upload JSON file
+            <input type="file" name="question_file" accept="application/json,.json" class="form-control">
+        </label>
+        <button class="button button-primary" type="submit">Import Drafts</button>
+    </form>
+
+    <div class="table-card">
+        <div class="panel-header">
+            <div>
+                <p class="eyebrow">Recent</p>
+                <h2>Import history</h2>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Questions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in imports %}
+                        <tr>
+                            <td data-label="Date">{{ item.created_at.strftime("%Y-%m-%d") }}</td>
+                            <td data-label="Questions">{{ item.count }}</td>
+                            <td data-label="Status">{{ item.status.title() }}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="3">No imports yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

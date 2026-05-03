@@ -11,16 +11,20 @@
 
     <div class="metric-grid">
         <article class="metric-card"><span>Topics</span><strong>{{ stats.topics }}</strong></article>
+        <article class="metric-card"><span>Languages</span><strong>{{ stats.languages }}</strong></article>
+        <article class="metric-card"><span>Fast starts</span><strong>{{ stats.presets }}</strong></article>
         <article class="metric-card"><span>Published</span><strong>{{ stats.published }}</strong></article>
         <article class="metric-card"><span>Drafts</span><strong>{{ stats.drafts }}</strong></article>
-        <article class="metric-card"><span>AI requests</span><strong>{{ stats.ai_requests }}</strong></article>
+        <article class="metric-card"><span>Imports</span><strong>{{ stats.imports }}</strong></article>
     </div>
 
     <div class="actions">
-        <a href="{{ url_for('main.admin_questions') }}" class="button button-primary">Questions</a>
-        <a href="{{ url_for('main.admin_question_new') }}" class="button button-secondary">New Question</a>
-        <a href="{{ url_for('main.admin_topics') }}" class="button button-secondary">Topics</a>
-        <a href="{{ url_for('main.admin_ai_drafts') }}" class="button button-secondary">AI Drafts</a>
+        <a href="{{ url_for('admin.questions') }}" class="button button-primary">Questions</a>
+        <a href="{{ url_for('admin.question_new') }}" class="button button-secondary">New Question</a>
+        <a href="{{ url_for('admin.topics') }}" class="button button-secondary">Topics</a>
+        <a href="{{ url_for('admin.languages') }}" class="button button-secondary">Languages</a>
+        <a href="{{ url_for('admin.presets') }}" class="button button-secondary">Fast Starts</a>
+        <a href="{{ url_for('admin.import_questions') }}" class="button button-secondary">Import Questions</a>
     </div>
 </section>
 {% endblock %}

@@ -38,7 +38,12 @@
             <textarea name="description" class="form-control textarea">{{ question.description if question else "" }}</textarea>
         </label>
         <label class="form-group">Language
-            <input name="language" class="form-control" value="{{ question.language if question and question.language else "" }}">
+            <select name="language" class="form-control">
+                <option value="">No language focus</option>
+                {% for language in languages %}
+                    <option value="{{ language.slug }}" {% if question and question.language == language.slug %}selected{% endif %}>{{ language.name }}</option>
+                {% endfor %}
+            </select>
         </label>
         <label class="form-group full">Code snippet
             <textarea name="code_snippet" class="form-control textarea code-input">{{ question.code_snippet if question and question.code_snippet else "" }}</textarea>

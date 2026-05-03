@@ -9,7 +9,7 @@
             <p class="eyebrow">Admin</p>
             <h1>Questions</h1>
         </div>
-        <a href="{{ url_for('main.admin_question_new') }}" class="button button-primary">New</a>
+        <a href="{{ url_for('admin.question_new') }}" class="button button-primary">New</a>
     </div>
 
     <div class="table-card">
@@ -33,7 +33,7 @@
                             <td data-label="Difficulty">{{ question.difficulty.title() }}</td>
                             <td data-label="Status">{{ "Archived" if question.is_archived else question.status.title() }}</td>
                             <td data-label="Source">{{ question.source }}</td>
-                            <td data-label="Action"><a href="{{ url_for('main.admin_question_edit', question_id=question.id) }}">Edit</a></td>
+                            <td data-label="Action"><a href="{{ url_for('admin.question_edit', question_id=question.id) }}">Edit</a></td>
                         </tr>
                     {% else %}
                         <tr><td colspan="6">No questions yet.</td></tr>
