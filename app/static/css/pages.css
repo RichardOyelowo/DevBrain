@@ -75,6 +75,32 @@
     margin: 6px 0 0;
     color: var(--text-soft);
 }
+.hero-sample-stack {
+    display: grid;
+    gap: 14px;
+}
+.sample-question {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.035);
+}
+.sample-question.active {
+    border-color: var(--line-strong);
+    background: rgba(69, 179, 157, 0.08);
+}
+.sample-question > span {
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.sample-question h3 {
+    font-size: 1rem;
+}
 .code-line, .track-list div, .attempt-row {
     display: flex;
     justify-content: space-between;
@@ -119,18 +145,48 @@
 .feature-card h2, .feature-card h3 { margin: 12px 0 10px; font-size: 1.25rem; }
 .feature-card p, .split-section p, .about-header p, .about-cta p { color: var(--text-soft); }
 .feature-index { color: var(--violet); font-family: var(--font-display); font-weight: 700; }
-.taxonomy-grid, .admin-marketing-grid {
+.example-grid,
+.taxonomy-grid,
+.admin-marketing-grid,
+.signal-grid,
+.ux-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 14px;
 }
-.taxonomy-grid article, .admin-marketing-grid div {
+.example-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.signal-grid, .ux-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.question-example-card,
+.taxonomy-grid article,
+.admin-marketing-grid div,
+.signal-grid article,
+.ux-grid article {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 20px;
     background: rgba(255, 255, 255, 0.035);
 }
-.taxonomy-grid span, .admin-marketing-grid span {
+.question-example-card {
+    display: grid;
+    gap: 14px;
+}
+.question-example-card p,
+.concept-question p,
+.ux-grid p {
+    color: var(--text-soft);
+}
+.concept-question {
+    display: grid;
+    gap: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    background: rgba(2, 6, 23, 0.38);
+}
+.taxonomy-grid span,
+.admin-marketing-grid span,
+.signal-grid span,
+.roadmap-strip span {
     display: block;
     margin-bottom: 10px;
     color: var(--text-muted);
@@ -139,11 +195,40 @@
     font-weight: 700;
     text-transform: uppercase;
 }
-.taxonomy-grid strong, .admin-marketing-grid strong {
+.taxonomy-grid strong,
+.admin-marketing-grid strong,
+.signal-grid strong,
+.roadmap-strip strong {
     color: var(--text-soft);
     line-height: 1.55;
 }
 .admin-marketing-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.category-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.category-cloud span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 10px 13px;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.04);
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+.roadmap-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+.roadmap-strip div {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: rgba(69, 179, 157, 0.07);
+}
 .split-section {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
@@ -638,6 +723,10 @@
     }
     .taxonomy-grid,
     .admin-marketing-grid,
+    .example-grid,
+    .signal-grid,
+    .ux-grid,
+    .roadmap-strip,
     .marketing-stat-grid,
     .workflow-list,
     .pricing-grid,
