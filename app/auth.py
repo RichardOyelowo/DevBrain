@@ -1,9 +1,9 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
-from .extensions import mail, login_required
+from .extensions import db, mail, login_required
 from .forms import Register, Login, ForgotPassword, ResetPassword
 from flask_mail import Message
-from .db import get_db
+from .models import User
 from flask import (
     Blueprint, render_template, request,
     redirect, url_for, session, flash, current_app
@@ -40,25 +40,22 @@ def register():
         username = form.username.data
         password = form.password.data
 
-        conn = get_db()
-        cur = conn.cursor()
-        
-        if cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone():    
-            conn.close()
+        if User.query.filter_by(email=email).first():
             flash("Email already exists","danger")
-
             return redirect(url_for("auth.login"))
 
-        cur.execute(
-            "INSERT INTO users (email, username, password) VALUES (?, ?, ?)",
-            (email, username, generate_password_hash(password))
+        role = "admin" if User.query.count() == 0 else "user"
+        user = User(
+            email=email,
+            username=username,
+            password=generate_password_hash(password),
+            role=role,
         )
-        conn.commit()
-        user_id = cur.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()["id"]
-        conn.close()
+        db.session.add(user)
+        db.session.commit()
 
-        session["user_id"] = user_id
-        return redirect(url_for("main.quiz"))
+        session["user_id"] = user.id
+        return redirect(url_for("main.dashboard"))
 
     return render_template("register.html", form=form)
 
@@ -72,17 +69,14 @@ def login():
         email = form.email.data
         password = form.password.data
 
-        conn = get_db()
-        cur = conn.cursor()
-        row = cur.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-        conn.close()
+        user = User.query.filter_by(email=email).first()
 
-        if not row or not check_password_hash(row["password"], password):
+        if not user or not check_password_hash(user.password, password):
             flash("Invalid email or password", "info")
             return render_template("login.html", form=form)
 
-        session["user_id"] = row["id"]
-        return redirect(url_for("main.quiz"))
+        session["user_id"] = user.id
+        return redirect(url_for("main.dashboard"))
 
     return render_template("login.html", form=form)
 
@@ -103,17 +97,14 @@ def forgot_password():
     if form.validate_on_submit():
         users_email = form.email.data
 
-        conn = get_db()
-        cur = conn.cursor()
-        row = cur.execute("SELECT * FROM users WHERE email = ?", (users_email,)).fetchone()
-        conn.close()
+        user = User.query.filter_by(email=users_email).first()
 
-        if row:
+        if user:
             s = get_serializer()
-            token = s.dumps(row["id"], salt="password-reset-salt")
+            token = s.dumps(user.id, salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
             try:
-                send_reset_email(to_email=row["email"], reset_link=reset_link)
+                send_reset_email(to_email=user.email, reset_link=reset_link)
             except Exception as e:
                 return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.", form=form)
 
@@ -136,12 +127,10 @@ def reset_password(token):
     if form.validate_on_submit():
         new_password = form.password.data
 
-        conn = get_db()
-        cur = conn.cursor()
-        cur.execute("UPDATE users SET password = ? WHERE id = ?",
-                    (generate_password_hash(new_password), user_id))
-        conn.commit()
-        conn.close()
+        user = db.session.get(User, user_id)
+        if user:
+            user.password = generate_password_hash(new_password)
+            db.session.commit()
 
         return render_template("forgot_password.html", form_type="success")
 
