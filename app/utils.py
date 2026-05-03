@@ -1,4 +1,5 @@
-from .db import get_db
+from .extensions import db
+from .models import LegacyQuiz
 
 def calculate_grade(score, total):
     percentage = (score / total) * 100
@@ -16,18 +17,17 @@ def calculate_grade(score, total):
 
 
 def save_quiz_result(user_id, topic, difficulty, limit, score, grade):
-    conn = get_db()
-    cur = conn.cursor()
-
     if "&" in topic:
         topic = topic.replace("&", ", ")
 
-    cur.execute(
-        """INSERT INTO quizzes 
-        (user_id, topic, difficulty, question_count, score, grade) 
-        VALUES (?, ?, ?, ?, ?, ?)""",
-        (user_id, topic, difficulty.upper(), limit, score, grade)
+    db.session.add(
+        LegacyQuiz(
+            user_id=user_id,
+            topic=topic,
+            difficulty=difficulty.upper(),
+            question_count=limit,
+            score=score,
+            grade=grade,
+        )
     )
-
-    conn.commit()
-    conn.close()
+    db.session.commit()

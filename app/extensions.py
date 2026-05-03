@@ -1,12 +1,16 @@
-from flask import session, redirect, url_for
+from flask import flash, session, redirect, url_for
 from flask_wtf import CSRFProtect
 from functools import wraps
 from flask_mail import Mail
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from redis import Redis
 import os
 
 mail = Mail()
 csrf = CSRFProtect()
+db = SQLAlchemy()
+migrate = Migrate()
 
 
 # ---------------- Login Required Decorator ----------------
@@ -15,6 +19,22 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
             return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect(url_for("auth.login"))
+
+        from .models import User
+
+        user = db.session.get(User, session["user_id"])
+        if not user or user.role != "admin":
+            flash("You need an admin account to open that page.", "danger")
+            return redirect(url_for("main.dashboard"))
         return f(*args, **kwargs)
     return decorated_function
 

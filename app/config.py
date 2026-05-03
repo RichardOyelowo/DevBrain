@@ -2,40 +2,32 @@ import os
 from datetime import timedelta
 
 class Config:
-    # Required environment variables
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-    API_KEY = os.environ.get("DEVBRAIN_API_KEY")
-    DATABASE_URL = os.environ.get("DATABASE_URL")
+    SECRET_KEY = os.environ.get("SECRET_KEY", "devbrain-local-secret")
+
+    raw_database_url = os.environ.get("DATABASE_URL", "sqlite:///instance/devbrain.db")
+    if raw_database_url.startswith("postgres://"):
+        raw_database_url = raw_database_url.replace("postgres://", "postgresql://", 1)
+    elif "://" not in raw_database_url:
+        raw_database_url = f"sqlite:///{raw_database_url}"
+
+    DATABASE_URL = raw_database_url
+    SQLALCHEMY_DATABASE_URI = raw_database_url
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
-    MAIL_USERNAME = os.environ.get("EMAIL")
-    MAIL_SERVER = os.environ.get("MAIL_SERVER")
-    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+    MAIL_USERNAME = os.environ.get("EMAIL", "")
+    MAIL_SERVER = os.environ.get("MAIL_SERVER", "localhost")
+    MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
     MAIL_DEFAULT_SENDER = ("DevBrain Support", MAIL_USERNAME)
 
-    # Check all required env vars
-    required_vars = {
-        "SECRET_KEY": SECRET_KEY,
-        "API_KEY": API_KEY,
-        "DATABASE_URL": DATABASE_URL,
-        "MAIL_USERNAME": MAIL_USERNAME,
-        "MAIL_PASSWORD": MAIL_PASSWORD,
-        "MAIL_SERVER": MAIL_SERVER
-    }
-
-    missing_vars = [name for name, val in required_vars.items() if not val]
-    if missing_vars:
-        raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
-
-    # Mail config
     MAIL_USE_TLS = True
 
     # Session security
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = os.environ.get("FLASK_ENV") == "production"
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
     PREFERRED_URL_SCHEME = "https"
