@@ -1,8 +1,7 @@
-import os
 from sqlalchemy import inspect, text
 from flask import current_app, g
-
 from .extensions import db
+import os
 
 def get_db():
     return db.session.connection()
