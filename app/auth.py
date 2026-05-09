@@ -1,7 +1,7 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
-from .extensions import db, mail, login_required
 from .forms import Register, Login, ForgotPassword, ResetPassword
+from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
 from flask import (
