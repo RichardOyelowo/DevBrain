@@ -1,7 +1,4 @@
-import json
-
 from flask import Blueprint, abort, flash, render_template, request, redirect, session, url_for
-
 from .extensions import admin_required, csrf, db
 from .learning import (
     delete_language,
@@ -18,6 +15,7 @@ from .learning import (
     PRESET_ACCENTS,
 )
 from .models import Language, Question, QuestionImportBatch, QuizPreset, Topic
+import json
 
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
