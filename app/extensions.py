@@ -1,9 +1,9 @@
 from flask import flash, session, redirect, url_for
-from flask_wtf import CSRFProtect
-from functools import wraps
-from flask_mail import Mail
-from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_wtf import CSRFProtect
+from flask_mail import Mail
+from functools import wraps
 from redis import Redis
 import os
 
