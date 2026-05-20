@@ -3,7 +3,7 @@ from unittest.mock import patch
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
-from app.auth import get_serializer
+from app.auth import get_serializer, send_reset_email
 from app.extensions import db
 from app.models import User
 from tests.base import DevBrainTestCase
@@ -73,6 +73,16 @@ class UserAuthRouteTest(DevBrainTestCase):
 
 
 class PasswordResetRouteTest(DevBrainTestCase):
+    def test_reset_email_uses_configured_socket_timeout(self):
+        self.app.config["MAIL_TIMEOUT"] = 3
+
+        with self.app.test_request_context(), patch("app.auth.mail.send") as mail_send, patch("app.auth.socket.setdefaulttimeout") as set_timeout:
+            send_reset_email("learner@example.com", "https://example.com/reset")
+
+        mail_send.assert_called_once()
+        set_timeout.assert_any_call(3)
+        set_timeout.assert_any_call(None)
+
     def test_forgot_password_sends_reset_email_for_existing_user(self):
         user = User(email="learner@example.com", password=generate_password_hash("Old123!"))
         db.session.add(user)

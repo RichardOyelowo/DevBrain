@@ -28,6 +28,7 @@ class Config:
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "localhost")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD") or os.environ.get("EMAIL_PASSWORD", "")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
+    MAIL_TIMEOUT = int(os.environ.get("MAIL_TIMEOUT", 8))
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER") or MAIL_USERNAME or "noreply@devbrain.online"
 
     # Session security

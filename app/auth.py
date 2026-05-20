@@ -4,6 +4,7 @@ from .forms import Register, Login, ForgotPassword, ResetPassword
 from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
+import socket
 from flask import (
     Blueprint, render_template, request,
     redirect, url_for, session, flash, current_app
@@ -23,7 +24,12 @@ def send_reset_email(to_email, reset_link):
         html=render_template("reset_email.html", reset_link=reset_link),
         body=render_template("reset_email.txt", reset_link=reset_link)
     )
-    mail.send(msg)
+    previous_timeout = socket.getdefaulttimeout()
+    socket.setdefaulttimeout(current_app.config.get("MAIL_TIMEOUT", 8))
+    try:
+        mail.send(msg)
+    finally:
+        socket.setdefaulttimeout(previous_timeout)
 
 def get_serializer():
     """Helper to get URLSafeTimedSerializer using app's SECRET_KEY"""
