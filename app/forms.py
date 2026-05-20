@@ -20,7 +20,7 @@ class Register(FlaskForm):
 
 
 class ForgotPassword(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(max=100)])
+    email = StringField('Email', render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email(), Length(max=100)])
     submit = SubmitField('Send Email')
 
 

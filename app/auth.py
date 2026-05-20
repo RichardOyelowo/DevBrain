@@ -105,7 +105,8 @@ def forgot_password():
             reset_link = url_for("auth.reset_password", token=token, _external=True)
             try:
                 send_reset_email(to_email=user.email, reset_link=reset_link)
-            except Exception as e:
+            except Exception:
+                current_app.logger.exception("Password reset email failed for user %s", user.id)
                 return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.", form=form)
 
         return render_template("forgot_password.html", form_type="sent_or_notfound")
@@ -122,7 +123,12 @@ def reset_password(token):
     try:
         user_id = s.loads(token, salt="password-reset-salt", max_age=3600)
     except (BadSignature, SignatureExpired):
-        return render_template("forgot_password.html", form_type="forgot", error="The reset link is invalid or expired.")
+        return render_template(
+            "forgot_password.html",
+            form_type="forgot",
+            error="The reset link is invalid or expired.",
+            form=ForgotPassword(),
+        )
 
     if form.validate_on_submit():
         new_password = form.password.data

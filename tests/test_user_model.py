@@ -1,5 +1,9 @@
+from unittest.mock import patch
+
+from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
+from app.auth import get_serializer
 from app.extensions import db
 from app.models import User
 from tests.base import DevBrainTestCase
@@ -66,3 +70,57 @@ class UserAuthRouteTest(DevBrainTestCase):
 
         self.assertIsNotNone(user)
         self.assertEqual(user.role, "user")
+
+
+class PasswordResetRouteTest(DevBrainTestCase):
+    def test_forgot_password_sends_reset_email_for_existing_user(self):
+        user = User(email="learner@example.com", password=generate_password_hash("Old123!"))
+        db.session.add(user)
+        db.session.commit()
+
+        with patch("app.auth.send_reset_email") as send_reset_email:
+            response = self.client.post(
+                "/forgot_password",
+                data={"email": "learner@example.com"},
+                follow_redirects=False,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        send_reset_email.assert_called_once()
+        self.assertEqual(send_reset_email.call_args.kwargs["to_email"], "learner@example.com")
+        self.assertIn("/reset_password/", send_reset_email.call_args.kwargs["reset_link"])
+
+    def test_forgot_password_is_neutral_for_unknown_email(self):
+        with patch("app.auth.send_reset_email") as send_reset_email:
+            response = self.client.post(
+                "/forgot_password",
+                data={"email": "missing@example.com"},
+                follow_redirects=False,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"If an account exists", response.data)
+        send_reset_email.assert_not_called()
+
+    def test_invalid_reset_token_renders_recovery_form(self):
+        response = self.client.get("/reset_password/not-a-real-token")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"The reset link is invalid or expired.", response.data)
+        self.assertIn(b"Reset Your Password", response.data)
+
+    def test_reset_password_updates_user_password(self):
+        user = User(email="learner@example.com", password=generate_password_hash("Old123!"))
+        db.session.add(user)
+        db.session.commit()
+        token = get_serializer().dumps(user.id, salt="password-reset-salt")
+
+        response = self.client.post(
+            f"/reset_password/{token}",
+            data={"password": "New123!", "confirmation": "New123!"},
+            follow_redirects=False,
+        )
+        saved = db.session.get(User, user.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(check_password_hash(saved.password, "New123!"))
