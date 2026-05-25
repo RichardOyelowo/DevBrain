@@ -5,6 +5,7 @@ from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
 import socket
+import threading
 from flask import (
     Blueprint, render_template, request,
     redirect, url_for, session, flash, current_app
@@ -15,21 +16,44 @@ auth = Blueprint("auth", __name__)
 
 
 # ---------------- Reset Email Utility ----------------
-def send_reset_email(to_email, reset_link):
-    """Send password reset email using Flask-Mail and app config"""
-
-    msg = Message(
+def build_reset_email(to_email, reset_link):
+    return Message(
         subject="Reset Your DevBrain Password",
         recipients= [to_email],
         html=render_template("reset_email.html", reset_link=reset_link),
         body=render_template("reset_email.txt", reset_link=reset_link)
     )
+
+
+def send_prepared_email(msg):
     previous_timeout = socket.getdefaulttimeout()
     socket.setdefaulttimeout(current_app.config.get("MAIL_TIMEOUT", 8))
     try:
         mail.send(msg)
     finally:
         socket.setdefaulttimeout(previous_timeout)
+
+
+def send_reset_email(to_email, reset_link):
+    """Send password reset email using Flask-Mail and app config"""
+
+    send_prepared_email(build_reset_email(to_email, reset_link))
+
+
+def queue_reset_email(to_email, reset_link, user_id):
+    app = current_app._get_current_object()
+    msg = build_reset_email(to_email, reset_link)
+    timeout = current_app.config.get("MAIL_TIMEOUT", 8)
+
+    def _send():
+        with app.app_context():
+            app.config["MAIL_TIMEOUT"] = timeout
+            try:
+                send_prepared_email(msg)
+            except Exception:
+                app.logger.exception("Password reset email failed for user %s", user_id)
+
+    threading.Thread(target=_send, daemon=True).start()
 
 def get_serializer():
     """Helper to get URLSafeTimedSerializer using app's SECRET_KEY"""
@@ -109,11 +133,7 @@ def forgot_password():
             s = get_serializer()
             token = s.dumps(user.id, salt="password-reset-salt")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
-            try:
-                send_reset_email(to_email=user.email, reset_link=reset_link)
-            except Exception:
-                current_app.logger.exception("Password reset email failed for user %s", user.id)
-                return render_template("forgot_password.html", form_type="forgot", error="Error sending email. Try again later.", form=form)
+            queue_reset_email(to_email=user.email, reset_link=reset_link, user_id=user.id)
 
         return render_template("forgot_password.html", form_type="sent_or_notfound")
 

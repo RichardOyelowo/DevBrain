@@ -88,7 +88,7 @@ class PasswordResetRouteTest(DevBrainTestCase):
         db.session.add(user)
         db.session.commit()
 
-        with patch("app.auth.send_reset_email") as send_reset_email:
+        with patch("app.auth.queue_reset_email") as queue_reset_email:
             response = self.client.post(
                 "/forgot_password",
                 data={"email": "learner@example.com"},
@@ -96,12 +96,12 @@ class PasswordResetRouteTest(DevBrainTestCase):
             )
 
         self.assertEqual(response.status_code, 200)
-        send_reset_email.assert_called_once()
-        self.assertEqual(send_reset_email.call_args.kwargs["to_email"], "learner@example.com")
-        self.assertIn("/reset_password/", send_reset_email.call_args.kwargs["reset_link"])
+        queue_reset_email.assert_called_once()
+        self.assertEqual(queue_reset_email.call_args.kwargs["to_email"], "learner@example.com")
+        self.assertIn("/reset_password/", queue_reset_email.call_args.kwargs["reset_link"])
 
     def test_forgot_password_is_neutral_for_unknown_email(self):
-        with patch("app.auth.send_reset_email") as send_reset_email:
+        with patch("app.auth.queue_reset_email") as queue_reset_email:
             response = self.client.post(
                 "/forgot_password",
                 data={"email": "missing@example.com"},
@@ -110,7 +110,7 @@ class PasswordResetRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"If an account exists", response.data)
-        send_reset_email.assert_not_called()
+        queue_reset_email.assert_not_called()
 
     def test_invalid_reset_token_renders_recovery_form(self):
         response = self.client.get("/reset_password/not-a-real-token")
