@@ -4,6 +4,7 @@ from .forms import Register, Login, ForgotPassword, ResetPassword
 from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
+from .rate_limit import rate_limit
 import hashlib
 import socket
 import threading
@@ -99,6 +100,7 @@ def registration_role():
 
 # ---------------- Registration ----------------
 @auth.route("/register", methods=["GET", "POST"])
+@rate_limit("register")
 def register():
     form = Register()
 
@@ -129,6 +131,7 @@ def register():
 
 # ---------------- Login ----------------
 @auth.route("/login", methods=["GET", "POST"])
+@rate_limit("login")
 def login():
     form = Login()
 
@@ -158,6 +161,7 @@ def logout():
 
 # ---------------- Forgot Password ----------------
 @auth.route("/forgot_password", methods=["GET", "POST"])
+@rate_limit("forgot_password")
 def forgot_password():
     form = ForgotPassword()
     
@@ -178,6 +182,7 @@ def forgot_password():
 
 # ---------------- Reset Password ----------------
 @auth.route("/reset_password/<token>", methods=["GET", "POST"])
+@rate_limit("reset_password")
 def reset_password(token):
     form = ResetPassword()
 

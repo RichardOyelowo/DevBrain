@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash
 from app.auth import create_reset_token, send_reset_email
 from app.extensions import db
 from app.models import User
+from app.rate_limit import clear_rate_limits
 from tests.base import DevBrainTestCase
 
 
@@ -37,6 +38,10 @@ class UserModelTest(DevBrainTestCase):
 
 
 class UserAuthRouteTest(DevBrainTestCase):
+    def tearDown(self):
+        clear_rate_limits()
+        super().tearDown()
+
     def test_first_registered_user_is_normal_user_by_default(self):
         response = self.client.post(
             "/register",
@@ -89,8 +94,23 @@ class UserAuthRouteTest(DevBrainTestCase):
         self.assertIsNotNone(user)
         self.assertEqual(user.role, "user")
 
+    def test_login_rate_limit_returns_429(self):
+        clear_rate_limits()
+        self.app.config["AUTH_RATE_LIMIT"] = 1
+        self.app.config["AUTH_RATE_WINDOW_SECONDS"] = 60
+
+        first = self.client.post("/login", data={"email": "learner@example.com", "password": "bad"})
+        second = self.client.post("/login", data={"email": "learner@example.com", "password": "bad"})
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 429)
+
 
 class PasswordResetRouteTest(DevBrainTestCase):
+    def tearDown(self):
+        clear_rate_limits()
+        super().tearDown()
+
     def test_reset_email_uses_configured_socket_timeout(self):
         self.app.config["MAIL_TIMEOUT"] = 3
 
