@@ -11,6 +11,7 @@
     </div>
 
     <form method="post" class="panel form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="form-group">Title
             <input name="title" class="form-control" required>
         </label>
@@ -62,6 +63,7 @@
     <div class="admin-edit-list">
         {% for preset in presets %}
             <form method="post" class="panel form-grid compact-edit">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="preset_id" value="{{ preset.id }}">
                 <label class="form-group">Title
                     <input name="title" class="form-control" value="{{ preset.title }}" required>

@@ -11,6 +11,7 @@
     </div>
 
     <form method="post" class="panel form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="form-group">Name
             <input name="name" class="form-control" required>
         </label>
@@ -27,6 +28,7 @@
     <div class="admin-edit-list">
         {% for language in languages %}
             <form method="post" class="panel form-grid compact-edit">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="language_id" value="{{ language.id }}">
                 <label class="form-group">Name
                     <input name="name" class="form-control" value="{{ language.name }}" required>
