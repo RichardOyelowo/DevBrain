@@ -54,12 +54,14 @@
                         <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
                         <a href="{{ url_for('main.history') }}">History</a>
                         <a href="{{ url_for('main.profile') }}">Profile</a>
+                        <a href="{{ url_for('main.pricing') }}">Plans</a>
                         {% if current_user and current_user.is_admin %}
                             <a href="{{ url_for('admin.home') }}">Admin</a>
                         {% endif %}
                         <a class="button button-ghost" href="{{ url_for('auth.logout') }}">Logout</a>
                     {% else %}
                         <a href="{{ url_for('main.about') }}">About</a>
+                        <a href="{{ url_for('main.pricing') }}">Plans</a>
                         <a class="button button-ghost" href="{{ url_for('auth.register') }}">Register</a>
                         <a class="button button-primary" href="{{ url_for('auth.login') }}">Login</a>
                     {% endif %}
@@ -83,9 +85,6 @@
 
         <footer class="site-footer">
             <p>Built with love for development by Richard Oyelowo</p>
-            <div class="footer-links">
-                <a href="https://github.com/RichardOyelowo/DevBrain.git">Open Source</a>
-            </div>
             <p>&copy; 2026</p>
         </footer>
         <script src="{{ url_for('static', filename='js/app.js') }}"></script>

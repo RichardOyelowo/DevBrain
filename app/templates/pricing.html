@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}: Plans{% endblock %}
+
+{% block body %}
+<section class="app-page">
+    <div class="page-heading">
+        <p class="eyebrow">Plans</p>
+        <h1>Start with the full app experience. Upgrade when practice becomes a habit.</h1>
+        <p class="muted">Billing is intentionally provider-neutral in this MVP. The plan page is wired into the app, and checkout can later connect to Stripe, Lemon Squeezy, Paddle, or another provider without changing the learner flow.</p>
+    </div>
+
+    <div class="pricing-grid">
+        <article class="pricing-card">
+            <p class="eyebrow">Free</p>
+            <h3>$0</h3>
+            <p>For trying DevBrain with the real dashboard, history, and review flow.</p>
+            <ul>
+                <li>5 quizzes per rolling week</li>
+                <li>Dashboard and weak-topic tracking</li>
+                <li>Saved history and review pages</li>
+                <li>Access to starter categories</li>
+            </ul>
+            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Create Account</a>
+        </article>
+
+        <article class="pricing-card featured">
+            <p class="eyebrow">Pro</p>
+            <h3>$5/month</h3>
+            <p>For learners who practice weekly and want more room without going fully unlimited.</p>
+            <ul>
+                <li>40 to 50 quizzes per week</li>
+                <li>Priority access to new question sets</li>
+                <li>All free features</li>
+                <li>Best fit for interview prep sprints</li>
+            </ul>
+            <a href="{{ url_for('auth.register') }}" class="button button-primary">Join Waitlist</a>
+        </article>
+
+        <article class="pricing-card">
+            <p class="eyebrow">Unlimited</p>
+            <h3>$10/month</h3>
+            <p>For consistent developers who want no quiz cap while the bank keeps growing.</p>
+            <ul>
+                <li>Unlimited quizzes</li>
+                <li>All categories and difficulties</li>
+                <li>All current and future tracks</li>
+                <li>Best fit for long-term practice</li>
+            </ul>
+            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Get Notified</a>
+        </article>
+    </div>
+
+    <section class="about-cta">
+        <div>
+            <p class="eyebrow">Billing status</p>
+            <h2>Checkout is not locked to a provider yet.</h2>
+            <p class="muted">The MVP keeps pricing visible and keeps quota logic in the app. The final payment provider can be chosen after the free plan and content depth are stable.</p>
+        </div>
+        <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
+    </section>
+</section>
+{% endblock %}

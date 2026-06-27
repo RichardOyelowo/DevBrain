@@ -185,3 +185,8 @@ def profile():
 @main.route("/about", methods=["GET"])
 def about():
     return render_template("about.html")
+
+
+@main.route("/pricing", methods=["GET"])
+def pricing():
+    return render_template("pricing.html")
