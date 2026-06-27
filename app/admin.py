@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, flash, render_template, request, redirect, session, url_for
-from .extensions import admin_required, csrf, db
+from .extensions import admin_required, db
 from .learning import (
     delete_language,
     delete_topic,
@@ -44,7 +44,6 @@ def questions():
 
 
 @admin.route("/questions/new", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def question_new():
     if request.method == "POST":
@@ -59,7 +58,6 @@ def question_new():
 
 
 @admin.route("/questions/<int:question_id>/edit", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def question_edit(question_id):
     question = db.session.get(Question, question_id) or abort(404)
@@ -75,7 +73,6 @@ def question_edit(question_id):
 
 
 @admin.route("/topics", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def topics():
     if request.method == "POST":
@@ -105,7 +102,6 @@ def topics():
 
 
 @admin.route("/languages", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def languages():
     if request.method == "POST":
@@ -135,7 +131,6 @@ def languages():
 
 
 @admin.route("/presets", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def presets():
     if request.method == "POST":
@@ -158,7 +153,6 @@ def presets():
 
 
 @admin.route("/import", methods=["GET", "POST"])
-@csrf.exempt
 @admin_required
 def import_questions():
     if request.method == "POST":
