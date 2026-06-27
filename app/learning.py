@@ -92,6 +92,55 @@ def get_quiz_presets():
     ]
 
 
+def question_bank_summary():
+    published_filter = (
+        Question.status == "published",
+        Question.is_archived.is_(False),
+    )
+    return {
+        "published": Question.query.filter(*published_filter).count(),
+        "draft": Question.query.filter_by(status="draft", is_archived=False).count(),
+        "topics": Topic.query.filter(Topic.is_active.is_(True), ~Topic.slug.in_(DEPRECATED_TOPIC_SLUGS)).count(),
+        "languages": Language.query.filter_by(is_active=True).count(),
+    }
+
+
+def topic_availability():
+    rows = (
+        db.session.query(
+            Topic,
+            func.count(Question.id).label("published_count"),
+            func.count(func.distinct(Question.language)).label("language_count"),
+        )
+        .outerjoin(
+            Question,
+            (Question.topic_id == Topic.id)
+            & (Question.status == "published")
+            & (Question.is_archived.is_(False)),
+        )
+        .filter(Topic.is_active.is_(True), ~Topic.slug.in_(DEPRECATED_TOPIC_SLUGS))
+        .group_by(Topic.id)
+        .order_by(Topic.name)
+        .all()
+    )
+    return [
+        {
+            "topic": topic,
+            "published_count": int(published_count or 0),
+            "language_count": int(language_count or 0),
+        }
+        for topic, published_count, language_count in rows
+    ]
+
+
+def get_active_attempt(user_id):
+    return (
+        QuizAttempt.query.filter_by(user_id=user_id, status="in_progress")
+        .order_by(QuizAttempt.created_at.desc())
+        .first()
+    )
+
+
 def quiz_quota_status(user_id):
     from .models import User
 
@@ -280,6 +329,18 @@ def dashboard_stats(user_id):
         key=lambda item: item[1],
     )
     recent = attempts[:5]
+    topic_breakdown = [
+        {
+            "topic": topic,
+            "average": round(sum(scores) / len(scores), 1),
+            "count": len(scores),
+        }
+        for topic, scores in sorted(topic_scores.items(), key=lambda item: sum(item[1]) / len(item[1]))
+    ]
+    completed_this_week = len([
+        attempt for attempt in attempts
+        if attempt.completed_at and attempt.completed_at >= datetime.utcnow() - timedelta(days=7)
+    ])
 
     return {
         "total": total,
@@ -288,6 +349,10 @@ def dashboard_stats(user_id):
         "weakest": ranked[0][0] if ranked else "Not enough data",
         "recent": recent,
         "recommended": ranked[0][0] if ranked else _default_topic_name(),
+        "best": round(max((attempt.percentage for attempt in attempts), default=0), 1),
+        "completed_this_week": completed_this_week,
+        "streak": _completion_streak(attempts),
+        "topic_breakdown": topic_breakdown[:5],
     }
 
 
@@ -310,7 +375,34 @@ def _legacy_dashboard_stats(rows):
         "weakest": topic_counts.most_common()[-1][0],
         "recent": rows[:5],
         "recommended": topic_counts.most_common()[-1][0],
+        "best": round(max(percentages), 1) if percentages else 0,
+        "completed_this_week": len([
+            row for row in rows
+            if row.date and row.date >= datetime.utcnow() - timedelta(days=7)
+        ]),
+        "streak": 0,
+        "topic_breakdown": [],
     }
+
+
+def _completion_streak(attempts):
+    completed_days = {
+        attempt.completed_at.date()
+        for attempt in attempts
+        if attempt.completed_at
+    }
+    if not completed_days:
+        return 0
+
+    streak = 0
+    cursor = datetime.utcnow().date()
+    if cursor not in completed_days:
+        cursor -= timedelta(days=1)
+
+    while cursor in completed_days:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
 
 
 def _default_topic_name():

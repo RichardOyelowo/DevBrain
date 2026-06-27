@@ -7,14 +7,17 @@ from .learning import (
     create_attempt,
     can_start_quiz,
     dashboard_stats,
+    get_active_attempt,
     get_active_topics,
     get_available_languages,
     get_next_pending_answer,
     get_quiz_presets,
+    question_bank_summary,
     normalize_difficulty,
     normalize_language,
     quiz_quota_status,
     submit_answer,
+    topic_availability,
 )
 
 
@@ -32,22 +35,31 @@ def index():
 @login_required
 def dashboard():
     stats = dashboard_stats(session["user_id"])
-    topics = get_active_topics()
     quota = quiz_quota_status(session["user_id"])
-    return render_template("dashboard.html", stats=stats, topics=topics, quota=quota)
+    return render_template(
+        "dashboard.html",
+        stats=stats,
+        topics=get_active_topics(),
+        quota=quota,
+        active_attempt=get_active_attempt(session["user_id"]),
+        bank_summary=question_bank_summary(),
+        topic_availability=topic_availability(),
+    )
 
 
 @main.route("/quiz", methods=["GET"], endpoint="quiz")
 @login_required
 def quiz_setup():
-    topics = get_active_topics()
     quota = quiz_quota_status(session["user_id"])
     return render_template(
         "quiz_setup.html",
-        topics=topics,
+        topics=get_active_topics(),
         languages=get_available_languages(),
         presets=get_quiz_presets(),
         quota=quota,
+        active_attempt=get_active_attempt(session["user_id"]),
+        bank_summary=question_bank_summary(),
+        topic_availability=topic_availability(),
     )
 
 

@@ -1,5 +1,14 @@
 from app.extensions import db
-from app.learning import can_start_quiz, create_attempt, quiz_quota_status
+from app.learning import (
+    can_start_quiz,
+    create_attempt,
+    dashboard_stats,
+    get_active_attempt,
+    question_bank_summary,
+    quiz_quota_status,
+    submit_answer,
+    topic_availability,
+)
 from app.models import Language, Topic, User
 from tests.base import DevBrainTestCase
 
@@ -33,6 +42,52 @@ class QuizQuotaServiceTest(DevBrainTestCase):
             create_attempt(user.id, [], "EASY", 1)
 
         self.assertFalse(can_start_quiz(user.id))
+
+    def test_active_attempt_returns_latest_in_progress_attempt(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        first = create_attempt(user.id, [], "EASY", 1)
+        second = create_attempt(user.id, [], "EASY", 1)
+        first.status = "completed"
+        db.session.commit()
+
+        active = get_active_attempt(user.id)
+
+        self.assertEqual(active.id, second.id)
+
+
+class LearningSignalServiceTest(DevBrainTestCase):
+    def test_question_bank_summary_counts_catalog(self):
+        summary = question_bank_summary()
+
+        self.assertGreaterEqual(summary["published"], 1)
+        self.assertGreaterEqual(summary["topics"], 20)
+        self.assertGreaterEqual(summary["languages"], 10)
+
+    def test_topic_availability_includes_published_counts(self):
+        availability = topic_availability()
+        data_structures = next(item for item in availability if item["topic"].name == "Data Structures")
+
+        self.assertGreaterEqual(data_structures["published_count"], 1)
+        self.assertIn("language_count", data_structures)
+
+    def test_dashboard_stats_include_streak_best_and_breakdown(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        attempt = create_attempt(user.id, [], "EASY", 1)
+        answer = attempt.answers[0]
+        correct = answer.question.correct_option
+
+        submit_answer(attempt, answer.id, correct.id)
+
+        stats = dashboard_stats(user.id)
+
+        self.assertEqual(stats["best"], 100)
+        self.assertEqual(stats["completed_this_week"], 1)
+        self.assertGreaterEqual(stats["streak"], 1)
+        self.assertTrue(stats["topic_breakdown"])
 
 
 class AdminRouteAccessTest(DevBrainTestCase):
