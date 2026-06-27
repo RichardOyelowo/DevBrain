@@ -3,7 +3,7 @@ from unittest.mock import patch
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
-from app.auth import get_serializer, send_reset_email
+from app.auth import create_reset_token, send_reset_email
 from app.extensions import db
 from app.models import User
 from tests.base import DevBrainTestCase
@@ -141,7 +141,7 @@ class PasswordResetRouteTest(DevBrainTestCase):
         user = User(email="learner@example.com", password=generate_password_hash("Old123!"))
         db.session.add(user)
         db.session.commit()
-        token = get_serializer().dumps(user.id, salt="password-reset-salt")
+        token = create_reset_token(user)
 
         response = self.client.post(
             f"/reset_password/{token}",
@@ -152,3 +152,23 @@ class PasswordResetRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(check_password_hash(saved.password, "New123!"))
+
+    def test_reset_token_cannot_be_reused_after_password_change(self):
+        user = User(email="learner@example.com", password=generate_password_hash("Old123!"))
+        db.session.add(user)
+        db.session.commit()
+        token = create_reset_token(user)
+
+        self.client.post(
+            f"/reset_password/{token}",
+            data={"password": "New123!", "confirmation": "New123!"},
+        )
+        response = self.client.post(
+            f"/reset_password/{token}",
+            data={"password": "Again123!", "confirmation": "Again123!"},
+        )
+        saved = db.session.get(User, user.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"The reset link is invalid or expired.", response.data)
+        self.assertFalse(check_password_hash(saved.password, "Again123!"))

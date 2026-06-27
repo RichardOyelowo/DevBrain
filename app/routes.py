@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, flash, render_template, request, session, redirect, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 from .extensions import csrf, db, login_required
 from .models import QuizAttempt, User
 from .forms import ChangePassword
@@ -157,6 +158,7 @@ def profile():
             flash("Current password is incorrect.", "danger")
         else:
             user.password = generate_password_hash(form.password.data)
+            user.password_changed_at = datetime.utcnow()
             db.session.commit()
             flash("Password updated.", "success")
             return redirect(url_for("main.profile"))
