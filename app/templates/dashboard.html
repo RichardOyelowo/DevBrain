@@ -87,6 +87,7 @@
             </div>
             <p class="muted">Focus your next session on {{ stats.recommended }}.</p>
             <form action="{{ url_for('main.quiz_start') }}" method="post" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <select name="topics" class="form-control">
                     {% for topic in topics %}
                         <option value="{{ topic.id }}" {% if topic.name == stats.recommended %}selected{% endif %}>{{ topic.name }}</option>

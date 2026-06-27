@@ -4,6 +4,7 @@
 
 {% block body %}
 <form action="{{ url_for('main.quiz_question', attempt_id=attempt.id) }}" method="post" class="quiz-shell" data-quiz-form>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="attempt_answer_id" value="{{ attempt_answer.id }}">
     <input type="hidden" name="option_id" value="" data-option-input>
 

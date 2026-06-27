@@ -4,6 +4,7 @@
 
 {% block body %}
 <form action="{{ url_for('main.quiz_start') }}" method="post" class="quiz-builder setup-canvas">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <section class="builder-hero">
         <p class="eyebrow">Quiz setup</p>
         <h1>Configure a focused practice session.</h1>

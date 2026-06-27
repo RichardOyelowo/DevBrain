@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, flash, render_template, request, session, redirect, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-from .extensions import csrf, db, login_required
+from .extensions import db, login_required
 from .models import QuizAttempt, User
 from .forms import ChangePassword
 from .learning import (
@@ -23,6 +23,16 @@ from .learning import (
 
 
 main = Blueprint("main", __name__)
+
+
+def form_int(name, default=None):
+    value = request.form.get(name)
+    if value is None or value == "":
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 @main.route("/", methods=["GET", "POST"])
@@ -65,7 +75,6 @@ def quiz_setup():
 
 
 @main.route("/quiz/start", methods=["POST"])
-@csrf.exempt
 @login_required
 def quiz_start():
     if not can_start_quiz(session["user_id"]):
@@ -82,7 +91,7 @@ def quiz_start():
     else:
         topic_ids = [int(topic_id) for topic_id in request.form.getlist("topics") if topic_id.isdigit()]
         difficulty = normalize_difficulty(request.form.get("difficulty"))
-        limit = min(max(int(request.form.get("limit") or 10), 1), 25)
+        limit = min(max(form_int("limit", 10), 1), 25)
         language = normalize_language(request.form.get("language"))
 
     attempt = create_attempt(session["user_id"], topic_ids, difficulty, limit, language)
@@ -93,7 +102,6 @@ def quiz_start():
 
 
 @main.route("/quiz/<int:attempt_id>/question", methods=["GET", "POST"])
-@csrf.exempt
 @login_required
 def quiz_question(attempt_id):
     attempt = db.session.get(QuizAttempt, attempt_id) or abort(404)
@@ -103,8 +111,11 @@ def quiz_question(attempt_id):
         return redirect(url_for("main.quiz_results", attempt_id=attempt.id))
 
     if request.method == "POST":
-        answer_id = int(request.form.get("attempt_answer_id"))
-        option_id = int(request.form.get("option_id"))
+        answer_id = form_int("attempt_answer_id")
+        option_id = form_int("option_id")
+        if not answer_id or not option_id:
+            flash("Choose an answer before continuing.", "danger")
+            return redirect(url_for("main.quiz_question", attempt_id=attempt.id))
         submit_answer(attempt, answer_id, option_id)
         if attempt.status == "completed":
             return redirect(url_for("main.quiz_results", attempt_id=attempt.id))
@@ -122,6 +133,8 @@ def quiz_results(attempt_id):
     attempt = db.session.get(QuizAttempt, attempt_id) or abort(404)
     if attempt.user_id != session.get("user_id"):
         abort(403)
+    if attempt.status != "completed":
+        return redirect(url_for("main.quiz_question", attempt_id=attempt.id))
     return render_template("results.html", attempt=attempt)
 
 
@@ -131,6 +144,8 @@ def quiz_review(attempt_id):
     attempt = db.session.get(QuizAttempt, attempt_id) or abort(404)
     if attempt.user_id != session.get("user_id"):
         abort(403)
+    if attempt.status != "completed":
+        return redirect(url_for("main.quiz_question", attempt_id=attempt.id))
     return render_template("review.html", attempt=attempt)
 
 
