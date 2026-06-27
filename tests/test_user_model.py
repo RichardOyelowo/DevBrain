@@ -37,7 +37,25 @@ class UserModelTest(DevBrainTestCase):
 
 
 class UserAuthRouteTest(DevBrainTestCase):
-    def test_first_registered_user_becomes_admin(self):
+    def test_first_registered_user_is_normal_user_by_default(self):
+        response = self.client.post(
+            "/register",
+            data={
+                "email": "first@example.com",
+                "username": "First",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+            follow_redirects=False,
+        )
+        user = User.query.filter_by(email="first@example.com").first()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(user.is_admin)
+
+    def test_first_registered_user_can_be_bootstrap_admin(self):
+        self.app.config["ADMIN_BOOTSTRAP_ENABLED"] = True
+
         response = self.client.post(
             "/register",
             data={

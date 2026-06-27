@@ -60,6 +60,12 @@ def get_serializer():
     return URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
 
+def registration_role():
+    if User.query.count() == 0 and current_app.config.get("ADMIN_BOOTSTRAP_ENABLED"):
+        return "admin"
+    return "user"
+
+
 # ---------------- Registration ----------------
 @auth.route("/register", methods=["GET", "POST"])
 def register():
@@ -74,12 +80,11 @@ def register():
             flash("Email already exists","danger")
             return redirect(url_for("auth.login"))
 
-        role = "admin" if User.query.count() == 0 else "user"
         user = User(
             email=email,
             username=username,
             password=generate_password_hash(password),
-            role=role,
+            role=registration_role(),
         )
         db.session.add(user)
         db.session.commit()
