@@ -11,6 +11,7 @@
     </div>
 
     <form method="post" enctype="multipart/form-data" class="panel form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="form-group full">Question JSON
             <textarea name="payload" class="form-control textarea code-input" rows="18" spellcheck="false">[
   {

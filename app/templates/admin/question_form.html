@@ -10,6 +10,7 @@
     </div>
 
     <form method="post" class="panel form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="form-group">Topic
             <select name="topic_id" class="form-control" required>
                 {% for topic in topics %}
