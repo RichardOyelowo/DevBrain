@@ -23,6 +23,13 @@
     </section>
 
     <div class="dashboard-top-grid">
+        {% if active_attempt %}
+            <div class="quota-banner">
+                <strong>Resume {{ active_attempt.topic_label }}</strong>
+                <span>{{ active_attempt.answered_count }} of {{ active_attempt.question_count }} answered. Finish this attempt before starting another focused run.</span>
+                <a href="{{ url_for('main.quiz_question', attempt_id=active_attempt.id) }}" class="button button-secondary">Continue</a>
+            </div>
+        {% endif %}
         <div class="quota-banner">
             {% if quota.is_unlimited %}
                 <strong>Unlimited access</strong>
@@ -47,6 +54,22 @@
         <article class="metric-card">
             <span>Average score</span>
             <strong>{{ stats.average }}%</strong>
+        </article>
+        <article class="metric-card">
+            <span>Best score</span>
+            <strong>{{ stats.best|default(0) }}%</strong>
+        </article>
+        <article class="metric-card">
+            <span>This week</span>
+            <strong>{{ stats.completed_this_week|default(0) }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Streak</span>
+            <strong>{{ stats.streak|default(0) }} days</strong>
+        </article>
+        <article class="metric-card">
+            <span>Published questions</span>
+            <strong>{{ bank_summary.published }}</strong>
         </article>
         <article class="metric-card">
             <span>Strongest topic</span>
@@ -132,6 +155,44 @@
                 <div><span>01</span><strong>Take a focused quiz</strong><small>Choose one skill and answer carefully.</small></div>
                 <div><span>02</span><strong>Review mistakes</strong><small>Read explanations before starting another run.</small></div>
                 <div><span>03</span><strong>Repeat the weak topic</strong><small>Use history to confirm progress.</small></div>
+            </div>
+        </section>
+
+        <section class="panel span-7">
+            <div class="panel-header">
+                <h2>Weak-topic signal</h2>
+                <span class="muted">Recent completed attempts</span>
+            </div>
+            {% if stats.topic_breakdown %}
+                <div class="skill-list">
+                    {% for item in stats.topic_breakdown %}
+                        <div class="skill-row">
+                            <div><span>{{ item.topic }}</span><strong>{{ item.average }}%</strong></div>
+                            <div class="progress-track"><span style="width: {{ item.average if item.average > 8 else 8 }}%"></span></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state compact">
+                    <h2>No weak topic yet.</h2>
+                    <p class="muted">Complete a quiz and DevBrain will start ranking topic signals.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel span-5">
+            <div class="panel-header">
+                <h2>Question bank</h2>
+                <span class="muted">{{ bank_summary.topics }} active categories</span>
+            </div>
+            <div class="path-list">
+                {% for item in topic_availability[:4] %}
+                    <div>
+                        <span>{{ "%02d"|format(loop.index) }}</span>
+                        <strong>{{ item.topic.name }}</strong>
+                        <small>{{ item.published_count }} published{% if item.language_count %} / {{ item.language_count }} languages{% endif %}</small>
+                    </div>
+                {% endfor %}
             </div>
         </section>
     </div>
