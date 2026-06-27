@@ -16,6 +16,8 @@ class Config:
         raise RuntimeError("SECRET_KEY is required in production.")
     SECRET_KEY = SECRET_KEY or "devbrain-local-secret"
     ADMIN_BOOTSTRAP_ENABLED = _env_bool("ADMIN_BOOTSTRAP_ENABLED", False)
+    AUTH_RATE_LIMIT = int(os.environ.get("AUTH_RATE_LIMIT", 5))
+    AUTH_RATE_WINDOW_SECONDS = int(os.environ.get("AUTH_RATE_WINDOW_SECONDS", 900))
 
     raw_database_url = os.environ.get("DATABASE_URL", "sqlite:///instance/devbrain.db")
     if raw_database_url.startswith("postgres://"):
