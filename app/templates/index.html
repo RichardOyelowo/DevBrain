@@ -3,15 +3,14 @@
 {% block body %}
 <section class="hero-section">
     <div class="hero-copy">
-        <p class="eyebrow">Developer learning intelligence</p>
-        <h1>Practice like a developer who wants proof of progress.</h1>
+        <p class="eyebrow">Active recall for developers</p>
+        <h1>Practice the concepts you actually need to remember.</h1>
         <p class="hero-text">
-            DevBrain turns technical review into short, focused quiz sessions with saved results, explanations,
-            topic trends, and a dashboard that shows what to practice next.
+            DevBrain gives you short technical quizzes, instant feedback, saved reviews, and a dashboard that shows which topics need more work.
         </p>
         <div class="hero-actions">
             <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
-            <a href="#pricing" class="button button-secondary">View Plans</a>
+            <a href="{{ url_for('main.pricing') }}" class="button button-secondary">View Plans</a>
         </div>
         <div class="hero-proof">
             <span>5 free quizzes weekly</span>
@@ -371,15 +370,26 @@ console.log(users.length);</code></pre>
             <a href="{{ url_for('auth.register') }}" class="button button-secondary">Create Account</a>
         </article>
         <article class="pricing-card featured">
+            <p class="eyebrow">Pro</p>
+            <h3>$5/month</h3>
+            <p>For learners who need more weekly practice without going fully unlimited.</p>
+            <ul>
+                <li>40 to 50 quiz attempts per week</li>
+                <li>Priority access to new question sets</li>
+                <li>All free features</li>
+            </ul>
+            <a href="{{ url_for('main.pricing') }}" class="button button-primary">View Pro</a>
+        </article>
+        <article class="pricing-card">
             <p class="eyebrow">Unlimited</p>
-            <h3>Monthly</h3>
+            <h3>$10/month</h3>
             <p>For consistent learners, interview prep, and developers building a practice routine.</p>
             <ul>
                 <li>Unlimited quiz attempts</li>
                 <li>All current and future categories</li>
                 <li>Deeper question sets as the bank grows</li>
             </ul>
-            <a href="{{ url_for('auth.register') }}" class="button button-primary">Join Waitlist</a>
+            <a href="{{ url_for('main.pricing') }}" class="button button-secondary">View Unlimited</a>
         </article>
     </div>
 </section>
