@@ -22,7 +22,7 @@
                 <div><span>Email</span><strong>{{ user.email }}</strong></div>
                 <div><span>Username</span><strong>{{ user.username or "Not set" }}</strong></div>
                 <div><span>Role</span><strong>{{ user.role.title() }}</strong></div>
-                <div><span>Plan</span><strong>{{ "Unlimited" if quota.is_unlimited else "Free" }}</strong></div>
+                <div><span>Plan</span><strong>{{ quota.plan.title() }}</strong></div>
             </div>
             {% if user.is_admin %}
                 <a href="{{ url_for('admin.home') }}" class="button button-secondary">Open Admin Tools</a>
@@ -36,7 +36,7 @@
             {% if quota.is_unlimited %}
                 <div class="quota-banner"><strong>Unlimited access</strong><span>No weekly quiz cap for this account.</span></div>
             {% else %}
-                <div class="quota-banner"><strong>{{ quota.remaining }} / {{ quota.limit }} quizzes left</strong><span>Free usage renews on a rolling weekly window.</span></div>
+                <div class="quota-banner"><strong>{{ quota.remaining }} / {{ quota.limit }} quizzes left</strong><span>{{ quota.plan.title() }} usage renews on a rolling weekly window.</span></div>
             {% endif %}
             <div class="detail-list">
                 <div><span>Total quizzes</span><strong>{{ stats.total }}</strong></div>

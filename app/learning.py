@@ -22,6 +22,12 @@ from .utils import calculate_grade
 
 DIFFICULTIES = ("EASY", "MEDIUM", "HARD")
 FREE_WEEKLY_QUIZ_LIMIT = 5
+PRO_WEEKLY_QUIZ_LIMIT = 50
+PLAN_WEEKLY_LIMITS = {
+    "free": FREE_WEEKLY_QUIZ_LIMIT,
+    "pro": PRO_WEEKLY_QUIZ_LIMIT,
+}
+UNLIMITED_PLANS = {"unlimited"}
 PRESET_ACCENTS = ("mint", "amber", "red", "blue", "violet")
 DEPRECATED_TOPIC_SLUGS = {"python", "javascript", "sql", "http"}
 
@@ -145,24 +151,28 @@ def quiz_quota_status(user_id):
     from .models import User
 
     user = db.session.get(User, user_id)
-    if user and user.role == "admin":
+    plan = (user.plan if user else "free") or "free"
+    if user and (user.role == "admin" or plan in UNLIMITED_PLANS):
         return {
             "limit": None,
             "used": 0,
             "remaining": None,
             "is_unlimited": True,
+            "plan": plan,
         }
 
+    limit = PLAN_WEEKLY_LIMITS.get(plan, FREE_WEEKLY_QUIZ_LIMIT)
     window_start = datetime.utcnow() - timedelta(days=7)
     used = QuizAttempt.query.filter(
         QuizAttempt.user_id == user_id,
         QuizAttempt.created_at >= window_start,
     ).count()
     return {
-        "limit": FREE_WEEKLY_QUIZ_LIMIT,
+        "limit": limit,
         "used": used,
-        "remaining": max(FREE_WEEKLY_QUIZ_LIMIT - used, 0),
+        "remaining": max(limit - used, 0),
         "is_unlimited": False,
+        "plan": plan,
     }
 
 

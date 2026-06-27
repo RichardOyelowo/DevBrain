@@ -33,6 +33,31 @@ class QuizQuotaServiceTest(DevBrainTestCase):
 
         self.assertFalse(quota["is_unlimited"])
         self.assertEqual(quota["remaining"], 5)
+        self.assertEqual(quota["plan"], "free")
+
+    def test_pro_user_quota_starts_with_fifty_remaining(self):
+        user = User(email="learner@example.com", password="hash", role="user", plan="pro")
+        db.session.add(user)
+        db.session.commit()
+
+        quota = quiz_quota_status(user.id)
+
+        self.assertFalse(quota["is_unlimited"])
+        self.assertEqual(quota["limit"], 50)
+        self.assertEqual(quota["remaining"], 50)
+        self.assertEqual(quota["plan"], "pro")
+
+    def test_unlimited_user_has_no_weekly_cap(self):
+        user = User(email="learner@example.com", password="hash", role="user", plan="unlimited")
+        db.session.add(user)
+        db.session.commit()
+
+        quota = quiz_quota_status(user.id)
+
+        self.assertTrue(quota["is_unlimited"])
+        self.assertIsNone(quota["limit"])
+        self.assertIsNone(quota["remaining"])
+        self.assertEqual(quota["plan"], "unlimited")
 
     def test_free_user_cannot_start_after_five_attempts(self):
         user = User(email="learner@example.com", password="hash", role="user")
