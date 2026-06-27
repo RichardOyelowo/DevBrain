@@ -10,6 +10,7 @@ class User(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default="user")
+    plan = db.Column(db.String(20), nullable=False, default="free")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     password_changed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
