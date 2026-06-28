@@ -16,6 +16,7 @@ from .learning import (
     question_bank_summary,
     normalize_difficulty,
     normalize_language,
+    QuizQuotaExceeded,
     quiz_quota_status,
     submit_answer,
     topic_availability,
@@ -94,7 +95,11 @@ def quiz_start():
         limit = min(max(form_int("limit", 10), 1), 25)
         language = normalize_language(request.form.get("language"))
 
-    attempt = create_attempt(session["user_id"], topic_ids, difficulty, limit, language)
+    try:
+        attempt = create_attempt(session["user_id"], topic_ids, difficulty, limit, language)
+    except QuizQuotaExceeded:
+        flash("You have used your weekly quiz allowance. Upgrade options are available on the plans page.", "danger")
+        return redirect(url_for("main.quiz"))
     if not attempt:
         flash("No published questions match that setup yet.", "danger")
         return redirect(url_for("main.quiz"))
@@ -175,8 +180,9 @@ def profile():
             user.password = generate_password_hash(form.password.data)
             user.password_changed_at = datetime.utcnow()
             db.session.commit()
-            flash("Password updated.", "success")
-            return redirect(url_for("main.profile"))
+            session.clear()
+            flash("Password updated. Please log in again.", "success")
+            return redirect(url_for("auth.login"))
     quota = quiz_quota_status(session["user_id"])
     stats = dashboard_stats(session["user_id"])
     return render_template("profile.html", user=user, form=form, quota=quota, stats=stats)

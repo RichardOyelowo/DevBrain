@@ -21,6 +21,9 @@ class User(db.Model):
         return self.role == "admin"
 
 
+db.Index("uq_users_email_lower", db.func.lower(User.email), unique=True)
+
+
 class LegacyQuiz(db.Model):
     __tablename__ = "quizzes"
 

@@ -3,6 +3,8 @@
 {% block title %}: Plans{% endblock %}
 
 {% block body %}
+{% set plan_cta_url = url_for('main.profile') if current_user else url_for('auth.register') %}
+{% set plan_cta_label = "View Account" if current_user else "Create Account" %}
 <section class="app-page">
     <div class="page-heading">
         <p class="eyebrow">Plans</p>
@@ -21,7 +23,7 @@
                 <li>Saved history and review pages</li>
                 <li>Access to starter categories</li>
             </ul>
-            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Create Account</a>
+            <a href="{{ plan_cta_url }}" class="button button-secondary">{{ plan_cta_label }}</a>
         </article>
 
         <article class="pricing-card featured">
@@ -34,7 +36,7 @@
                 <li>All free features</li>
                 <li>Best fit for interview prep sprints</li>
             </ul>
-            <a href="{{ url_for('auth.register') }}" class="button button-primary">Join Waitlist</a>
+            <a href="{{ plan_cta_url }}" class="button button-primary">{{ "View Account" if current_user else "Join Waitlist" }}</a>
         </article>
 
         <article class="pricing-card">
@@ -47,7 +49,7 @@
                 <li>All current and future tracks</li>
                 <li>Best fit for long-term practice</li>
             </ul>
-            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Get Notified</a>
+            <a href="{{ plan_cta_url }}" class="button button-secondary">{{ "View Account" if current_user else "Get Notified" }}</a>
         </article>
     </div>
 
@@ -57,7 +59,7 @@
             <h2>Checkout is not locked to a provider yet.</h2>
             <p class="muted">The MVP keeps pricing visible and keeps quota logic in the app. The final payment provider can be chosen after the free plan and content depth are stable.</p>
         </div>
-        <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
+        <a href="{{ plan_cta_url }}" class="button button-primary">{{ "View Account" if current_user else "Start Free" }}</a>
     </section>
 </section>
 {% endblock %}

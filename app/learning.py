@@ -32,6 +32,10 @@ PRESET_ACCENTS = ("mint", "amber", "red", "blue", "violet")
 DEPRECATED_TOPIC_SLUGS = {"python", "javascript", "sql", "http"}
 
 
+class QuizQuotaExceeded(ValueError):
+    pass
+
+
 def slugify(value):
     value = (value or "").strip().lower()
     value = re.sub(r"[^a-z0-9]+", "-", value)
@@ -230,6 +234,9 @@ def select_questions(topic_ids=None, difficulty=None, limit=10, language=None):
 
 
 def create_attempt(user_id, topic_ids, difficulty, limit, language=None):
+    if user_id and not can_start_quiz(user_id):
+        raise QuizQuotaExceeded("Quiz quota reached.")
+
     difficulty = normalize_difficulty(difficulty)
     language = normalize_language(language)
     questions = select_questions(topic_ids, difficulty, limit, language)

@@ -1,6 +1,7 @@
 import re
 from unittest.mock import patch
 
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
@@ -38,6 +39,15 @@ class UserModelTest(DevBrainTestCase):
         self.assertIsNotNone(saved)
         self.assertEqual(saved.role, "user")
         self.assertEqual(saved.username, "NewUser")
+
+    def test_email_unique_index_is_case_insensitive(self):
+        db.session.add(User(email="learner@example.com", password="hash", role="user"))
+        db.session.commit()
+        db.session.add(User(email="Learner@Example.com", password="hash", role="user"))
+
+        with self.assertRaises(IntegrityError):
+            db.session.commit()
+        db.session.rollback()
 
     def test_legacy_sqlite_users_table_gets_new_auth_columns(self):
         db.drop_all()
@@ -187,6 +197,21 @@ class UserAuthRouteTest(DevBrainTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIsNone(User.query.filter_by(email="second@example.com").first())
 
+    def test_logged_in_pricing_page_links_to_account(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+
+        response = self.client.get("/pricing")
+        html = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("/profile", html)
+        self.assertNotIn('href="/register"', html)
+
     def test_stale_session_redirects_after_password_reset(self):
         user = User(email="learner@example.com", password=generate_password_hash("Old123!"), role="user")
         db.session.add(user)
@@ -204,6 +229,29 @@ class UserAuthRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login", response.headers["Location"])
+
+    def test_profile_password_change_clears_current_session(self):
+        user = User(email="learner@example.com", password=generate_password_hash("Old123!"), role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+
+        response = self.client.post(
+            "/profile",
+            data={
+                "current_password": "Old123!",
+                "password": "New123!",
+                "confirmation": "New123!",
+            },
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login", response.headers["Location"])
+        with self.client.session_transaction() as session:
+            self.assertIsNone(session.get("user_id"))
 
     def test_get_logout_does_not_clear_session(self):
         user = User(email="learner@example.com", password="hash", role="user")

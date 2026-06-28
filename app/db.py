@@ -61,6 +61,16 @@ def _patch_existing_sqlite_schema():
             db.session.execute(text("UPDATE users SET password_changed_at = created_at WHERE password_changed_at IS NULL"))
         if "plan" not in columns:
             db.session.execute(text("ALTER TABLE users ADD COLUMN plan VARCHAR(20) NOT NULL DEFAULT 'free'"))
+        if not _sqlite_index_exists("users", "uq_users_email_lower"):
+            duplicate_rows = db.session.execute(text(
+                "SELECT lower(email) AS normalized_email, count(*) AS total "
+                "FROM users GROUP BY lower(email) HAVING count(*) > 1"
+            )).fetchall()
+            if duplicate_rows:
+                emails = ", ".join(row.normalized_email for row in duplicate_rows)
+                raise RuntimeError(f"Resolve duplicate user emails before startup: {emails}")
+            db.session.execute(text("UPDATE users SET email = lower(trim(email))"))
+            db.session.execute(text("CREATE UNIQUE INDEX uq_users_email_lower ON users (lower(email))"))
 
     if "quizzes" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("quizzes")}
@@ -68,3 +78,8 @@ def _patch_existing_sqlite_schema():
             db.session.execute(text("ALTER TABLE quizzes ADD COLUMN date DATETIME"))
 
     db.session.commit()
+
+
+def _sqlite_index_exists(table_name, index_name):
+    rows = db.session.execute(text(f"PRAGMA index_list('{table_name}')")).fetchall()
+    return any(row[1] == index_name for row in rows)

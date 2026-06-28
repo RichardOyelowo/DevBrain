@@ -5,6 +5,7 @@ from app.learning import (
     dashboard_stats,
     get_active_attempt,
     question_bank_summary,
+    QuizQuotaExceeded,
     quiz_quota_status,
     submit_answer,
     topic_availability,
@@ -68,6 +69,16 @@ class QuizQuotaServiceTest(DevBrainTestCase):
             create_attempt(user.id, [], "EASY", 1)
 
         self.assertFalse(can_start_quiz(user.id))
+
+    def test_create_attempt_raises_when_quota_is_exhausted(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        for _ in range(5):
+            create_attempt(user.id, [], "EASY", 1)
+
+        with self.assertRaises(QuizQuotaExceeded):
+            create_attempt(user.id, [], "EASY", 1)
 
     def test_active_attempt_returns_latest_in_progress_attempt(self):
         user = User(email="learner@example.com", password="hash", role="user")

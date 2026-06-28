@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
     password_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_users_email_lower
+ON users (lower(email));
+
 CREATE TABLE IF NOT EXISTS quizzes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
