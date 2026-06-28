@@ -12,10 +12,21 @@ def clear_rate_limits():
     _attempts.clear()
 
 
-def default_rate_key(scope):
+def client_ip():
+    if current_app.config.get("TRUST_PROXY_HEADERS"):
+        forwarded_for = request.headers.get("X-Forwarded-For")
+        if forwarded_for:
+            return forwarded_for.split(",")[0].strip()
+    return request.remote_addr or "unknown"
+
+
+def default_rate_keys(scope):
     email = (request.form.get("email") or "").strip().lower()
-    remote_addr = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
-    return f"{scope}:{remote_addr}:{email}"
+    remote_addr = client_ip()
+    keys = [f"{scope}:ip:{remote_addr}"]
+    if email:
+        keys.append(f"{scope}:email:{email}")
+    return keys
 
 
 def rate_limit(scope):
@@ -28,16 +39,18 @@ def rate_limit(scope):
             limit = current_app.config.get("AUTH_RATE_LIMIT", 5)
             window = current_app.config.get("AUTH_RATE_WINDOW_SECONDS", 900)
             now = monotonic()
-            key = default_rate_key(scope)
-            bucket = _attempts[key]
+            keys = default_rate_keys(scope)
+            buckets = [_attempts[key] for key in keys]
 
-            while bucket and bucket[0] <= now - window:
-                bucket.popleft()
+            for bucket in buckets:
+                while bucket and bucket[0] <= now - window:
+                    bucket.popleft()
 
-            if len(bucket) >= limit:
+            if any(len(bucket) >= limit for bucket in buckets):
                 return ("Too many attempts. Please wait and try again.", 429)
 
-            bucket.append(now)
+            for bucket in buckets:
+                bucket.append(now)
             return view(*args, **kwargs)
 
         return wrapped

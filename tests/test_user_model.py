@@ -244,6 +244,33 @@ class UserAuthRouteTest(DevBrainTestCase):
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 429)
 
+    def test_register_rate_limit_returns_429(self):
+        clear_rate_limits()
+        self.app.config["AUTH_RATE_LIMIT"] = 1
+        self.app.config["AUTH_RATE_WINDOW_SECONDS"] = 60
+
+        first = self.client.post(
+            "/register",
+            data={
+                "email": "first@example.com",
+                "username": "First",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+        )
+        second = self.client.post(
+            "/register",
+            data={
+                "email": "second@example.com",
+                "username": "Second",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+        )
+
+        self.assertEqual(first.status_code, 302)
+        self.assertEqual(second.status_code, 429)
+
     def test_register_accepts_valid_csrf_without_referrer(self):
         self.app.config["WTF_CSRF_ENABLED"] = True
         self.app.config["WTF_CSRF_SSL_STRICT"] = False
