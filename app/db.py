@@ -56,6 +56,11 @@ def _patch_existing_sqlite_schema():
             db.session.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'user'"))
         if "created_at" not in columns:
             db.session.execute(text("ALTER TABLE users ADD COLUMN created_at DATETIME"))
+        if "password_changed_at" not in columns:
+            db.session.execute(text("ALTER TABLE users ADD COLUMN password_changed_at DATETIME"))
+            db.session.execute(text("UPDATE users SET password_changed_at = created_at WHERE password_changed_at IS NULL"))
+        if "plan" not in columns:
+            db.session.execute(text("ALTER TABLE users ADD COLUMN plan VARCHAR(20) NOT NULL DEFAULT 'free'"))
 
     if "quizzes" in inspector.get_table_names():
         columns = {column["name"] for column in inspector.get_columns("quizzes")}

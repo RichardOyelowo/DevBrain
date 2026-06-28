@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT,
     password TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    plan TEXT NOT NULL DEFAULT 'free',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    password_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS quizzes (

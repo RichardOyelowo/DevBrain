@@ -1,3 +1,4 @@
+import re
 from unittest.mock import patch
 
 from werkzeug.security import check_password_hash
@@ -7,6 +8,7 @@ from app.auth import create_reset_token, send_reset_email
 from app.extensions import db
 from app.models import User
 from app.rate_limit import clear_rate_limits
+from app.db import ensure_database_ready
 from tests.base import DevBrainTestCase
 
 
@@ -35,6 +37,29 @@ class UserModelTest(DevBrainTestCase):
         self.assertIsNotNone(saved)
         self.assertEqual(saved.role, "user")
         self.assertEqual(saved.username, "NewUser")
+
+    def test_legacy_sqlite_users_table_gets_new_auth_columns(self):
+        db.drop_all()
+        db.session.execute(db.text(
+            "CREATE TABLE users ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "email TEXT UNIQUE NOT NULL, "
+            "username TEXT, "
+            "password TEXT NOT NULL, "
+            "role TEXT NOT NULL DEFAULT 'user', "
+            "created_at DATETIME"
+            ")"
+        ))
+        db.session.commit()
+
+        ensure_database_ready(seed=False)
+        user = User(email="legacy@example.com", password=generate_password_hash("Pass123!"))
+        db.session.add(user)
+        db.session.commit()
+        saved = User.query.filter_by(email="legacy@example.com").first()
+
+        self.assertEqual(saved.plan, "free")
+        self.assertIsNotNone(saved.password_changed_at)
 
 
 class UserAuthRouteTest(DevBrainTestCase):
@@ -104,6 +129,56 @@ class UserAuthRouteTest(DevBrainTestCase):
 
         self.assertEqual(first.status_code, 200)
         self.assertEqual(second.status_code, 429)
+
+    def test_register_accepts_valid_csrf_without_referrer(self):
+        self.app.config["WTF_CSRF_ENABLED"] = True
+        self.app.config["WTF_CSRF_SSL_STRICT"] = False
+        clear_rate_limits()
+
+        response = self.client.get("/register", base_url="https://devbrain.test")
+        token_match = re.search(
+            r'name="csrf_token" type="hidden" value="([^"]+)"',
+            response.get_data(as_text=True),
+        )
+
+        self.assertIsNotNone(token_match)
+
+        response = self.client.post(
+            "/register",
+            base_url="https://devbrain.test",
+            data={
+                "csrf_token": token_match.group(1),
+                "email": "csrf@example.com",
+                "username": "Csrf",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+            follow_redirects=False,
+        )
+        user = User.query.filter_by(email="csrf@example.com").first()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNotNone(user)
+
+    def test_register_rejects_invalid_csrf_token(self):
+        self.app.config["WTF_CSRF_ENABLED"] = True
+        self.app.config["WTF_CSRF_SSL_STRICT"] = False
+        clear_rate_limits()
+
+        response = self.client.post(
+            "/register",
+            base_url="https://devbrain.test",
+            data={
+                "csrf_token": "bad-token",
+                "email": "badcsrf@example.com",
+                "username": "Bad",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 400)
 
 
 class PasswordResetRouteTest(DevBrainTestCase):
