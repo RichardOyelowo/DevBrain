@@ -9,6 +9,7 @@ from app.extensions import db
 from app.models import User
 from app.rate_limit import clear_rate_limits
 from app.db import ensure_database_ready
+from app.session_security import auth_marker
 from tests.base import DevBrainTestCase
 
 
@@ -170,6 +171,7 @@ class UserAuthRouteTest(DevBrainTestCase):
         db.session.commit()
         with self.client.session_transaction() as session:
             session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
 
         response = self.client.post(
             "/register",
@@ -184,6 +186,24 @@ class UserAuthRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertIsNone(User.query.filter_by(email="second@example.com").first())
+
+    def test_stale_session_redirects_after_password_reset(self):
+        user = User(email="learner@example.com", password=generate_password_hash("Old123!"), role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+        token = create_reset_token(user)
+
+        self.client.post(
+            f"/reset_password/{token}",
+            data={"password": "New123!", "confirmation": "New123!"},
+        )
+        response = self.client.get("/dashboard", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login", response.headers["Location"])
 
     def test_login_rate_limit_returns_429(self):
         clear_rate_limits()
