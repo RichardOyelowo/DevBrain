@@ -1,4 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 from .forms import Register, Login, ForgotPassword, ResetPassword
 from .extensions import db, mail, login_required
@@ -98,14 +99,21 @@ def registration_role():
     return "user"
 
 
+def normalize_email(value):
+    return (value or "").strip().lower()
+
+
 # ---------------- Registration ----------------
 @auth.route("/register", methods=["GET", "POST"])
 @rate_limit("register")
 def register():
+    if session.get("user_id"):
+        return redirect(url_for("main.dashboard"))
+
     form = Register()
 
     if form.validate_on_submit():
-        email = form.email.data
+        email = normalize_email(form.email.data)
         username = form.username.data
         password = form.password.data
 
@@ -121,7 +129,12 @@ def register():
             role=registration_role(),
         )
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Email already exists", "danger")
+            return redirect(url_for("auth.login"))
 
         session["user_id"] = user.id
         return redirect(url_for("main.dashboard"))
@@ -133,10 +146,13 @@ def register():
 @auth.route("/login", methods=["GET", "POST"])
 @rate_limit("login")
 def login():
+    if session.get("user_id"):
+        return redirect(url_for("main.dashboard"))
+
     form = Login()
 
     if form.validate_on_submit():
-        email = form.email.data
+        email = normalize_email(form.email.data)
         password = form.password.data
 
         user = User.query.filter_by(email=email).first()
@@ -166,7 +182,7 @@ def forgot_password():
     form = ForgotPassword()
     
     if form.validate_on_submit():
-        users_email = form.email.data
+        users_email = normalize_email(form.email.data)
 
         user = User.query.filter_by(email=users_email).first()
 

@@ -119,6 +119,72 @@ class UserAuthRouteTest(DevBrainTestCase):
         self.assertIsNotNone(user)
         self.assertEqual(user.role, "user")
 
+    def test_register_normalizes_email(self):
+        self.client.post(
+            "/register",
+            data={
+                "email": "MixedCase@Example.COM ",
+                "username": "Mixed",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+        )
+
+        self.assertIsNotNone(User.query.filter_by(email="mixedcase@example.com").first())
+        self.assertIsNone(User.query.filter_by(email="MixedCase@Example.COM ").first())
+
+    def test_login_uses_normalized_email(self):
+        db.session.add(User(email="learner@example.com", password=generate_password_hash("Pass123!"), role="user"))
+        db.session.commit()
+
+        response = self.client.post(
+            "/login",
+            data={"email": "Learner@Example.COM", "password": "Pass123!"},
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/dashboard", response.headers["Location"])
+
+    def test_case_insensitive_duplicate_registration_redirects(self):
+        db.session.add(User(email="learner@example.com", password="hash", role="user"))
+        db.session.commit()
+
+        response = self.client.post(
+            "/register",
+            data={
+                "email": "Learner@Example.COM",
+                "username": "Learner",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(User.query.filter_by(email="learner@example.com").count(), 1)
+
+    def test_logged_in_user_cannot_register_second_account(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+
+        response = self.client.post(
+            "/register",
+            data={
+                "email": "second@example.com",
+                "username": "Second",
+                "password": "Pass123!",
+                "confirmation": "Pass123!",
+            },
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNone(User.query.filter_by(email="second@example.com").first())
+
     def test_login_rate_limit_returns_429(self):
         clear_rate_limits()
         self.app.config["AUTH_RATE_LIMIT"] = 1
