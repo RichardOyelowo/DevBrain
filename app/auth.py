@@ -6,7 +6,7 @@ from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
 from .rate_limit import rate_limit
-import hashlib
+from .session_security import auth_marker
 import socket
 import threading
 from datetime import datetime
@@ -65,13 +65,7 @@ def get_serializer():
 
 
 def password_changed_marker(user):
-    changed_at = user.password_changed_at or user.created_at
-    if not changed_at:
-        changed_at_marker = 0
-    else:
-        changed_at_marker = int(changed_at.timestamp())
-    password_marker = hashlib.sha256(user.password.encode("utf-8")).hexdigest()
-    return f"{changed_at_marker}:{password_marker}"
+    return auth_marker(user)
 
 
 def create_reset_token(user):
@@ -101,6 +95,12 @@ def registration_role():
 
 def normalize_email(value):
     return (value or "").strip().lower()
+
+
+def start_user_session(user):
+    session.clear()
+    session["user_id"] = user.id
+    session["auth_marker"] = auth_marker(user)
 
 
 # ---------------- Registration ----------------
@@ -136,7 +136,7 @@ def register():
             flash("Email already exists", "danger")
             return redirect(url_for("auth.login"))
 
-        session["user_id"] = user.id
+        start_user_session(user)
         return redirect(url_for("main.dashboard"))
 
     return render_template("register.html", form=form)
@@ -161,7 +161,7 @@ def login():
             flash("Invalid email or password", "info")
             return render_template("login.html", form=form)
 
-        session["user_id"] = user.id
+        start_user_session(user)
         return redirect(url_for("main.dashboard"))
 
     return render_template("login.html", form=form)
