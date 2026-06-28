@@ -18,6 +18,7 @@ class Config:
     ADMIN_BOOTSTRAP_ENABLED = _env_bool("ADMIN_BOOTSTRAP_ENABLED", False)
     AUTH_RATE_LIMIT = int(os.environ.get("AUTH_RATE_LIMIT", 5))
     AUTH_RATE_WINDOW_SECONDS = int(os.environ.get("AUTH_RATE_WINDOW_SECONDS", 900))
+    WTF_CSRF_SSL_STRICT = _env_bool("WTF_CSRF_SSL_STRICT", False)
 
     raw_database_url = os.environ.get("DATABASE_URL", "sqlite:///instance/devbrain.db")
     if raw_database_url.startswith("postgres://"):
