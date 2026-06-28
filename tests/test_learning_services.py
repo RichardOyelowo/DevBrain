@@ -10,6 +10,7 @@ from app.learning import (
     topic_availability,
 )
 from app.models import Language, Topic, User
+from app.session_security import auth_marker
 from tests.base import DevBrainTestCase
 
 
@@ -130,10 +131,12 @@ class AdminRouteAccessTest(DevBrainTestCase):
 
         with self.client.session_transaction() as session:
             session["user_id"] = admin.id
+            session["auth_marker"] = auth_marker(admin)
         admin_html = self.client.get("/dashboard").get_data(as_text=True)
 
         with self.client.session_transaction() as session:
             session["user_id"] = learner.id
+            session["auth_marker"] = auth_marker(learner)
         learner_html = self.client.get("/dashboard").get_data(as_text=True)
 
         self.assertIn("Admin</a>", admin_html)
@@ -147,6 +150,7 @@ class AdminRouteAccessTest(DevBrainTestCase):
 
         with self.client.session_transaction() as session:
             session["user_id"] = admin.id
+            session["auth_marker"] = auth_marker(admin)
         response = self.client.post(
             "/admin/topics",
             data={"action": "delete", "topic_id": str(topic.id)},
@@ -164,6 +168,7 @@ class AdminRouteAccessTest(DevBrainTestCase):
 
         with self.client.session_transaction() as session:
             session["user_id"] = admin.id
+            session["auth_marker"] = auth_marker(admin)
         response = self.client.post(
             "/admin/languages",
             data={"action": "delete", "language_id": str(language.id)},

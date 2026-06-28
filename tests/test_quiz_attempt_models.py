@@ -1,6 +1,7 @@
 from app.learning import create_attempt, get_next_pending_answer, submit_answer
 from app.extensions import db
 from app.models import LegacyQuiz, QuizAttempt, Topic, User
+from app.session_security import auth_marker
 from tests.base import DevBrainTestCase
 
 
@@ -89,6 +90,7 @@ class QuizRouteSafetyTest(DevBrainTestCase):
         db.session.commit()
         with self.client.session_transaction() as session:
             session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
         return user
 
     def test_results_redirect_for_incomplete_attempt(self):
