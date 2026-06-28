@@ -9,7 +9,7 @@
     <div class="page-heading">
         <p class="eyebrow">Plans</p>
         <h1>Start with the full app experience. Upgrade when practice becomes a habit.</h1>
-        <p class="muted">Billing is intentionally provider-neutral in this MVP. The plan page is wired into the app, and checkout can later connect to Stripe, Lemon Squeezy, Paddle, or another provider without changing the learner flow.</p>
+        <p class="muted">Use the free plan to build a habit. Upgrade when you want more weekly practice or no quiz cap.</p>
     </div>
 
     <div class="pricing-grid">
@@ -46,7 +46,7 @@
             <ul>
                 <li>Unlimited quizzes</li>
                 <li>All categories and difficulties</li>
-                <li>All current and future tracks</li>
+                <li>All learning tracks as the question bank grows</li>
                 <li>Best fit for long-term practice</li>
             </ul>
             <a href="{{ plan_cta_url }}" class="button button-secondary">{{ "View Account" if current_user else "Get Notified" }}</a>
@@ -55,9 +55,9 @@
 
     <section class="about-cta">
         <div>
-            <p class="eyebrow">Billing status</p>
-            <h2>Checkout is not locked to a provider yet.</h2>
-            <p class="muted">The MVP keeps pricing visible and keeps quota logic in the app. The final payment provider can be chosen after the free plan and content depth are stable.</p>
+            <p class="eyebrow">Start practicing</p>
+            <h2>Every account gets the full learning flow.</h2>
+            <p class="muted">Create an account, take focused quizzes, review every answer, and track progress from your dashboard.</p>
         </div>
         <a href="{{ plan_cta_url }}" class="button button-primary">{{ "View Account" if current_user else "Start Free" }}</a>
     </section>

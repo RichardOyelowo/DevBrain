@@ -83,7 +83,7 @@ print(len(items))</code></pre>
     <div class="section-heading">
         <p class="eyebrow">Question styles</p>
         <h2>DevBrain supports code-reading prompts and normal concept checks.</h2>
-        <p class="muted">Some learning gaps show up when reading code. Others show up when explaining a system decision. The MVP supports both from the same question bank.</p>
+        <p class="muted">Some learning gaps show up when reading code. Others show up when explaining a system decision. DevBrain supports both from the same question bank.</p>
     </div>
     <div class="example-grid">
         <article class="question-example-card">
@@ -171,7 +171,7 @@ console.log(users.length);</code></pre>
     <div class="section-heading">
         <p class="eyebrow">Content model</p>
         <h2>Categories and languages are separate, so practice stays flexible.</h2>
-        <p class="muted">A category describes the skill being tested. A language describes the syntax used in a code snippet. That means Data Structures can include Python today, JavaScript tomorrow, and another language later without rebuilding the quiz flow.</p>
+        <p class="muted">A category describes the skill being tested. A language describes the syntax used in a code snippet. That means Data Structures can include Python, JavaScript, SQL, and other language-focused examples without rebuilding the quiz flow.</p>
     </div>
     <div class="taxonomy-grid">
         <article>
@@ -192,8 +192,8 @@ console.log(users.length);</code></pre>
 <section class="section-band">
     <div class="section-heading">
         <p class="eyebrow">Category strategy</p>
-        <h2>Twenty broad categories keep the MVP useful without making it shallow.</h2>
-        <p class="muted">The category list is intentionally broad. It includes fundamentals, web development, frameworks, infrastructure, quality, and architecture. Languages live in a separate filter so a topic can later be practiced in different syntaxes.</p>
+        <h2>Twenty broad categories keep practice useful without making it shallow.</h2>
+        <p class="muted">The category list is intentionally broad. It includes fundamentals, web development, frameworks, infrastructure, quality, and architecture. Languages live in a separate filter so a topic can be practiced in different syntaxes.</p>
     </div>
     <div class="category-cloud">
         <span>Data Structures</span>
@@ -241,23 +241,23 @@ console.log(users.length);</code></pre>
 
 <section class="section-band">
     <div class="section-heading">
-        <p class="eyebrow">Built for the MVP stage</p>
-        <h2>The product keeps the architecture simple while still feeling like a real app.</h2>
-        <p class="muted">DevBrain uses Flask, Jinja, SQLAlchemy, migrations, and a small amount of JavaScript. That keeps the MVP easy to reason about while still supporting accounts, dashboards, saved attempts, and a polished practice flow.</p>
+        <p class="eyebrow">Focused learning flow</p>
+        <h2>DevBrain keeps practice direct, fast, and easy to repeat.</h2>
+        <p class="muted">The app gives learners the pieces that matter most during practice: account progress, saved attempts, clear reviews, and a polished quiz flow across devices.</p>
     </div>
     <div class="feature-grid three">
         <article class="feature-card">
-            <span class="feature-index">Server-rendered</span>
-            <h3>No frontend build step</h3>
-            <p>Templates and CSS carry the product experience without adding a second frontend app too early.</p>
+            <span class="feature-index">Fast</span>
+            <h3>Short sessions</h3>
+            <p>Quiz setup stays focused so learners can start quickly and finish a useful practice run without friction.</p>
         </article>
         <article class="feature-card">
-            <span class="feature-index">Database-owned</span>
-            <h3>No external quiz dependency</h3>
+            <span class="feature-index">Curated</span>
+            <h3>Owned question bank</h3>
             <p>Published questions come from DevBrain's own database, so the learning experience is stable and consistent.</p>
         </article>
         <article class="feature-card">
-            <span class="feature-index">Progress-ready</span>
+            <span class="feature-index">Progress</span>
             <h3>Learning records stay useful</h3>
             <p>Attempts, answers, scores, grades, and reviews stay connected to the learner's account.</p>
         </article>
@@ -268,7 +268,7 @@ console.log(users.length);</code></pre>
     <div class="section-heading">
         <p class="eyebrow">Question bank</p>
         <h2>Owned content instead of a random external feed.</h2>
-        <p class="muted">Every question is stored in the database with a category, difficulty, explanation, answer options, optional language, and optional code snippet. That keeps the quiz flow reliable and lets the product grow beyond a one-off demo.</p>
+        <p class="muted">Every question is stored in the database with a category, difficulty, explanation, answer options, optional language, and optional code snippet. That keeps the quiz flow reliable as the question bank grows.</p>
     </div>
     <div class="feature-grid three">
         <article class="feature-card">
@@ -284,7 +284,7 @@ console.log(users.length);</code></pre>
         <article class="feature-card">
             <span class="feature-index">Grow</span>
             <h3>Designed for deeper tracks</h3>
-            <p>The same model can support broad review now and language-specific coding tracks later.</p>
+            <p>The same model supports broad review and language-specific coding tracks.</p>
         </article>
     </div>
 </section>
@@ -386,7 +386,7 @@ console.log(users.length);</code></pre>
             <p>For consistent learners, interview prep, and developers building a practice routine.</p>
             <ul>
                 <li>Unlimited quiz attempts</li>
-                <li>All current and future categories</li>
+                <li>All learning categories as the bank grows</li>
                 <li>Deeper question sets as the bank grows</li>
             </ul>
             <a href="{{ url_for('main.pricing') }}" class="button button-secondary">View Unlimited</a>
@@ -396,14 +396,14 @@ console.log(users.length);</code></pre>
 
 <section class="section-band">
     <div class="section-heading">
-        <p class="eyebrow">Road ahead</p>
-        <h2>The MVP is structured for deeper question sets and paid unlimited practice.</h2>
-        <p class="muted">The current product proves the full learner loop: account, quiz, answer, results, review, history, dashboard, and profile. The next work is mostly depth: more questions, richer stats, stronger recommendations, and billing when the free limit is ready to become a real plan.</p>
+        <p class="eyebrow">Learning depth</p>
+        <h2>DevBrain is designed to grow with your practice routine.</h2>
+        <p class="muted">Start with focused recall, then use saved reviews and dashboard signals to return to the topics that need more work.</p>
     </div>
     <div class="roadmap-strip">
-        <div><span>Now</span><strong>Owned bank, saved attempts, full review loop</strong></div>
-        <div><span>Next</span><strong>More questions per category and difficulty</strong></div>
-        <div><span>Later</span><strong>Billing, learning paths, and deeper analytics</strong></div>
+        <div><span>Practice</span><strong>Focused quizzes from a curated question bank</strong></div>
+        <div><span>Review</span><strong>Saved answer history with explanations</strong></div>
+        <div><span>Improve</span><strong>Dashboard signals for the next weak topic</strong></div>
     </div>
 </section>
 
