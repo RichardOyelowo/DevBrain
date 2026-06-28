@@ -205,6 +205,34 @@ class UserAuthRouteTest(DevBrainTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login", response.headers["Location"])
 
+    def test_get_logout_does_not_clear_session(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+
+        response = self.client.get("/logout", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 405)
+        with self.client.session_transaction() as session:
+            self.assertEqual(session.get("user_id"), user.id)
+
+    def test_post_logout_clears_session(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+
+        response = self.client.post("/logout", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 302)
+        with self.client.session_transaction() as session:
+            self.assertIsNone(session.get("user_id"))
+
     def test_login_rate_limit_returns_429(self):
         clear_rate_limits()
         self.app.config["AUTH_RATE_LIMIT"] = 1

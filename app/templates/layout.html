@@ -58,7 +58,10 @@
                         {% if current_user and current_user.is_admin %}
                             <a href="{{ url_for('admin.home') }}">Admin</a>
                         {% endif %}
-                        <a class="button button-ghost" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <form action="{{ url_for('auth.logout') }}" method="post" class="nav-logout">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="button button-ghost" type="submit">Logout</button>
+                        </form>
                     {% else %}
                         <a href="{{ url_for('main.about') }}">About</a>
                         <a href="{{ url_for('main.pricing') }}">Plans</a>

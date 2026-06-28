@@ -53,6 +53,12 @@
     gap: 12px;
     flex-wrap: wrap;
 }
+.nav-logout {
+    margin: 0;
+}
+.nav-logout .button {
+    font: inherit;
+}
 .nav-profile {
     display: none;
 }
@@ -178,7 +184,8 @@
     color: var(--text);
     background: rgba(255, 255, 255, 0.06);
 }
-.app-mode .nav-links .button {
+.app-mode .nav-links .button,
+.app-mode .nav-logout {
     width: 100%;
     margin-top: 8px;
 }
@@ -274,6 +281,6 @@
     .site-main, .site-footer { width: min(100% - 24px, 1180px); }
     .site-nav { width: 100%; max-width: none; }
     .site-main { padding-top: 28px; }
-    .nav-links .button, .hero-actions .button, .actions .button, .auth-links { width: 100%; }
+    .nav-links .button, .nav-logout, .hero-actions .button, .actions .button, .auth-links { width: 100%; }
     .brand-name { font-size: 1.05rem; }
 }
