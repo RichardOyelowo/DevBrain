@@ -1,0 +1,24 @@
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  box-shadow: var(--db-shadow-focus);
+  border-radius: var(--db-radius-xs);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--db-shadow-focus);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+}

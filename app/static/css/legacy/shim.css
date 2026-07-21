@@ -1,0 +1,231 @@
+/*
+ * Temporary bridge: maps legacy class names to new design tokens.
+ * Removed page-by-page as templates migrate to db-* components.
+ */
+
+/* ── Legacy layout ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--db-z-header);
+  border-bottom: 1px solid var(--db-border-subtle);
+  background: rgba(9, 9, 11, 0.88);
+  backdrop-filter: blur(12px);
+}
+
+.site-nav {
+  max-width: var(--db-content-wide);
+  margin: 0 auto;
+  padding: 0 var(--db-page-padding);
+  min-height: var(--db-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--db-space-4);
+}
+
+.site-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--db-content-wide);
+  margin: 0 auto;
+  padding: var(--db-space-8) var(--db-page-padding);
+}
+
+.site-footer {
+  border-top: 1px solid var(--db-border-subtle);
+  max-width: var(--db-content-wide);
+  margin: 0 auto;
+  padding: var(--db-space-6) var(--db-page-padding);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--db-space-4);
+  flex-wrap: wrap;
+}
+
+.site-footer p {
+  font-size: var(--db-text-sm);
+  color: var(--db-text-tertiary);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--db-space-3);
+  font-weight: var(--db-weight-semibold);
+  color: var(--db-text-primary);
+}
+
+.brand-mark {
+  width: 24px;
+  height: 24px;
+}
+
+.brand-name {
+  font-size: var(--db-text-md);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--db-space-2);
+  flex-wrap: wrap;
+}
+
+.nav-links a:not(.button) {
+  padding: var(--db-space-2) var(--db-space-3);
+  border-radius: var(--db-radius-sm);
+  font-size: var(--db-text-sm);
+  font-weight: var(--db-weight-medium);
+  color: var(--db-text-secondary);
+  transition: background var(--db-duration-fast) var(--db-ease-out), color var(--db-duration-fast) var(--db-ease-out);
+}
+
+.nav-links a:not(.button):hover {
+  background: var(--db-bg-muted);
+  color: var(--db-text-primary);
+}
+
+.nav-toggle {
+  display: none;
+}
+
+.flash-messages {
+  position: fixed;
+  top: var(--db-space-4);
+  right: var(--db-space-4);
+  z-index: var(--db-z-toast);
+  width: min(380px, calc(100vw - var(--db-space-8)));
+}
+
+/* ── Legacy buttons ── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--db-space-2);
+  height: 32px;
+  padding: 0 var(--db-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--db-radius-sm);
+  font-size: var(--db-text-sm);
+  font-weight: var(--db-weight-medium);
+  transition: background var(--db-duration-fast) var(--db-ease-out), border-color var(--db-duration-fast) var(--db-ease-out);
+}
+
+.button-primary {
+  background: var(--db-accent);
+  color: var(--db-accent-text);
+}
+
+.button-primary:hover {
+  background: var(--db-accent-hover);
+  color: var(--db-accent-text);
+}
+
+.button-secondary,
+.button-ghost {
+  background: var(--db-bg-muted);
+  border-color: var(--db-border-default);
+  color: var(--db-text-primary);
+}
+
+.button-secondary:hover,
+.button-ghost:hover {
+  background: var(--db-bg-emphasis);
+}
+
+.button-danger {
+  background: var(--db-danger-muted);
+  border-color: rgba(235, 87, 87, 0.3);
+  color: var(--db-danger);
+}
+
+/* ── Legacy forms ── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--db-space-2);
+}
+
+.form-group label {
+  font-size: var(--db-text-sm);
+  font-weight: var(--db-weight-medium);
+  color: var(--db-text-primary);
+}
+
+.form-control {
+  height: 36px;
+  padding: 0 var(--db-space-3);
+  border: 1px solid var(--db-border-default);
+  border-radius: var(--db-radius-sm);
+  background: var(--db-bg-subtle);
+  color: var(--db-text-primary);
+}
+
+.form-control:focus {
+  border-color: var(--db-border-focus);
+  box-shadow: var(--db-shadow-focus);
+}
+
+/* ── Legacy panels ── */
+.panel,
+.metric-card,
+.terminal-panel,
+.feature-card,
+.auth-container,
+.Question-section,
+.results-details,
+.table-card,
+.about-cta,
+.track-list,
+.empty-state {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: var(--db-radius-md);
+  background: var(--db-bg-subtle);
+}
+
+.panel,
+.auth-container,
+.Question-section,
+.results-details,
+.table-card {
+  padding: var(--db-space-5);
+}
+
+.alert,
+.error-message,
+.form-errors {
+  padding: var(--db-space-3) var(--db-space-4);
+  border: 1px solid var(--db-border-default);
+  border-radius: var(--db-radius-md);
+  font-size: var(--db-text-sm);
+  background: var(--db-info-muted);
+  color: var(--db-info);
+}
+
+.alert-error,
+.error-message,
+.form-errors {
+  background: var(--db-danger-muted);
+  border-color: rgba(235, 87, 87, 0.25);
+  color: var(--db-danger);
+}
+
+.muted,
+.eyebrow {
+  color: var(--db-text-tertiary);
+}
+
+.eyebrow {
+  font-size: var(--db-text-xs);
+  font-weight: var(--db-weight-medium);
+  letter-spacing: var(--db-tracking-wide);
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .site-main {
+    padding: var(--db-space-6) var(--db-space-4);
+  }
+}

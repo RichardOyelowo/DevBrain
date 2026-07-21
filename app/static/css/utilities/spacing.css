@@ -1,0 +1,22 @@
+.db-p-0 { padding: var(--db-space-0); }
+.db-p-2 { padding: var(--db-space-2); }
+.db-p-4 { padding: var(--db-space-4); }
+.db-p-6 { padding: var(--db-space-6); }
+.db-p-8 { padding: var(--db-space-8); }
+
+.db-px-4 { padding-left: var(--db-space-4); padding-right: var(--db-space-4); }
+.db-py-4 { padding-top: var(--db-space-4); padding-bottom: var(--db-space-4); }
+
+.db-m-0 { margin: var(--db-space-0); }
+.db-mt-2 { margin-top: var(--db-space-2); }
+.db-mt-4 { margin-top: var(--db-space-4); }
+.db-mt-6 { margin-top: var(--db-space-6); }
+.db-mt-8 { margin-top: var(--db-space-8); }
+.db-mb-4 { margin-bottom: var(--db-space-4); }
+.db-mb-6 { margin-bottom: var(--db-space-6); }
+
+.db-w-full { width: 100%; }
+.db-max-w-sm { max-width: 24rem; }
+.db-max-w-md { max-width: 28rem; }
+.db-max-w-lg { max-width: 32rem; }
+.db-max-w-xl { max-width: 36rem; }

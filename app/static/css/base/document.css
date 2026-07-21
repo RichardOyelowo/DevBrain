@@ -1,0 +1,67 @@
+html {
+  background: var(--db-bg-base);
+  overflow-x: clip;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  color: var(--db-text-primary);
+  font-family: var(--db-font-sans);
+  font-size: var(--db-text-base);
+  font-weight: var(--db-weight-normal);
+  background: var(--db-bg-base);
+}
+
+::selection {
+  background: var(--db-accent-muted);
+  color: var(--db-text-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--db-weight-semibold);
+  line-height: var(--db-leading-tight);
+  letter-spacing: var(--db-tracking-tight);
+  color: var(--db-text-primary);
+}
+
+h1 { font-size: var(--db-text-3xl); }
+h2 { font-size: var(--db-text-2xl); }
+h3 { font-size: var(--db-text-xl); }
+h4 { font-size: var(--db-text-lg); }
+h5 { font-size: var(--db-text-md); }
+h6 { font-size: var(--db-text-base); }
+
+p {
+  color: var(--db-text-secondary);
+  line-height: var(--db-leading-relaxed);
+}
+
+a.db-link {
+  color: var(--db-accent);
+  transition: color var(--db-duration-fast) var(--db-ease-out);
+}
+
+a.db-link:hover {
+  color: var(--db-accent-hover);
+}
+
+strong {
+  font-weight: var(--db-weight-semibold);
+  color: var(--db-text-primary);
+}
+
+small {
+  font-size: var(--db-text-sm);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--db-border-subtle);
+  margin: var(--db-space-6) 0;
+}

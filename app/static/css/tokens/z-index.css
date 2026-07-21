@@ -1,0 +1,10 @@
+:root {
+  --db-z-base: 0;
+  --db-z-dropdown: 100;
+  --db-z-sticky: 200;
+  --db-z-header: 300;
+  --db-z-sidebar: 350;
+  --db-z-overlay: 400;
+  --db-z-modal: 500;
+  --db-z-toast: 600;
+}

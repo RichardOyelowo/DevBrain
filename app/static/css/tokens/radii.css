@@ -1,0 +1,8 @@
+:root {
+  --db-radius-xs: 4px;
+  --db-radius-sm: 6px;
+  --db-radius-md: 8px;
+  --db-radius-lg: 12px;
+  --db-radius-xl: 16px;
+  --db-radius-full: 9999px;
+}

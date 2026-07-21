@@ -1,0 +1,45 @@
+.db-grid {
+  display: grid;
+  gap: var(--db-space-4);
+}
+
+.db-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.db-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.db-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.db-grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.db-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.db-stack--1 { gap: var(--db-space-1); }
+.db-stack--2 { gap: var(--db-space-2); }
+.db-stack--3 { gap: var(--db-space-3); }
+.db-stack--4 { gap: var(--db-space-4); }
+.db-stack--6 { gap: var(--db-space-6); }
+.db-stack--8 { gap: var(--db-space-8); }
+
+.db-row {
+  display: flex;
+  align-items: center;
+}
+
+.db-row--between {
+  justify-content: space-between;
+}
+
+.db-row--2 { gap: var(--db-space-2); }
+.db-row--3 { gap: var(--db-space-3); }
+.db-row--4 { gap: var(--db-space-4); }
+
+@media (max-width: 768px) {
+  .db-grid--2,
+  .db-grid--3,
+  .db-grid--4 {
+    grid-template-columns: 1fr;
+  }
+}
