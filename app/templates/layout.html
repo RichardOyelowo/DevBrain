@@ -1,95 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DevBrain{% block title %}{% endblock %}</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevBrain{% block title %}{% endblock %}</title>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon/favicon-96x96.png') }}">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
-        <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
-        <meta name="theme-color" content="#44e2cd">
-        <meta name="apple-mobile-web-app-title" content="DevBrain">
-    </head>
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon/favicon-96x96.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
+    <meta name="theme-color" content="#5e6ad2">
+    <meta name="apple-mobile-web-app-title" content="DevBrain">
 
-    <body class="{% if session.get('user_id') %}app-mode{% else %}marketing-mode{% endif %}">
-        <header class="site-header">
-            <nav class="site-nav" aria-label="Primary navigation">
-                {% if session.get("user_id") %}
-                    <a class="brand" href="{{ url_for('main.dashboard') }}" aria-label="DevBrain dashboard">
-                {% else %}
-                    <a class="brand" href="{{ url_for('main.index') }}" aria-label="DevBrain home">
-                {% endif %}
-                        <img src="{{ url_for('static', filename='cropped_logo.svg') }}" alt="" class="brand-mark">
-                        <span class="brand-name">DevBrain</span>
-                    </a>
+    {% block head %}{% endblock %}
+</head>
 
-                <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+{% set is_logged_in = session.get("user_id") %}
+{% set user_initial = ((current_user.username if current_user else none) or (current_user.email if current_user else none) or "U")[0]|upper %}
+{% set user_name = (current_user.username if current_user else none) or "Developer" %}
+{% set user_role = "Admin" if current_user and current_user.is_admin else "Free learner" %}
+{% set ep = request.endpoint or "" %}
 
-                <div class="nav-links" data-nav-links>
-                    {% if session.get("user_id") %}
-                        <div class="nav-profile">
-                            <span class="profile-avatar">{{ ((current_user.username if current_user else none) or (current_user.email if current_user else none) or "U")[0]|upper }}</span>
-                            <span>
-                                <strong>{{ (current_user.username if current_user else none) or "Developer" }}</strong>
-                                <small>{{ "Admin" if current_user and current_user.is_admin else "Free learner" }}</small>
-                            </span>
-                        </div>
-                        <a href="{{ url_for('main.quiz') }}">Quiz</a>
-                        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
-                        <a href="{{ url_for('main.history') }}">History</a>
-                        <a href="{{ url_for('main.profile') }}">Profile</a>
-                        <a href="{{ url_for('main.pricing') }}">Plans</a>
-                        {% if current_user and current_user.is_admin %}
-                            <a href="{{ url_for('admin.home') }}">Admin</a>
-                        {% endif %}
-                        <form action="{{ url_for('auth.logout') }}" method="post" class="nav-logout">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button class="button button-ghost" type="submit">Logout</button>
-                        </form>
-                    {% else %}
-                        <a href="{{ url_for('main.about') }}">About</a>
-                        <a href="{{ url_for('main.pricing') }}">Plans</a>
-                        <a class="button button-ghost" href="{{ url_for('auth.register') }}">Register</a>
-                        <a class="button button-primary" href="{{ url_for('auth.login') }}">Login</a>
-                    {% endif %}
+<body>
+{% if is_logged_in %}
+<div class="db-shell db-shell--app">
+    <div class="db-sidebar-backdrop" data-sidebar-backdrop hidden></div>
+
+    <aside class="db-shell__sidebar db-sidebar" data-sidebar aria-label="App navigation">
+        <a class="db-sidebar__brand" href="{{ url_for('main.dashboard') }}">
+            <img src="{{ url_for('static', filename='cropped_logo.svg') }}" alt="">
+            <span>DevBrain</span>
+        </a>
+
+        <nav class="db-sidebar__nav">
+            <a class="db-nav-item{% if ep == 'main.dashboard' %} is-active{% endif %}" href="{{ url_for('main.dashboard') }}">
+                <span class="db-icon"><i data-lucide="layout-dashboard"></i></span>
+                Dashboard
+            </a>
+            <a class="db-nav-item{% if ep in ['main.quiz', 'main.quiz_start', 'main.quiz_question', 'main.quiz_results', 'main.quiz_review'] %} is-active{% endif %}" href="{{ url_for('main.quiz') }}">
+                <span class="db-icon"><i data-lucide="zap"></i></span>
+                Quiz
+            </a>
+            <a class="db-nav-item{% if ep == 'main.history' %} is-active{% endif %}" href="{{ url_for('main.history') }}">
+                <span class="db-icon"><i data-lucide="clock"></i></span>
+                History
+            </a>
+            <a class="db-nav-item{% if ep == 'main.profile' %} is-active{% endif %}" href="{{ url_for('main.profile') }}">
+                <span class="db-icon"><i data-lucide="user"></i></span>
+                Profile
+            </a>
+
+            <div class="db-sidebar__section">Account</div>
+
+            <a class="db-nav-item{% if ep == 'main.pricing' %} is-active{% endif %}" href="{{ url_for('main.pricing') }}">
+                <span class="db-icon"><i data-lucide="credit-card"></i></span>
+                Plans
+            </a>
+            {% if current_user and current_user.is_admin %}
+            <a class="db-nav-item{% if ep and ep.startswith('admin.') %} is-active{% endif %}" href="{{ url_for('admin.home') }}">
+                <span class="db-icon"><i data-lucide="shield"></i></span>
+                Admin
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="db-sidebar__footer">
+            <div class="db-sidebar__user">
+                <span class="db-avatar db-avatar--md">{{ user_initial }}</span>
+                <div class="db-sidebar__user-info">
+                    <span class="db-sidebar__user-name">{{ user_name }}</span>
+                    <span class="db-sidebar__user-role">{{ user_role }}</span>
                 </div>
-            </nav>
+            </div>
+            <form action="{{ url_for('auth.logout') }}" method="post" class="db-mt-2">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="db-btn db-btn--ghost db-w-full" type="submit">
+                    <span class="db-icon"><i data-lucide="log-out"></i></span>
+                    Sign out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="db-shell__main">
+        <header class="db-topbar db-hide-desktop">
+            <button class="db-btn db-btn--ghost db-btn--icon" type="button" aria-label="Open navigation" aria-expanded="false" data-sidebar-toggle>
+                <span class="db-icon"><i data-lucide="menu"></i></span>
+            </button>
+            <span class="db-topbar__title">DevBrain</span>
         </header>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages" role="status" aria-live="polite">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
+{% else %}
+<div class="db-shell db-shell--marketing">
+    <header class="db-header">
+        <div class="db-header__inner">
+            <a class="db-header__brand" href="{{ url_for('main.index') }}">
+                <img src="{{ url_for('static', filename='cropped_logo.svg') }}" alt="">
+                <span>DevBrain</span>
+            </a>
+
+            <button class="db-header__toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
+                <span class="db-icon"><i data-lucide="menu"></i></span>
+            </button>
+
+            <div class="db-header__menu" data-nav-links>
+                <nav class="db-header__nav" aria-label="Primary navigation">
+                    <a class="db-nav-item{% if ep == 'main.about' %} is-active{% endif %}" href="{{ url_for('main.about') }}">About</a>
+                    <a class="db-nav-item{% if ep == 'main.pricing' %} is-active{% endif %}" href="{{ url_for('main.pricing') }}">Plans</a>
+                </nav>
+
+                <div class="db-header__actions">
+                    <a class="db-btn db-btn--ghost" href="{{ url_for('auth.register') }}">Register</a>
+                    <a class="db-btn db-btn--primary" href="{{ url_for('auth.login') }}">Sign in</a>
                 </div>
-            {% endif %}
-        {% endwith %}
+            </div>
+        </div>
+    </header>
+{% endif %}
 
-        <main class="site-main">
-            {% block body %}{% endblock %}
-        </main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="db-toast-stack" role="status" aria-live="polite">
+            {% for category, message in messages %}
+            <div class="db-alert db-alert--{{ category if category in ['info', 'success', 'warning', 'danger', 'error'] else 'info' }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
 
-        <footer class="site-footer">
-            <p>Built with love for development by Richard Oyelowo</p>
-            <p>&copy; 2026</p>
-        </footer>
-        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    </body>
+    <main class="db-shell__content">
+        {% block body %}{% endblock %}
+    </main>
+
+{% if is_logged_in %}
+    </div>
+</div>
+{% else %}
+    <footer class="db-footer">
+        <div class="db-footer__inner">
+            <p class="db-footer__text">Built with love for development by Richard Oyelowo</p>
+            <p class="db-footer__text">&copy; 2026</p>
+        </div>
+    </footer>
+</div>
+{% endif %}
+
+<script src="https://unpkg.com/lucide@0.487.0/dist/umd/lucide.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
 </html>
