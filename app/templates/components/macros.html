@@ -1,0 +1,50 @@
+{# Reusable Linear-style UI primitives. Import with: {% from "components/macros.html" import icon, btn, alert, empty, metric, badge %} #}
+
+{% macro icon(name, size="md") -%}
+<span class="db-icon db-icon--{{ size }}" aria-hidden="true"><i data-lucide="{{ name }}"></i></span>
+{%- endmacro %}
+
+{% macro btn(label, href=None, variant="primary", size="", type="button", extra="", disabled=false, icon_name=None) -%}
+{%- set cls = "db-btn db-btn--" ~ variant %}
+{%- if size %}{% set cls = cls ~ " db-btn--" ~ size %}{% endif %}
+{%- if extra %}{% set cls = cls ~ " " ~ extra %}{% endif %}
+{%- if href -%}
+<a class="{{ cls }}" href="{{ href }}"{% if disabled %} aria-disabled="true"{% endif %}>{% if icon_name %}{{ icon(icon_name) }}{% endif %}{{ label }}</a>
+{%- else -%}
+<button class="{{ cls }}" type="{{ type }}"{% if disabled %} disabled{% endif %}>{% if icon_name %}{{ icon(icon_name) }}{% endif %}{{ label }}</button>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro alert(message, kind="info") -%}
+<div class="db-alert db-alert--{{ kind }}" role="status">{{ message }}</div>
+{%- endmacro %}
+
+{% macro empty(title, text="", action_href=None, action_label=None, icon_name="inbox") -%}
+<div class="db-empty">
+    <div class="db-empty__icon">{{ icon(icon_name, "lg") }}</div>
+    <h2 class="db-empty__title">{{ title }}</h2>
+    {% if text %}<p class="db-empty__text">{{ text }}</p>{% endif %}
+    {% if action_href and action_label %}
+        {{ btn(action_label, href=action_href, extra="db-mt-2") }}
+    {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro metric(label, value) -%}
+<article class="db-card db-metric">
+    <div class="db-metric__label">{{ label }}</div>
+    <div class="db-metric__value">{{ value }}</div>
+</article>
+{%- endmacro %}
+
+{% macro badge(label, kind="default") -%}
+<span class="db-badge db-badge--{{ kind }}">{{ label }}</span>
+{%- endmacro %}
+
+{% macro page_header(eyebrow, title, subtitle=None) -%}
+<div class="db-page-header">
+    {% if eyebrow %}<p class="db-eyebrow">{{ eyebrow }}</p>{% endif %}
+    <h1 class="db-page-title">{{ title }}</h1>
+    {% if subtitle %}<p class="db-page-subtitle">{{ subtitle }}</p>{% endif %}
+</div>
+{%- endmacro %}

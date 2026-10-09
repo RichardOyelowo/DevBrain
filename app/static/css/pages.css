@@ -1,6 +1,4 @@
 @import url("utilities/_index.css");
+@import url("pages/marketing.css");
+@import url("pages/app.css");
 @import url("legacy/shim.css");
-
-/*
- * Page-specific styles land here during commits 4–7.
- */
