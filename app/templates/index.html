@@ -1,417 +1,83 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import btn, icon %}
 
 {% block body %}
-<section class="hero-section">
-    <div class="hero-copy">
-        <p class="eyebrow">Active recall for developers</p>
-        <h1>Practice the concepts you actually need to remember.</h1>
-        <p class="hero-text">
-            DevBrain gives you short technical quizzes, instant feedback, saved reviews, and a dashboard that shows which topics need more work.
+<section class="mkt-hero">
+    <div class="mkt-hero__copy">
+        <p class="db-eyebrow">Issue tracker for what you know</p>
+        <h1>Practice like you ship: short, focused, reviewable.</h1>
+        <p class="mkt-hero__lede">
+            DevBrain is a developer learning cockpit. Pick a category, answer under light pressure, then inspect every miss with code, explanations, and a saved attempt.
         </p>
-        <div class="hero-actions">
-            <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
-            <a href="{{ url_for('main.pricing') }}" class="button button-secondary">View Plans</a>
+        <div class="mkt-hero__actions">
+            {{ btn("Start free", href=url_for('auth.register'), icon_name="arrow-right") }}
+            {{ btn("View plans", href=url_for('main.pricing'), variant="secondary") }}
         </div>
-        <div class="hero-proof">
-            <span>5 free quizzes weekly</span>
-            <span>Saved reviews</span>
-            <span>Developer-focused topics</span>
+        <div class="mkt-chips">
+            <span class="mkt-chip">5 free quizzes / week</span>
+            <span class="mkt-chip">Code + concept prompts</span>
+            <span class="mkt-chip">Weak-topic dashboard</span>
         </div>
     </div>
 
-    <div class="terminal-panel quiz-sample" aria-label="DevBrain quiz preview">
-        <div class="terminal-bar">
-            <span></span>
-            <span></span>
-            <span></span>
+    <div class="db-terminal" aria-label="Quiz preview">
+        <div class="db-terminal__bar">
+            <span class="db-terminal__dot db-terminal__dot--red"></span>
+            <span class="db-terminal__dot db-terminal__dot--yellow"></span>
+            <span class="db-terminal__dot db-terminal__dot--green"></span>
         </div>
-        <div class="terminal-body">
-            <p class="terminal-muted">Quiz preview</p>
-            <h2>Two ways DevBrain checks understanding.</h2>
-            <div class="hero-sample-stack">
-                <article class="sample-question active">
-                    <span>Code snippet example</span>
-                    <h3>What does this print?</h3>
-                    <pre class="sample-code"><code>items = ["api", "db", "ui"]
+        <div class="db-terminal__body db-stack db-stack--4">
+            <p class="db-eyebrow">quiz · python</p>
+            <h2 class="db-text-lg">What does this print?</h2>
+            <pre class="db-code-block"><code>items = ["api", "db", "ui"]
 print(len(items))</code></pre>
-                    <div class="sample-answer-grid">
-                        <span>2</span>
-                        <span class="is-correct">3</span>
-                        <span>api</span>
-                        <span>Error</span>
-                    </div>
-                </article>
-                <article class="sample-question">
-                    <span>Normal concept question</span>
-                    <h3>Why should APIs paginate large collections?</h3>
-                    <div class="sample-answer-grid">
-                        <span class="is-correct">Bound response size</span>
-                        <span>Disable auth</span>
-                        <span>Force table scans</span>
-                        <span>Remove filtering</span>
-                    </div>
-                </article>
-                <div class="sample-feedback">
-                    <strong>Each answer saves a review trail.</strong>
-                    <p>Users see the correct answer, their choice, and a short explanation after the attempt.</p>
-                </div>
+            <div class="sample-answer-grid">
+                <span>2</span>
+                <span class="is-correct">3</span>
+                <span>api</span>
+                <span>Error</span>
             </div>
+            <p class="db-text-sm db-text-secondary">Correct. Each answer writes a review record you can reopen later.</p>
         </div>
     </div>
 </section>
 
-<section class="marketing-stat-grid">
-    <article>
-        <strong>5/week</strong>
-        <span>Free quiz attempts for every account</span>
-    </article>
-    <article>
-        <strong>20</strong>
-        <span>Editable non-language categories for focused practice</span>
-    </article>
-    <article>
-        <strong>15</strong>
-        <span>Separate language filters for code-reading questions</span>
-    </article>
-    <article>
-        <strong>Review</strong>
-        <span>Every completed quiz becomes a saved learning record</span>
-    </article>
+<section class="mkt-stats">
+    <article class="mkt-stat"><strong>5/week</strong><span>Free quiz attempts</span></article>
+    <article class="mkt-stat"><strong>20</strong><span>Practice categories</span></article>
+    <article class="mkt-stat"><strong>15</strong><span>Language filters</span></article>
+    <article class="mkt-stat"><strong>Review</strong><span>Saved learning records</span></article>
 </section>
 
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Question styles</p>
-        <h2>DevBrain supports code-reading prompts and normal concept checks.</h2>
-        <p class="muted">Some learning gaps show up when reading code. Others show up when explaining a system decision. DevBrain supports both from the same question bank.</p>
-    </div>
-    <div class="example-grid">
-        <article class="question-example-card">
-            <span class="feature-index">Code</span>
-            <h3>Read a snippet and choose the result</h3>
-            <pre class="sample-code"><code>const users = ["Ada", "Linus"];
-console.log(users.length);</code></pre>
-            <div class="sample-answer-grid compact">
-                <span>1</span>
-                <span class="is-correct">2</span>
-                <span>users</span>
-                <span>undefined</span>
-            </div>
-            <p>These questions use an optional `language` and `code_snippet`, so learners can practice syntax-specific reading without turning language into a general category.</p>
-        </article>
-        <article class="question-example-card">
-            <span class="feature-index">Concept</span>
-            <h3>Answer a practical development question</h3>
-            <div class="concept-question">
-                <strong>What is the main value of a CI pipeline?</strong>
-                <div class="sample-answer-grid compact">
-                    <span class="is-correct">Repeatable checks</span>
-                    <span>Remove testing</span>
-                    <span>Hide deploys</span>
-                    <span>Edit production data</span>
-                </div>
-            </div>
-            <p>These questions focus on judgement, vocabulary, architecture, tooling, security, and habits developers use in real projects.</p>
-        </article>
+<section class="mkt-section">
+    <p class="db-eyebrow">Loop</p>
+    <h2>Choose. Answer. Inspect. Repeat the gap.</h2>
+    <p>Sessions stay short. The dashboard ranks weak topics so the next run is not random trivia.</p>
+    <div class="db-grid db-grid--3">
+        <article class="db-card"><div class="db-card__body">
+            {{ icon("zap") }}
+            <h3 class="db-mt-4">Focused setup</h3>
+            <p class="db-mt-2">Topics, optional language, difficulty, and question count — same form the app already uses.</p>
+        </div></article>
+        <article class="db-card"><div class="db-card__body">
+            {{ icon("code-2") }}
+            <h3 class="db-mt-4">Two question styles</h3>
+            <p class="db-mt-2">Read a snippet or judge a system decision. Language is a filter, not a fake category.</p>
+        </div></article>
+        <article class="db-card"><div class="db-card__body">
+            {{ icon("line-chart") }}
+            <h3 class="db-mt-4">Signal, not vibes</h3>
+            <p class="db-mt-2">Score, grade, explanations, and recommended next topic stay on your account.</p>
+        </div></article>
     </div>
 </section>
 
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Why DevBrain</p>
-        <h2>Passive tutorials feel productive. Active recall proves what stuck.</h2>
-        <p class="muted">The platform is designed for learners who want a clean loop: choose a focus area, answer under light pressure, review mistakes, and return to the weakest topic next time.</p>
-    </div>
-    <div class="feature-grid three">
-        <article class="feature-card">
-            <span class="feature-index">01</span>
-            <h3>Practice deliberately</h3>
-            <p>Pick topics and difficulty instead of taking random trivia. Sessions stay short enough for daily repetition.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">02</span>
-            <h3>Review with context</h3>
-            <p>Answers include explanations and code-reading prompts where useful, so the review page teaches after scoring.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">03</span>
-            <h3>Track what matters</h3>
-            <p>Your dashboard summarizes attempts, average score, strongest topic, weakest topic, and recommended next work.</p>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Learning signal</p>
-        <h2>The app is built around what learners can inspect after a quiz.</h2>
-        <p class="muted">A quiz should not end with only a score. DevBrain treats every attempt as a saved learning record that can be reviewed, filtered, and used to pick the next session.</p>
-    </div>
-    <div class="signal-grid">
-        <article>
-            <span>Attempt</span>
-            <strong>Topic, difficulty, count, score, grade, and completion time are saved.</strong>
-        </article>
-        <article>
-            <span>Answer</span>
-            <strong>Each selected answer is stored against the correct answer and explanation.</strong>
-        </article>
-        <article>
-            <span>Dashboard</span>
-            <strong>Progress stats summarize total quizzes, average score, strongest topic, and weakest topic.</strong>
-        </article>
-        <article>
-            <span>History</span>
-            <strong>Completed attempts can be filtered and reopened for review instead of disappearing.</strong>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Content model</p>
-        <h2>Categories and languages are separate, so practice stays flexible.</h2>
-        <p class="muted">A category describes the skill being tested. A language describes the syntax used in a code snippet. That means Data Structures can include Python, JavaScript, SQL, and other language-focused examples without rebuilding the quiz flow.</p>
-    </div>
-    <div class="taxonomy-grid">
-        <article>
-            <span>Categories</span>
-            <strong>Data Structures, Algorithms, Web APIs, Backend, Databases, Security, Testing, DevOps, Cloud, Architecture, Performance, and frameworks.</strong>
-        </article>
-        <article>
-            <span>Languages</span>
-            <strong>Python, JavaScript, TypeScript, SQL, PHP, Java, C#, C++, C, Go, Ruby, Rust, Swift, Kotlin, and Shell.</strong>
-        </article>
-        <article>
-            <span>Fast starts</span>
-            <strong>Preset cards help learners begin with common tracks without extra setup.</strong>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Category strategy</p>
-        <h2>Twenty broad categories keep practice useful without making it shallow.</h2>
-        <p class="muted">The category list is intentionally broad. It includes fundamentals, web development, frameworks, infrastructure, quality, and architecture. Languages live in a separate filter so a topic can be practiced in different syntaxes.</p>
-    </div>
-    <div class="category-cloud">
-        <span>Data Structures</span>
-        <span>Algorithms</span>
-        <span>Web APIs</span>
-        <span>Frontend</span>
-        <span>Backend</span>
-        <span>Databases</span>
-        <span>React</span>
-        <span>Next.js</span>
-        <span>Django</span>
-        <span>Flask</span>
-        <span>Laravel</span>
-        <span>Express</span>
-        <span>Git</span>
-        <span>Docker</span>
-        <span>DevOps</span>
-        <span>Cloud</span>
-        <span>Security</span>
-        <span>Testing</span>
-        <span>Architecture</span>
-        <span>Performance</span>
-    </div>
-</section>
-
-<section class="split-section">
+<section class="mkt-cta">
     <div>
-        <p class="eyebrow">Specializations</p>
-        <h2>Built for practical developer learning, not generic trivia.</h2>
-        <p>
-            DevBrain starts with programming, web, databases, infrastructure, security, testing, and architecture.
-            The question bank is owned by the app, so it can grow into deeper tracks over time instead of depending
-            on a third-party feed.
-        </p>
-        <a href="{{ url_for('auth.register') }}" class="button button-primary">Create Free Account</a>
+        <p class="db-eyebrow">Get started</p>
+        <h2>Make the next study session measurable.</h2>
+        <p class="db-mt-2">Create a free account and take a five-question run tonight.</p>
     </div>
-    <div class="track-list">
-        <div><span>Core CS</span><strong>Data structures, algorithms, complexity</strong></div>
-        <div><span>Web</span><strong>Frontend, backend, Web APIs, auth, caching</strong></div>
-        <div><span>Frameworks</span><strong>React, Next.js, Django, Flask, Laravel, Express</strong></div>
-        <div><span>Systems</span><strong>Git, Docker, DevOps, cloud basics</strong></div>
-        <div><span>Quality</span><strong>Testing, security, architecture, performance</strong></div>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Focused learning flow</p>
-        <h2>DevBrain keeps practice direct, fast, and easy to repeat.</h2>
-        <p class="muted">The app gives learners the pieces that matter most during practice: account progress, saved attempts, clear reviews, and a polished quiz flow across devices.</p>
-    </div>
-    <div class="feature-grid three">
-        <article class="feature-card">
-            <span class="feature-index">Fast</span>
-            <h3>Short sessions</h3>
-            <p>Quiz setup stays focused so learners can start quickly and finish a useful practice run without friction.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">Curated</span>
-            <h3>Owned question bank</h3>
-            <p>Published questions come from DevBrain's own database, so the learning experience is stable and consistent.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">Progress</span>
-            <h3>Learning records stay useful</h3>
-            <p>Attempts, answers, scores, grades, and reviews stay connected to the learner's account.</p>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Question bank</p>
-        <h2>Owned content instead of a random external feed.</h2>
-        <p class="muted">Every question is stored in the database with a category, difficulty, explanation, answer options, optional language, and optional code snippet. That keeps the quiz flow reliable as the question bank grows.</p>
-    </div>
-    <div class="feature-grid three">
-        <article class="feature-card">
-            <span class="feature-index">Explain</span>
-            <h3>Every answer needs context</h3>
-            <p>The review page shows the learner's answer, the correct answer, and why the answer matters.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">Pick</span>
-            <h3>Randomized from the database</h3>
-            <p>Quiz questions are selected from published matches and shuffled so sessions do not simply follow entry order.</p>
-        </article>
-        <article class="feature-card">
-            <span class="feature-index">Grow</span>
-            <h3>Designed for deeper tracks</h3>
-            <p>The same model supports broad review and language-specific coding tracks.</p>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">User experience</p>
-        <h2>A focused app shell for repeated practice.</h2>
-        <p class="muted">Once logged in, the app is intentionally quieter than the homepage. The dashboard, quiz setup, history, review, and profile pages are designed for scanning and repeated use.</p>
-    </div>
-    <div class="ux-grid">
-        <article>
-            <h3>Dashboard first</h3>
-            <p>Logged-in users land on progress, quota, recent attempts, and the next recommended practice area.</p>
-        </article>
-        <article>
-            <h3>Mobile-aware quiz flow</h3>
-            <p>Question setup, answer options, result summaries, and review pages are designed to fit smaller screens.</p>
-        </article>
-        <article>
-            <h3>Settings stay separate</h3>
-            <p>Dashboard progress and profile settings have different jobs, so the app keeps them separated.</p>
-        </article>
-        <article>
-            <h3>Useful empty states</h3>
-            <p>The app handles missing history, unavailable questions, and quota limits with clear next actions.</p>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Product loop</p>
-        <h2>A weekly rhythm for sharper technical recall.</h2>
-    </div>
-    <div class="workflow-list">
-        <article>
-            <span>1</span>
-            <div>
-                <h3>Choose the skill</h3>
-                <p>Select one or more categories and the difficulty that matches your current target.</p>
-            </div>
-        </article>
-        <article>
-            <span>2</span>
-            <div>
-                <h3>Answer and learn</h3>
-                <p>See feedback after each question, including explanations and code snippets when relevant.</p>
-            </div>
-        </article>
-        <article>
-            <span>3</span>
-            <div>
-                <h3>Review the attempt</h3>
-                <p>Open a saved review showing your answer, the correct answer, and why it matters.</p>
-            </div>
-        </article>
-        <article>
-            <span>4</span>
-            <div>
-                <h3>Return to the gap</h3>
-                <p>Use dashboard recommendations to spend the next session where it will actually help.</p>
-            </div>
-        </article>
-    </div>
-</section>
-
-<section class="section-band" id="pricing">
-    <div class="section-heading">
-        <p class="eyebrow">Plans</p>
-        <h2>Start free. Upgrade when practice becomes a habit.</h2>
-    </div>
-    <div class="pricing-grid">
-        <article class="pricing-card">
-            <p class="eyebrow">Free</p>
-            <h3>$0</h3>
-            <p>For learners who want to try the full app experience before committing.</p>
-            <ul>
-                <li>5 quiz attempts per rolling week</li>
-                <li>Dashboard, history, and review pages</li>
-                <li>Access to published starter categories</li>
-            </ul>
-            <a href="{{ url_for('auth.register') }}" class="button button-secondary">Create Account</a>
-        </article>
-        <article class="pricing-card featured">
-            <p class="eyebrow">Pro</p>
-            <h3>$5/month</h3>
-            <p>For learners who need more weekly practice without going fully unlimited.</p>
-            <ul>
-                <li>40 to 50 quiz attempts per week</li>
-                <li>Priority access to new question sets</li>
-                <li>All free features</li>
-            </ul>
-            <a href="{{ url_for('main.pricing') }}" class="button button-primary">View Pro</a>
-        </article>
-        <article class="pricing-card">
-            <p class="eyebrow">Unlimited</p>
-            <h3>$10/month</h3>
-            <p>For consistent learners, interview prep, and developers building a practice routine.</p>
-            <ul>
-                <li>Unlimited quiz attempts</li>
-                <li>All learning categories as the bank grows</li>
-                <li>Deeper question sets as the bank grows</li>
-            </ul>
-            <a href="{{ url_for('main.pricing') }}" class="button button-secondary">View Unlimited</a>
-        </article>
-    </div>
-</section>
-
-<section class="section-band">
-    <div class="section-heading">
-        <p class="eyebrow">Learning depth</p>
-        <h2>DevBrain is designed to grow with your practice routine.</h2>
-        <p class="muted">Start with focused recall, then use saved reviews and dashboard signals to return to the topics that need more work.</p>
-    </div>
-    <div class="roadmap-strip">
-        <div><span>Practice</span><strong>Focused quizzes from a curated question bank</strong></div>
-        <div><span>Review</span><strong>Saved answer history with explanations</strong></div>
-        <div><span>Improve</span><strong>Dashboard signals for the next weak topic</strong></div>
-    </div>
-</section>
-
-<section class="about-cta">
-    <div>
-        <p class="eyebrow">Get started</p>
-        <h2>Make your next study session measurable.</h2>
-    </div>
-    <a href="{{ url_for('auth.register') }}" class="button button-primary">Start Free</a>
+    {{ btn("Create free account", href=url_for('auth.register')) }}
 </section>
 {% endblock %}

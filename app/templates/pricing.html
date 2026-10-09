@@ -1,65 +1,69 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import btn %}
 
 {% block title %}: Plans{% endblock %}
 
 {% block body %}
 {% set plan_cta_url = url_for('main.profile') if current_user else url_for('auth.register') %}
-{% set plan_cta_label = "View Account" if current_user else "Create Account" %}
-<section class="app-page">
-    <div class="page-heading">
-        <p class="eyebrow">Plans</p>
-        <h1>Start with the full app experience. Upgrade when practice becomes a habit.</h1>
-        <p class="muted">Use the free plan to build a habit. Upgrade when you want more weekly practice or no quiz cap.</p>
+{% set plan_cta_label = "View account" if current_user else "Create account" %}
+<div class="db-page-header">
+    <p class="db-eyebrow">Plans</p>
+    <h1 class="db-page-title">Start free. Upgrade when practice is a habit.</h1>
+    <p class="db-page-subtitle">Checkout is not live yet. Every account already gets dashboard, history, and review. Caps are enforced in the app.</p>
+</div>
+
+<div class="pricing-grid">
+    <article class="pricing-card">
+        <p class="db-eyebrow">Free</p>
+        <h3>$0</h3>
+        <p>Full product loop with a weekly cap.</p>
+        <ul>
+            <li>5 quizzes per rolling week</li>
+            <li>Dashboard, history, reviews</li>
+            <li>Published starter categories</li>
+        </ul>
+        {{ btn(plan_cta_label, href=plan_cta_url, variant="secondary") }}
+    </article>
+    <article class="pricing-card is-featured">
+        <p class="db-eyebrow">Pro</p>
+        <h3>$4.99/month</h3>
+        <p>More weekly room without going unlimited. App enforces 25.</p>
+        <ul>
+            <li>20 to 30 quizzes per week</li>
+            <li>All free features</li>
+            <li>Priority as new sets ship</li>
+        </ul>
+        {{ btn("View account" if current_user else "Join waitlist", href=plan_cta_url) }}
+    </article>
+    <article class="pricing-card">
+        <p class="db-eyebrow">Unlimited</p>
+        <h3>$9.99/month</h3>
+        <p>No quiz cap while the bank grows.</p>
+        <ul>
+            <li>Unlimited attempts</li>
+            <li>All categories as they publish</li>
+            <li>Deeper sets over time</li>
+        </ul>
+        {{ btn("View account" if current_user else "Get notified", href=plan_cta_url, variant="secondary") }}
+    </article>
+</div>
+
+<section class="mkt-section">
+    <p class="db-eyebrow">FAQ</p>
+    <h2>How plans work</h2>
+    <div class="db-stack db-stack--4">
+        <article class="db-card"><div class="db-card__body">
+            <h3 class="db-text-md">What does Free include?</h3>
+            <p class="db-mt-2">The same quiz, review, and dashboard flow as paid plans, limited to 5 starts per rolling week.</p>
+        </div></article>
+        <article class="db-card"><div class="db-card__body">
+            <h3 class="db-text-md">Can I pay today?</h3>
+            <p class="db-mt-2">Not yet. Use the waitlist CTAs and keep practicing on Free until billing ships.</p>
+        </div></article>
+        <article class="db-card"><div class="db-card__body">
+            <h3 class="db-text-md">Do unused quizzes roll forever?</h3>
+            <p class="db-mt-2">No. The cap is a rolling week, not a lifetime bank of unused attempts.</p>
+        </div></article>
     </div>
-
-    <div class="pricing-grid">
-        <article class="pricing-card">
-            <p class="eyebrow">Free</p>
-            <h3>$0</h3>
-            <p>For trying DevBrain with the real dashboard, history, and review flow.</p>
-            <ul>
-                <li>5 quizzes per rolling week</li>
-                <li>Dashboard and weak-topic tracking</li>
-                <li>Saved history and review pages</li>
-                <li>Access to starter categories</li>
-            </ul>
-            <a href="{{ plan_cta_url }}" class="button button-secondary">{{ plan_cta_label }}</a>
-        </article>
-
-        <article class="pricing-card featured">
-            <p class="eyebrow">Pro</p>
-            <h3>$5/month</h3>
-            <p>For learners who practice weekly and want more room without going fully unlimited.</p>
-            <ul>
-                <li>40 to 50 quizzes per week</li>
-                <li>Priority access to new question sets</li>
-                <li>All free features</li>
-                <li>Best fit for interview prep sprints</li>
-            </ul>
-            <a href="{{ plan_cta_url }}" class="button button-primary">{{ "View Account" if current_user else "Join Waitlist" }}</a>
-        </article>
-
-        <article class="pricing-card">
-            <p class="eyebrow">Unlimited</p>
-            <h3>$10/month</h3>
-            <p>For consistent developers who want no quiz cap while the bank keeps growing.</p>
-            <ul>
-                <li>Unlimited quizzes</li>
-                <li>All categories and difficulties</li>
-                <li>All learning tracks as the question bank grows</li>
-                <li>Best fit for long-term practice</li>
-            </ul>
-            <a href="{{ plan_cta_url }}" class="button button-secondary">{{ "View Account" if current_user else "Get Notified" }}</a>
-        </article>
-    </div>
-
-    <section class="about-cta">
-        <div>
-            <p class="eyebrow">Start practicing</p>
-            <h2>Every account gets the full learning flow.</h2>
-            <p class="muted">Create an account, take focused quizzes, review every answer, and track progress from your dashboard.</p>
-        </div>
-        <a href="{{ plan_cta_url }}" class="button button-primary">{{ "View Account" if current_user else "Start Free" }}</a>
-    </section>
 </section>
 {% endblock %}
