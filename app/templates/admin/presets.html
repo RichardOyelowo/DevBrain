@@ -4,116 +4,116 @@
 
 {% block body %}
 <section class="app-page">
-    <div class="page-heading">
-        <p class="eyebrow">Admin</p>
-        <h1>Fast starts</h1>
-        <p class="muted">Edit the preset cards shown at the top of quiz setup.</p>
+    <div class="db-page-header">
+        <p class="db-eyebrow">Admin / Question bank</p>
+        <h1 class="db-page-title">Fast starts</h1>
+        <p class="db-page-subtitle">Edit the preset cards shown at the top of quiz setup.</p>
     </div>
 
-    <form method="post" class="panel form-grid">
+    <form method="post" class="db-panel db-p-6 form-grid">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label class="form-group">Title
-            <input name="title" class="form-control" required>
+        <label class="db-field">Title
+            <input name="title" class="db-input" required>
         </label>
-        <label class="form-group">Category
-            <select name="topic_id" class="form-control" required>
+        <label class="db-field">Category
+            <select name="topic_id" class="db-select" required>
                 {% for topic in topics %}
                     <option value="{{ topic.id }}">{{ topic.name }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group full">Description
-            <textarea name="description" class="form-control textarea"></textarea>
+        <label class="db-field full">Description
+            <textarea name="description" class="db-textarea"></textarea>
         </label>
-        <label class="form-group">Difficulty
-            <select name="difficulty" class="form-control">
+        <label class="db-field">Difficulty
+            <select name="difficulty" class="db-select">
                 {% for difficulty in difficulties %}
                     <option value="{{ difficulty }}">{{ difficulty.title() }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group">Questions
-            <input name="question_limit" class="form-control" type="number" min="1" max="25" value="5">
+        <label class="db-field">Questions
+            <input name="question_limit" class="db-input" type="number" min="1" max="25" value="5">
         </label>
-        <label class="form-group">Language
-            <select name="language" class="form-control">
+        <label class="db-field">Language
+            <select name="language" class="db-select">
                 <option value="">Any language</option>
                 {% for language in languages %}
                     <option value="{{ language.slug }}">{{ language.name }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group">Accent
-            <select name="accent" class="form-control">
+        <label class="db-field">Accent
+            <select name="accent" class="db-select">
                 {% for accent in accents %}
                     <option value="{{ accent }}">{{ accent.title() }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group">Position
-            <input name="position" class="form-control" type="number" value="0">
+        <label class="db-field">Position
+            <input name="position" class="db-input" type="number" value="0">
         </label>
-        <label class="form-group check-row">
+        <label class="db-field check-row">
             <input type="checkbox" name="is_active" value="1" checked>
             Active
         </label>
-        <button class="button button-primary" type="submit">Add Fast Start</button>
+        <button class="db-btn db-btn--primary" type="submit">Add fast start</button>
     </form>
 
     <div class="admin-edit-list">
         {% for preset in presets %}
-            <form method="post" class="panel form-grid compact-edit">
+            <form method="post" class="db-panel db-p-6 form-grid compact-edit">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="preset_id" value="{{ preset.id }}">
-                <label class="form-group">Title
-                    <input name="title" class="form-control" value="{{ preset.title }}" required>
+                <label class="db-field">Title
+                    <input name="title" class="db-input" value="{{ preset.title }}" required>
                 </label>
-                <label class="form-group">Slug
-                    <input name="slug" class="form-control" value="{{ preset.slug }}">
+                <label class="db-field">Slug
+                    <input name="slug" class="db-input" value="{{ preset.slug }}">
                 </label>
-                <label class="form-group">Category
-                    <select name="topic_id" class="form-control" required>
+                <label class="db-field">Category
+                    <select name="topic_id" class="db-select" required>
                         {% for topic in topics %}
                             <option value="{{ topic.id }}" {% if preset.topic_id == topic.id %}selected{% endif %}>{{ topic.name }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="form-group full">Description
-                    <textarea name="description" class="form-control textarea">{{ preset.description }}</textarea>
+                <label class="db-field full">Description
+                    <textarea name="description" class="db-textarea">{{ preset.description }}</textarea>
                 </label>
-                <label class="form-group">Difficulty
-                    <select name="difficulty" class="form-control">
+                <label class="db-field">Difficulty
+                    <select name="difficulty" class="db-select">
                         {% for difficulty in difficulties %}
                             <option value="{{ difficulty }}" {% if preset.difficulty == difficulty %}selected{% endif %}>{{ difficulty.title() }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="form-group">Questions
-                    <input name="question_limit" class="form-control" type="number" min="1" max="25" value="{{ preset.question_limit }}">
+                <label class="db-field">Questions
+                    <input name="question_limit" class="db-input" type="number" min="1" max="25" value="{{ preset.question_limit }}">
                 </label>
-                <label class="form-group">Language
-                    <select name="language" class="form-control">
+                <label class="db-field">Language
+                    <select name="language" class="db-select">
                         <option value="">Any language</option>
                         {% for language in languages %}
                             <option value="{{ language.slug }}" {% if preset.language == language.slug %}selected{% endif %}>{{ language.name }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="form-group">Accent
-                    <select name="accent" class="form-control">
+                <label class="db-field">Accent
+                    <select name="accent" class="db-select">
                         {% for accent in accents %}
                             <option value="{{ accent }}" {% if preset.accent == accent %}selected{% endif %}>{{ accent.title() }}</option>
                         {% endfor %}
                     </select>
                 </label>
-                <label class="form-group">Position
-                    <input name="position" class="form-control" type="number" value="{{ preset.position }}">
+                <label class="db-field">Position
+                    <input name="position" class="db-input" type="number" value="{{ preset.position }}">
                 </label>
-                <label class="form-group check-row">
+                <label class="db-field check-row">
                     <input type="checkbox" name="is_active" value="1" {% if preset.is_active %}checked{% endif %}>
                     Active
                 </label>
-                <button class="button button-secondary" type="submit">Save</button>
+                <button class="db-btn db-btn--secondary" type="submit">Save</button>
             </form>
         {% endfor %}
     </div>
