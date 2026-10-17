@@ -12,4 +12,5 @@
 @import url("layout/_index.css");
 @import url("components/_index.css");
 @import url("utilities/_index.css");
+@import url("pages.css");
 @import url("legacy/shim.css");
