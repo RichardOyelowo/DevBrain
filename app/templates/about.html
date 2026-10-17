@@ -4,36 +4,35 @@
 {% block title %}: About{% endblock %}
 
 {% block body %}
-<div class="db-page-header">
-    <p class="db-eyebrow">About</p>
-    <h1 class="db-page-title">Active recall for people who write software.</h1>
-    <p class="db-page-subtitle">DevBrain tests what you think you know, then keeps the miss as a reviewable record. No trivia feed. Owned questions, categories, and language filters.</p>
-</div>
+<div class="mkt-about-page">
+    <section class="mkt-page-hero">
+        <div class="mkt-page-hero__copy">
+            <p class="db-eyebrow">Why DevBrain exists</p>
+            <h1>Learning should leave you with <span>proof.</span></h1>
+            <p>Watching a tutorial can feel like progress. A short quiz shows what you can still recall when the notes are closed. DevBrain saves that result and helps you choose what to practice next.</p>
+            <div class="mkt-hero__actions">{{ btn("Try a free session", href=url_for('auth.register'), icon_name="arrow-right") }} {{ btn("Explore the product", href=url_for('main.index'), variant="secondary") }}</div>
+        </div>
+        <aside class="mkt-about-callout">
+            <span class="mkt-about-callout__icon"><i data-lucide="brain-circuit"></i></span>
+            <p class="db-eyebrow">The learning loop</p>
+            <ol><li><b>01</b><span>Choose what to practice</span></li><li><b>02</b><span>Answer from memory</span></li><li><b>03</b><span>Review the reason</span></li><li><b>04</b><span>Return to the weak spot</span></li></ol>
+        </aside>
+    </section>
 
-<div class="db-grid db-grid--2 db-mb-6">
-    <article class="db-card"><div class="db-card__body">
-        <h2 class="db-text-lg">Who it is for</h2>
-        <p class="db-mt-2">Students, working developers, and anyone who learns better by answering than by rereading notes.</p>
-    </div></article>
-    <article class="db-card"><div class="db-card__body">
-        <h2 class="db-text-lg">How practice is structured</h2>
-        <p class="db-mt-2">A category is the skill. A language is optional syntax for code-reading. Difficulty and length stay in your control.</p>
-    </div></article>
-    <article class="db-card"><div class="db-card__body">
-        <h2 class="db-text-lg">After each quiz</h2>
-        <p class="db-mt-2">You get a score, a grade, the selected vs correct option, an explanation, and a dashboard signal for the next session.</p>
-    </div></article>
-    <article class="db-card"><div class="db-card__body">
-        <h2 class="db-text-lg">Why active recall</h2>
-        <p class="db-mt-2">Tutorials feel productive. Retrieval under a small amount of pressure shows what actually stuck.</p>
-    </div></article>
-</div>
+    <section class="mkt-section">
+        <div class="mkt-section__intro"><p class="db-eyebrow">Built around the answer</p><h2>A useful quiz gives you more than a score.</h2><p>DevBrain keeps each attempt connected to the question, your answer, the correct answer, and the explanation. You can reopen it later from history or review.</p></div>
+        <div class="mkt-steps">
+            <article class="mkt-step"><span class="mkt-step__number">01</span><span class="mkt-step__icon"><i data-lucide="list-checks"></i></span><h3>Practice on purpose</h3><p>Pick categories and difficulty. Use a fast start or build a session around a specific goal.</p></article>
+            <article class="mkt-step mkt-step--featured"><span class="mkt-step__number">02</span><span class="mkt-step__icon"><i data-lucide="message-square-text"></i></span><h3>Review with context</h3><p>See what you picked, what was correct, and why. The explanation stays with the attempt.</p></article>
+            <article class="mkt-step"><span class="mkt-step__number">03</span><span class="mkt-step__icon"><i data-lucide="chart-no-axes-combined"></i></span><h3>Follow the signal</h3><p>Your dashboard shows recent performance and the topic that needs more attention.</p></article>
+        </div>
+    </section>
 
-<section class="mkt-cta">
-    <div>
-        <p class="db-eyebrow">Start</p>
-        <h2>Build a weekly recall habit.</h2>
-    </div>
-    {{ btn("Create account", href=url_for('auth.register')) }}
-</section>
+    <section class="mkt-about-split">
+        <div><p class="db-eyebrow">A question bank we own</p><h2>Categories measure the skill. Languages shape the code.</h2><p>Data Structures, Web APIs, Databases, Security, Testing, and other categories describe what a question checks. An optional language filter adds Python, JavaScript, SQL, or another syntax to code-reading prompts.</p><p>That keeps the question bank useful for concept checks and practical code review without mixing two different kinds of filters.</p></div>
+        <div class="mkt-about-facts"><article><strong>20</strong><span>Practice categories</span></article><article><strong>15</strong><span>Language filters</span></article><article><strong>5</strong><span>Free attempts per rolling week</span></article></div>
+    </section>
+
+    <section class="mkt-cta"><div><p class="db-eyebrow">Start with what you know</p><h2>Take a short session. See what sticks.</h2><p>Your dashboard, attempt history, and reviews are part of the free account.</p></div>{{ btn("Create a free account", href=url_for('auth.register'), icon_name="arrow-right", size="lg") }}</section>
+</div>
 {% endblock %}

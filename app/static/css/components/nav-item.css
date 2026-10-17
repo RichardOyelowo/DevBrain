@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: var(--db-space-3);
-  height: 32px;
+  height: 40px;
   padding: 0 var(--db-space-3);
   border-radius: var(--db-radius-sm);
   font-size: var(--db-text-sm);
@@ -19,8 +19,9 @@
 }
 
 .db-nav-item.is-active {
-  background: var(--db-accent-subtle);
-  color: var(--db-text-primary);
+  border: 1px solid rgba(68, 226, 205, 0.18);
+  background: linear-gradient(90deg, rgba(68, 226, 205, 0.13), rgba(68, 226, 205, 0.04));
+  color: #a0f4e7;
 }
 
 .db-nav-item.is-active .db-icon {

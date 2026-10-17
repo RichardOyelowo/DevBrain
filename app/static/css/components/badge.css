@@ -18,7 +18,12 @@
 
 .db-badge--accent {
   background: var(--db-accent-muted);
-  color: #a5b0f0;
+  color: var(--db-accent);
+}
+
+.db-badge--violet {
+  background: rgba(191, 166, 255, 0.14);
+  color: #d1bdff;
 }
 
 .db-badge--success {

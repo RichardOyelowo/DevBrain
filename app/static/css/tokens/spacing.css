@@ -17,5 +17,5 @@
   --db-content-wide: 1280px;
   --db-content-narrow: 480px;
   --db-page-padding: var(--db-space-6);
-  --db-header-height: 48px;
+  --db-header-height: 64px;
 }

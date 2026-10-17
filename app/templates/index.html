@@ -1,83 +1,134 @@
 {% extends "layout.html" %}
-{% from "components/macros.html" import btn, icon %}
+{% from "components/macros.html" import btn %}
 
 {% block body %}
-<section class="mkt-hero">
-    <div class="mkt-hero__copy">
-        <p class="db-eyebrow">Issue tracker for what you know</p>
-        <h1>Practice like you ship: short, focused, reviewable.</h1>
-        <p class="mkt-hero__lede">
-            DevBrain is a developer learning cockpit. Pick a category, answer under light pressure, then inspect every miss with code, explanations, and a saved attempt.
-        </p>
-        <div class="mkt-hero__actions">
-            {{ btn("Start free", href=url_for('auth.register'), icon_name="arrow-right") }}
-            {{ btn("View plans", href=url_for('main.pricing'), variant="secondary") }}
-        </div>
-        <div class="mkt-chips">
-            <span class="mkt-chip">5 free quizzes / week</span>
-            <span class="mkt-chip">Code + concept prompts</span>
-            <span class="mkt-chip">Weak-topic dashboard</span>
-        </div>
-    </div>
-
-    <div class="db-terminal" aria-label="Quiz preview">
-        <div class="db-terminal__bar">
-            <span class="db-terminal__dot db-terminal__dot--red"></span>
-            <span class="db-terminal__dot db-terminal__dot--yellow"></span>
-            <span class="db-terminal__dot db-terminal__dot--green"></span>
-        </div>
-        <div class="db-terminal__body db-stack db-stack--4">
-            <p class="db-eyebrow">quiz · python</p>
-            <h2 class="db-text-lg">What does this print?</h2>
-            <pre class="db-code-block"><code>items = ["api", "db", "ui"]
-print(len(items))</code></pre>
-            <div class="sample-answer-grid">
-                <span>2</span>
-                <span class="is-correct">3</span>
-                <span>api</span>
-                <span>Error</span>
+<div class="mkt-home">
+    <section class="mkt-hero">
+        <div class="mkt-hero__copy">
+            <p class="db-eyebrow"><span class="mkt-pulse"></span> Developer learning intelligence</p>
+            <h1>Practice smarter.<br><span>Know what stuck.</span></h1>
+            <p class="mkt-hero__lede">DevBrain turns technical review into short quiz sessions with saved results, clear explanations, and a dashboard that tells you what to practice next.</p>
+            <div class="mkt-hero__actions">
+                {{ btn("Start free", href=url_for('auth.register'), icon_name="arrow-right", size="lg") }}
+                <a class="db-btn db-btn--secondary db-btn--lg" href="#how-it-works">See how it works</a>
             </div>
-            <p class="db-text-sm db-text-secondary">Correct. Each answer writes a review record you can reopen later.</p>
+            <div class="mkt-proof-list">
+                <span><i data-lucide="check"></i> 5 free quizzes every 7 days</span>
+                <span><i data-lucide="check"></i> Every answer saved</span>
+                <span><i data-lucide="check"></i> Built for developers</span>
+            </div>
         </div>
-    </div>
-</section>
 
-<section class="mkt-stats">
-    <article class="mkt-stat"><strong>5/week</strong><span>Free quiz attempts</span></article>
-    <article class="mkt-stat"><strong>20</strong><span>Practice categories</span></article>
-    <article class="mkt-stat"><strong>15</strong><span>Language filters</span></article>
-    <article class="mkt-stat"><strong>Review</strong><span>Saved learning records</span></article>
-</section>
+        <div class="mkt-hero__visual" aria-label="Preview of a DevBrain quiz">
+            <div class="mkt-demo-window">
+                <div class="mkt-demo-window__bar">
+                    <span class="mkt-window-dots"><i></i><i></i><i></i></span>
+                    <span>YOUR PRACTICE SESSION</span>
+                    <span class="mkt-live-indicator">LIVE PREVIEW</span>
+                </div>
+                <div class="mkt-demo-window__body">
+                    <div class="mkt-demo-heading">
+                        <span class="db-badge db-badge--accent">PYTHON</span>
+                        <span>QUESTION 02 <b>OF 05</b></span>
+                    </div>
+                    <div class="mkt-demo-progress"><span></span></div>
+                    <h2>What does this print?</h2>
+                    <pre class="db-code-block"><code>items = ["api", "db", "ui"]
+print(len(items))</code></pre>
+                    <div class="mkt-answer-grid">
+                        <span>2</span><span class="is-correct"><i data-lucide="check"></i> 3</span>
+                        <span>api</span><span>Error</span>
+                    </div>
+                    <div class="mkt-feedback">
+                        <span class="mkt-feedback__icon"><i data-lucide="sparkles"></i></span>
+                        <p><strong>Correct. Keep going.</strong><br>Each answer builds a review trail you can revisit later.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mkt-float-card mkt-float-card--score"><span class="mkt-float-card__icon"><i data-lucide="trending-up"></i></span><span><small>SAMPLE WEEK</small><strong>4 sessions</strong></span><b>+2</b></div>
+            <div class="mkt-float-card mkt-float-card--focus"><span class="mkt-float-card__icon"><i data-lucide="target"></i></span><span><small>NEXT FOCUS</small><strong>Data Structures</strong></span></div>
+        </div>
+    </section>
 
-<section class="mkt-section">
-    <p class="db-eyebrow">Loop</p>
-    <h2>Choose. Answer. Inspect. Repeat the gap.</h2>
-    <p>Sessions stay short. The dashboard ranks weak topics so the next run is not random trivia.</p>
-    <div class="db-grid db-grid--3">
-        <article class="db-card"><div class="db-card__body">
-            {{ icon("zap") }}
-            <h3 class="db-mt-4">Focused setup</h3>
-            <p class="db-mt-2">Topics, optional language, difficulty, and question count — same form the app already uses.</p>
-        </div></article>
-        <article class="db-card"><div class="db-card__body">
-            {{ icon("code-2") }}
-            <h3 class="db-mt-4">Two question styles</h3>
-            <p class="db-mt-2">Read a snippet or judge a system decision. Language is a filter, not a fake category.</p>
-        </div></article>
-        <article class="db-card"><div class="db-card__body">
-            {{ icon("line-chart") }}
-            <h3 class="db-mt-4">Signal, not vibes</h3>
-            <p class="db-mt-2">Score, grade, explanations, and recommended next topic stay on your account.</p>
-        </div></article>
-    </div>
-</section>
+    <section class="mkt-stats" aria-label="DevBrain at a glance">
+        <article><strong>05</strong><span>Free quizzes every 7 days</span></article>
+        <article><strong>20</strong><span>Developer practice topics</span></article>
+        <article><strong>15</strong><span>Code language filters</span></article>
+        <article><strong>100%</strong><span>Reviews saved to your account</span></article>
+    </section>
 
-<section class="mkt-cta">
-    <div>
-        <p class="db-eyebrow">Get started</p>
-        <h2>Make the next study session measurable.</h2>
-        <p class="db-mt-2">Create a free account and take a five-question run tonight.</p>
-    </div>
-    {{ btn("Create free account", href=url_for('auth.register')) }}
-</section>
+    <section class="mkt-section" id="how-it-works">
+        <div class="mkt-section__intro">
+            <p class="db-eyebrow">A better practice loop</p>
+            <h2>Turn “I think I know this” into something you can see.</h2>
+            <p>Pick a skill. Answer a few focused questions. Review the gaps. Your next session starts where the last one left off.</p>
+        </div>
+        <div class="mkt-steps">
+            <article class="mkt-step"><span class="mkt-step__number">01</span><span class="mkt-step__icon"><i data-lucide="sliders-horizontal"></i></span><h3>Choose your focus</h3><p>Pick categories, difficulty, and question count. Add a language filter when you want code-reading practice.</p></article>
+            <article class="mkt-step mkt-step--featured"><span class="mkt-step__number">02</span><span class="mkt-step__icon"><i data-lucide="brain"></i></span><h3>Think it through</h3><p>Answer practical concept questions and code snippets without reaching for a tutorial or autocomplete.</p></article>
+            <article class="mkt-step"><span class="mkt-step__number">03</span><span class="mkt-step__icon"><i data-lucide="chart-no-axes-combined"></i></span><h3>Know what comes next</h3><p>See explanations, reopen past attempts, and use your weakest topics to guide the next run.</p></article>
+        </div>
+    </section>
+
+    <section class="mkt-section mkt-section--examples">
+        <div class="mkt-section__intro">
+            <p class="db-eyebrow">Question styles</p>
+            <h2>Read the code. Understand the system.</h2>
+            <p>Developer work asks for both syntax recall and sound technical judgement. DevBrain gives each one room.</p>
+        </div>
+        <div class="mkt-example-grid">
+            <article class="mkt-example-card mkt-example-card--code">
+                <div class="mkt-example-card__top"><span class="db-badge db-badge--accent">CODE READING</span><span><i data-lucide="braces"></i></span></div>
+                <h3>What does this return?</h3>
+                <pre class="db-code-block"><code>const users = ["Ada", "Linus"];
+console.log(users.length);</code></pre>
+                <div class="mkt-mini-options"><span>1</span><span class="is-correct">2 <i data-lucide="check"></i></span><span>users</span><span>undefined</span></div>
+                <p>Practice syntax with language-specific snippets across the topics you care about.</p>
+            </article>
+            <article class="mkt-example-card mkt-example-card--concept">
+                <div class="mkt-example-card__top"><span class="db-badge db-badge--violet">CONCEPT CHECK</span><span><i data-lucide="network"></i></span></div>
+                <h3>Why paginate a large API response?</h3>
+                <div class="mkt-choice-list"><span class="is-correct"><i data-lucide="check-circle-2"></i> Bound response size</span><span><i data-lucide="circle"></i> Disable authentication</span><span><i data-lucide="circle"></i> Force table scans</span></div>
+                <p>Build judgement across APIs, databases, security, architecture, testing, and more.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="mkt-signal">
+        <div class="mkt-signal__copy">
+            <p class="db-eyebrow">More than a score</p>
+            <h2>Your progress should tell you what to do next.</h2>
+            <p>Every completed quiz becomes a learning record. DevBrain keeps the score, your answers, and the explanation together so weak spots do not disappear after the session.</p>
+            <a class="db-link" href="{{ url_for('auth.register') }}">Start building your learning history <i data-lucide="arrow-up-right"></i></a>
+        </div>
+        <div class="mkt-dashboard-preview" aria-label="Example learning dashboard">
+        <div class="mkt-dashboard-preview__header"><span><i data-lucide="layout-dashboard"></i> Learning dashboard</span><span class="db-badge db-badge--success">SAMPLE VIEW</span></div>
+            <div class="mkt-dashboard-metrics"><article><small>QUIZZES</small><strong>12</strong><span>+3 this week</span></article><article><small>AVERAGE</small><strong>78<span>%</span></strong><span>Across all topics</span></article><article><small>STREAK</small><strong>4 <span>days</span></strong><span>Keep it going</span></article></div>
+            <div class="mkt-focus-row"><span class="mkt-focus-row__icon"><i data-lucide="crosshair"></i></span><span><small>RECOMMENDED NEXT</small><strong>Data Structures</strong></span><span class="mkt-focus-row__reason">Needs practice</span></div>
+            <div class="mkt-sparkline" aria-hidden="true"><i style="--bar: 36%"></i><i style="--bar: 55%"></i><i style="--bar: 43%"></i><i style="--bar: 72%"></i><i style="--bar: 62%"></i><i style="--bar: 88%"></i><i style="--bar: 76%"></i><i style="--bar: 100%"></i></div>
+        </div>
+    </section>
+
+    <section class="mkt-section mkt-section--topics">
+        <div class="mkt-section__intro">
+            <p class="db-eyebrow">Made for developers</p>
+            <h2>Start broad. Get specific when you need to.</h2>
+            <p>Categories describe the skill. Language filters describe the syntax. Keep them separate and your practice can grow with you.</p>
+        </div>
+        <div class="mkt-topic-layout">
+            <div class="mkt-topic-cloud"><span>Data Structures</span><span>Algorithms</span><span>Web APIs</span><span>Frontend</span><span>Backend</span><span>Databases</span><span>React</span><span>Next.js</span><span>Django</span><span>Flask</span><span>Git</span><span>Docker</span><span>DevOps</span><span>Cloud</span><span>Security</span><span>Testing</span><span>Architecture</span><span>Performance</span></div>
+            <aside class="mkt-language-card"><span class="mkt-language-card__icon"><i data-lucide="code-xml"></i></span><p class="db-eyebrow">Language filters</p><h3>Practice in the syntax you use.</h3><p>Python, JavaScript, TypeScript, SQL, Go, Rust, and more. Choose a language when you want code-focused questions.</p><div class="mkt-language-tags"><span>Python</span><span>JavaScript</span><span>SQL</span><span>Go</span><span>+11</span></div></aside>
+        </div>
+    </section>
+
+    <section class="mkt-plans" id="pricing">
+        <div class="mkt-plans__intro"><p class="db-eyebrow">Start practicing</p><h2>Five quizzes a week.<br>Room to grow.</h2><p>Try the full learning loop for free. Upgrade options are planned as the question bank grows.</p></div>
+        <div class="mkt-plan-card"><div class="mkt-plan-card__head"><span class="db-badge db-badge--accent">FREE PLAN</span><strong>$0<span> / to start</span></strong><p>Everything you need to build a steady practice habit.</p></div><ul><li><i data-lucide="check"></i> 5 quiz attempts per rolling week</li><li><i data-lucide="check"></i> Dashboard, history, and saved reviews</li><li><i data-lucide="check"></i> All published starter categories</li></ul>{{ btn("Create your free account", href=url_for('auth.register'), icon_name="arrow-right") }}</div>
+    </section>
+
+    <section class="mkt-cta">
+        <div><p class="db-eyebrow">Your next session starts here</p><h2>Find the gaps. Close them one quiz at a time.</h2><p>Build a practice habit around what you actually want to remember.</p></div>
+        {{ btn("Start free", href=url_for('auth.register'), icon_name="arrow-right", size="lg") }}
+    </section>
+</div>
 {% endblock %}

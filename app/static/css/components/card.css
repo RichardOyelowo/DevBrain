@@ -1,11 +1,13 @@
 .db-card {
   border: 1px solid var(--db-border-subtle);
   border-radius: var(--db-radius-md);
-  background: var(--db-bg-subtle);
+  background: linear-gradient(145deg, rgba(13, 34, 52, 0.92), rgba(8, 25, 40, 0.96));
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   transition:
     border-color var(--db-duration-fast) var(--db-ease-out),
-    background var(--db-duration-fast) var(--db-ease-out);
+    background var(--db-duration-fast) var(--db-ease-out),
+    transform var(--db-duration-fast) var(--db-ease-out);
 }
 
 .db-card--interactive {
@@ -14,7 +16,8 @@
 
 .db-card--interactive:hover {
   border-color: var(--db-border-default);
-  background: var(--db-bg-muted);
+  background: linear-gradient(145deg, rgba(19, 48, 70, 0.96), rgba(10, 31, 48, 0.98));
+  transform: translateY(-2px);
 }
 
 .db-card--selected {

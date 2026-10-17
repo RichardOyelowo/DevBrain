@@ -1,7 +1,8 @@
 .db-panel {
   border: 1px solid var(--db-border-subtle);
   border-radius: var(--db-radius-md);
-  background: var(--db-bg-subtle);
+  background: linear-gradient(145deg, rgba(13, 34, 52, 0.94), rgba(8, 25, 40, 0.98));
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.13);
 }
 
 .db-panel__header {
