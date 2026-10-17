@@ -4,72 +4,72 @@
 
 {% block body %}
 <section class="app-page narrow">
-    <div class="page-heading">
-        <p class="eyebrow">Admin</p>
-        <h1>{{ "Edit" if question else "New" }} question</h1>
+    <div class="db-page-header">
+        <p class="db-eyebrow">Admin / Question bank</p>
+        <h1 class="db-page-title">{{ "Edit" if question else "New" }} question</h1>
     </div>
 
-    <form method="post" class="panel form-grid">
+    <form method="post" class="db-panel db-p-6 form-grid">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label class="form-group">Topic
+        <label class="db-field">Topic
             <select name="topic_id" class="db-select" required>
                 {% for topic in topics %}
                     <option value="{{ topic.id }}" {% if question and question.topic_id == topic.id %}selected{% endif %}>{{ topic.name }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group">Difficulty
+        <label class="db-field">Difficulty
             <select name="difficulty" class="db-select">
                 {% for value in ["EASY", "MEDIUM", "HARD"] %}
                     <option value="{{ value }}" {% if question and question.difficulty == value %}selected{% endif %}>{{ value.title() }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group">Status
-            <select name="status" class="form-control">
+        <label class="db-field">Status
+            <select name="status" class="db-select">
                 {% for value in ["draft", "published"] %}
                     <option value="{{ value }}" {% if question and question.status == value %}selected{% endif %}>{{ value.title() }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group full">Prompt
-            <textarea name="prompt" class="form-control textarea" required>{{ question.prompt if question else "" }}</textarea>
+        <label class="db-field full">Prompt
+            <textarea name="prompt" class="db-textarea" required>{{ question.prompt if question else "" }}</textarea>
         </label>
-        <label class="form-group full">Description
-            <textarea name="description" class="form-control textarea">{{ question.description if question else "" }}</textarea>
+        <label class="db-field full">Description
+            <textarea name="description" class="db-textarea">{{ question.description if question else "" }}</textarea>
         </label>
-        <label class="form-group">Language
-            <select name="language" class="form-control">
+        <label class="db-field">Language
+            <select name="language" class="db-select">
                 <option value="">No language focus</option>
                 {% for language in languages %}
                     <option value="{{ language.slug }}" {% if question and question.language == language.slug %}selected{% endif %}>{{ language.name }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="form-group full">Code snippet
-            <textarea name="code_snippet" class="form-control textarea code-input">{{ question.code_snippet if question and question.code_snippet else "" }}</textarea>
+        <label class="db-field full">Code snippet
+            <textarea name="code_snippet" class="db-textarea code-input">{{ question.code_snippet if question and question.code_snippet else "" }}</textarea>
         </label>
-        <label class="form-group full">Explanation
-            <textarea name="explanation" class="form-control textarea">{{ question.explanation if question else "" }}</textarea>
+        <label class="db-field full">Explanation
+            <textarea name="explanation" class="db-textarea">{{ question.explanation if question else "" }}</textarea>
         </label>
 
         {% set existing_options = question.options if question else [] %}
         {% for index in range(4) %}
             {% set option = existing_options[index] if existing_options|length > index else none %}
-            <label class="form-group">Option {{ index + 1 }}
-                <input name="options" class="form-control" value="{{ option.text if option else "" }}" required>
+            <label class="db-field">Option {{ index + 1 }}
+                <input name="options" class="db-input" value="{{ option.text if option else "" }}" required>
             </label>
-            <label class="form-group check-row">
+            <label class="db-field check-row">
                 <input type="radio" name="correct_option" value="{{ index }}" {% if (option and option.is_correct) or (not question and index == 0) %}checked{% endif %}>
                 Correct
             </label>
         {% endfor %}
 
-        <label class="form-group check-row full">
+        <label class="db-field check-row full">
             <input type="checkbox" name="is_archived" value="1" {% if question and question.is_archived %}checked{% endif %}>
             Archived
         </label>
-        <button class="db-btn db-btn--primary" type="submit">Save Question</button>
+        <button class="db-btn db-btn--primary" type="submit">Save question</button>
     </form>
 </section>
 {% endblock %}

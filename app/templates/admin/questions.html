@@ -4,15 +4,16 @@
 
 {% block body %}
 <section class="app-page">
-    <div class="panel-header">
+    <div class="db-page-header">
         <div>
-            <p class="eyebrow">Admin</p>
-            <h1>Questions</h1>
+            <p class="db-eyebrow">Admin / Question bank</p>
+            <h1 class="db-page-title">Questions</h1>
         </div>
-        <a href="{{ url_for('admin.question_new') }}" class="db-btn db-btn--primary">New</a>
+        <a href="{{ url_for('admin.question_new') }}" class="db-btn db-btn--primary">New question</a>
     </div>
 
-    <div class="db-table-wrap">
+    <section class="db-panel db-panel--flush">
+        <div class="db-table-wrap">
             <table class="db-table">
                 <thead>
                     <tr>
@@ -39,6 +40,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-    </div>
+        </div>
+    </section>
 </section>
 {% endblock %}
