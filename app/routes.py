@@ -54,8 +54,6 @@ def dashboard():
         topics=get_active_topics(),
         quota=quota,
         active_attempt=get_active_attempt(session["user_id"]),
-        bank_summary=question_bank_summary(),
-        topic_availability=topic_availability(),
     )
 
 
