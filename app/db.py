@@ -69,8 +69,8 @@ def _patch_existing_sqlite_schema():
                 columns.add("plan")
             if not _sqlite_index_exists(connection, "users", "uq_users_email_lower"):
                 duplicate_rows = connection.execute(text(
-                    "SELECT lower(email) AS normalized_email, count(*) AS total "
-                    "FROM users GROUP BY lower(email) HAVING count(*) > 1"
+                    "SELECT lower(trim(email)) AS normalized_email, count(*) AS total "
+                    "FROM users GROUP BY lower(trim(email)) HAVING count(*) > 1"
                 )).fetchall()
                 if duplicate_rows:
                     emails = ", ".join(row.normalized_email for row in duplicate_rows)

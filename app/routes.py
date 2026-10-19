@@ -79,7 +79,7 @@ def quiz_setup():
 @login_required
 def quiz_start():
     if not can_start_quiz(session["user_id"]):
-        flash("You have used your 5 free quizzes for this week. Unlimited access will be available on the paid plan.", "danger")
+        flash("You have used your weekly quiz allowance. Review the plans page for available options.", "danger")
         return redirect(url_for("main.quiz"))
 
     preset_slug = request.form.get("preset")

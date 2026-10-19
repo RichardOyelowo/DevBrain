@@ -36,7 +36,7 @@
             <p class="db-text-sm db-mt-2">Start as many sessions as you need.</p>
         {% else %}
             <strong>{{ quota.remaining }} quizzes left this week</strong>
-            <p class="db-text-sm db-mt-2">Free includes {{ quota.limit }} attempts per rolling week.</p>
+            <p class="db-text-sm db-mt-2">{{ quota.plan.title() }} includes {{ quota.limit }} quizzes per rolling week.</p>
         {% endif %}
     </div></div>
     <div class="db-card"><div class="db-card__body">

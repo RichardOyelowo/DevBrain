@@ -19,7 +19,7 @@ class Config:
     AUTH_RATE_LIMIT = int(os.environ.get("AUTH_RATE_LIMIT", 5))
     AUTH_RATE_WINDOW_SECONDS = int(os.environ.get("AUTH_RATE_WINDOW_SECONDS", 900))
     TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
-    WTF_CSRF_SSL_STRICT = _env_bool("WTF_CSRF_SSL_STRICT", False)
+    WTF_CSRF_SSL_STRICT = _env_bool("WTF_CSRF_SSL_STRICT", ENVIRONMENT == "production")
 
     raw_database_url = os.environ.get("DATABASE_URL", "sqlite:///instance/devbrain.db")
     if raw_database_url.startswith("postgres://"):

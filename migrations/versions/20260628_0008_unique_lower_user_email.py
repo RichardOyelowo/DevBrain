@@ -25,8 +25,8 @@ def upgrade():
 
     if INDEX_NAME not in indexes:
         duplicate_rows = bind.execute(sa.text(
-            "SELECT lower(email) AS normalized_email, count(*) AS total "
-            "FROM users GROUP BY lower(email) HAVING count(*) > 1"
+            "SELECT lower(trim(email)) AS normalized_email, count(*) AS total "
+            "FROM users GROUP BY lower(trim(email)) HAVING count(*) > 1"
         )).fetchall()
         if duplicate_rows:
             emails = ", ".join(row.normalized_email for row in duplicate_rows)

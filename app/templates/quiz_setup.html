@@ -17,7 +17,7 @@
             <strong>Unlimited practice</strong>
             <p class="db-text-sm db-mt-2">Start any number of quizzes from the published bank.</p>
         {% else %}
-            <strong>{{ quota.remaining }} of {{ quota.limit }} free weekly quizzes remaining</strong>
+            <strong>{{ quota.remaining }} of {{ quota.limit }} {{ quota.plan.title() }} weekly quizzes remaining</strong>
             <p class="db-text-sm db-mt-2">Attempts stay on your dashboard, history, and reviews.</p>
         {% endif %}
     </div></div>
