@@ -125,7 +125,7 @@
   background: rgba(4, 17, 29, 0.74);
   color: var(--db-text-tertiary);
   font-family: var(--db-font-display);
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.09em;
 }
@@ -150,7 +150,7 @@
 .mkt-demo-heading > span:last-child {
   color: var(--db-text-tertiary);
   font-family: var(--db-font-mono);
-  font-size: 0.67rem;
+  font-size: 0.75rem;
 }
 
 .mkt-demo-heading b { color: var(--db-text-secondary); font-weight: 500; }
@@ -239,7 +239,7 @@
 .mkt-float-card__icon svg { width: 16px; height: 16px; }
 .mkt-float-card small,
 .mkt-float-card strong { display: block; }
-.mkt-float-card small { color: var(--db-text-tertiary); font-size: 0.56rem; letter-spacing: 0.08em; }
+.mkt-float-card small { color: var(--db-text-tertiary); font-size: 0.7rem; letter-spacing: 0.08em; }
 .mkt-float-card strong { margin-top: 2px; color: var(--db-text-primary); font-family: var(--db-font-display); font-size: var(--db-text-sm); }
 .mkt-float-card > b { margin-left: 0.25rem; color: var(--db-accent); font-size: var(--db-text-sm); }
 
@@ -329,10 +329,10 @@
 .mkt-dashboard-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; padding: 1rem 0; }
 .mkt-dashboard-metrics article { padding: 0.9rem; border: 1px solid var(--db-border-subtle); border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
 .mkt-dashboard-metrics small,
-.mkt-focus-row small { display: block; color: var(--db-text-tertiary); font-family: var(--db-font-display); font-size: 0.59rem; font-weight: 700; letter-spacing: 0.08em; }
+.mkt-focus-row small { display: block; color: var(--db-text-tertiary); font-family: var(--db-font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; }
 .mkt-dashboard-metrics strong { display: block; margin-top: 0.45rem; color: var(--db-text-primary); font-family: var(--db-font-display); font-size: 1.8rem; letter-spacing: -0.05em; }
 .mkt-dashboard-metrics strong span { color: var(--db-accent); font-size: 0.9rem; }
-.mkt-dashboard-metrics article > span { color: var(--db-text-tertiary); font-size: 0.68rem; }
+.mkt-dashboard-metrics article > span { color: var(--db-text-tertiary); font-size: 0.75rem; }
 .mkt-focus-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem; border: 1px solid rgba(68, 226, 205, 0.22); border-radius: 10px; background: rgba(68, 226, 205, 0.055); }
 .mkt-focus-row__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--db-accent-muted); color: var(--db-accent); }
 .mkt-focus-row__icon svg { width: 17px; height: 17px; }
@@ -434,17 +434,17 @@
   .mkt-proof-list { display: grid; gap: 0.55rem; }
   .mkt-hero__visual { padding: 0.3rem 0 2.3rem; }
   .mkt-demo-window { transform: none; border-radius: 13px; }
-  .mkt-demo-window__bar { padding: 0 0.8rem; font-size: 0.53rem; }
+  .mkt-demo-window__bar { padding: 0 0.8rem; font-size: 0.7rem; }
   .mkt-demo-window__body { padding: 1rem; }
   .mkt-float-card { padding: 0.65rem 0.75rem; }
   .mkt-float-card--score { left: 0; }
   .mkt-float-card--focus { right: 0; top: auto; bottom: 0; }
   .mkt-float-card__icon { width: 28px; height: 28px; }
-  .mkt-float-card small { font-size: 0.5rem; }
-  .mkt-float-card strong { font-size: 0.68rem; }
+  .mkt-float-card small { font-size: 0.65rem; }
+  .mkt-float-card strong { font-size: 0.8rem; }
   .mkt-stats article { padding: 1rem; }
   .mkt-stats strong { font-size: 1.5rem; }
-  .mkt-stats span { font-size: 0.68rem; }
+  .mkt-stats span { font-size: 0.75rem; }
   .mkt-example-grid { grid-template-columns: 1fr; }
   .mkt-pricing-grid { grid-template-columns: 1fr; }
   .mkt-mini-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -452,8 +452,8 @@
   .mkt-dashboard-metrics { gap: 0.35rem; }
   .mkt-dashboard-metrics article { padding: 0.65rem; }
   .mkt-dashboard-metrics strong { font-size: 1.45rem; }
-  .mkt-dashboard-metrics small { font-size: 0.5rem; }
-  .mkt-dashboard-metrics article > span { font-size: 0.58rem; }
+  .mkt-dashboard-metrics small { font-size: 0.65rem; }
+  .mkt-dashboard-metrics article > span { font-size: 0.68rem; }
   .mkt-focus-row__reason { display: none; }
   .mkt-plans { padding: 1.25rem; border-radius: 15px; }
   .mkt-plan-card { padding: 1.2rem; }
