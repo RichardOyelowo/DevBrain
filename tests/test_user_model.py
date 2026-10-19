@@ -210,6 +210,7 @@ class UserAuthRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("/profile", html)
+        self.assertIn("50 quiz attempts per rolling week", html)
         self.assertNotIn('href="/register"', html)
 
     def test_stale_session_redirects_after_password_reset(self):
@@ -419,7 +420,7 @@ class PasswordResetRouteTest(DevBrainTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"The reset link is invalid or expired.", response.data)
-        self.assertIn(b"Reset Your Password", response.data)
+        self.assertIn(b"Reset password", response.data)
 
     def test_reset_password_updates_user_password(self):
         user = User(email="learner@example.com", password=generate_password_hash("Old123!"))

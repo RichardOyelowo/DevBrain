@@ -150,8 +150,8 @@ class AdminRouteAccessTest(DevBrainTestCase):
             session["auth_marker"] = auth_marker(learner)
         learner_html = self.client.get("/dashboard").get_data(as_text=True)
 
-        self.assertIn("Admin</a>", admin_html)
-        self.assertNotIn("Admin</a>", learner_html)
+        self.assertIn('href="/admin/"', admin_html)
+        self.assertNotIn('href="/admin/"', learner_html)
 
     def test_admin_can_delete_empty_topic(self):
         admin = User(email="admin@example.com", username="Admin", password="hash", role="admin")
