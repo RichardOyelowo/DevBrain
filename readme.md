@@ -1,8 +1,23 @@
-# DevBrain
+<div align="center">
+
+# <img src="images/full_logo.svg" alt="DevBrain" height="150">
+
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![Status](https://img.shields.io/badge/Status-Active-success.svg)](https://github.com/RichardOyelowo/DevBrain)
+
+</div>
 
 DevBrain is a quiz app for practicing software topics. Learners take quizzes, review answers, and track progress. Admins manage the question bank through the app.
 
 The question bank lives in the app database. Quiz selection does not call an external quiz service.
+
+---
+
+![Demo](images/devbrain.png)
+
+---
 
 ## Why I built it
 
@@ -45,20 +60,20 @@ For production, set a unique `SECRET_KEY`, use PostgreSQL, and run migrations be
 
 The app reads configuration from environment variables. In development it also loads a local `.env` file.
 
-| Variable | Purpose |
-| --- | --- |
-| `SECRET_KEY` | Flask session signing. Required when `FLASK_ENV=production`. |
-| `DATABASE_URL` | SQLite or PostgreSQL connection URL. |
-| `FLASK_ENV` | Use `production` to enable production defaults. |
-| `ADMIN_BOOTSTRAP_ENABLED` | Allows the first account on an empty database to become admin. Defaults to false. |
-| `AUTH_RATE_LIMIT` | Auth POST limit per client IP and email. Defaults to 5. |
-| `AUTH_RATE_WINDOW_SECONDS` | Rate-limit window in seconds. Defaults to 900. |
-| `TRUST_PROXY_HEADERS` | Reads forwarded client IP headers when set to true. Use only behind a trusted proxy. |
-| `SESSION_COOKIE_SECURE` | Secure cookie override. Defaults to true in production. |
-| `WTF_CSRF_SSL_STRICT` | Strict CSRF referrer checks. Defaults to true in production. |
-| `MAIL_USERNAME`, `MAIL_PASSWORD` | SMTP account. `EMAIL` and `EMAIL_PASSWORD` are accepted as aliases. |
-| `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USE_TLS`, `MAIL_USE_SSL` | SMTP connection settings. |
-| `REDIS_URL` | Optional Redis-backed sessions. |
+| Variable                                                   | Purpose                                                                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `SECRET_KEY`                                               | Flask session signing. Required when `FLASK_ENV=production`.                         |
+| `DATABASE_URL`                                             | SQLite or PostgreSQL connection URL.                                                 |
+| `FLASK_ENV`                                                | Use `production` to enable production defaults.                                      |
+| `ADMIN_BOOTSTRAP_ENABLED`                                  | Allows the first account on an empty database to become admin. Defaults to false.    |
+| `AUTH_RATE_LIMIT`                                          | Auth POST limit per client IP and email. Defaults to 5.                              |
+| `AUTH_RATE_WINDOW_SECONDS`                                 | Rate-limit window in seconds. Defaults to 900.                                       |
+| `TRUST_PROXY_HEADERS`                                      | Reads forwarded client IP headers when set to true. Use only behind a trusted proxy. |
+| `SESSION_COOKIE_SECURE`                                    | Secure cookie override. Defaults to true in production.                              |
+| `WTF_CSRF_SSL_STRICT`                                      | Strict CSRF referrer checks. Defaults to true in production.                         |
+| `MAIL_USERNAME`, `MAIL_PASSWORD`                           | SMTP account. `EMAIL` and `EMAIL_PASSWORD` are accepted as aliases.                  |
+| `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USE_TLS`, `MAIL_USE_SSL` | SMTP connection settings.                                                            |
+| `REDIS_URL`                                                | Optional Redis-backed sessions.                                                      |
 
 Do not commit real secrets. See [operations and plans](docs/operations-and-plans.md) for production settings and migration notes.
 
