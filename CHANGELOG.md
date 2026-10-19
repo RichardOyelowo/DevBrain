@@ -2,7 +2,7 @@
 
 This file records the notable changes in each existing release and the work prepared for the next release. Existing tag names and dates are kept as they appear in Git. The tags are not in semantic version order: `v0.1-public` was created after `v1.0.1`.
 
-## Unreleased
+## v2.0.0 - 2026-10-18
 
 Prepared for the next major release. This section is not tagged or released yet.
 
