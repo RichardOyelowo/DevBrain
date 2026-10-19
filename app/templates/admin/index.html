@@ -1,30 +1,29 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import btn, metric %}
 
 {% block title %}: Admin{% endblock %}
 
 {% block body %}
-<section class="app-page">
-    <div class="page-heading">
-        <p class="eyebrow">Admin</p>
-        <h1>Question bank</h1>
-    </div>
+<div class="db-page-header">
+    <p class="db-eyebrow">Admin</p>
+    <h1 class="db-page-title">Question bank</h1>
+</div>
 
-    <div class="metric-grid">
-        <article class="metric-card"><span>Topics</span><strong>{{ stats.topics }}</strong></article>
-        <article class="metric-card"><span>Languages</span><strong>{{ stats.languages }}</strong></article>
-        <article class="metric-card"><span>Fast starts</span><strong>{{ stats.presets }}</strong></article>
-        <article class="metric-card"><span>Published</span><strong>{{ stats.published }}</strong></article>
-        <article class="metric-card"><span>Drafts</span><strong>{{ stats.drafts }}</strong></article>
-        <article class="metric-card"><span>Imports</span><strong>{{ stats.imports }}</strong></article>
-    </div>
+<div class="metric-grid">
+    {{ metric("Topics", stats.topics) }}
+    {{ metric("Languages", stats.languages) }}
+    {{ metric("Fast starts", stats.presets) }}
+    {{ metric("Published", stats.published) }}
+    {{ metric("Drafts", stats.drafts) }}
+    {{ metric("Imports", stats.imports) }}
+</div>
 
-    <div class="actions">
-        <a href="{{ url_for('admin.questions') }}" class="button button-primary">Questions</a>
-        <a href="{{ url_for('admin.question_new') }}" class="button button-secondary">New Question</a>
-        <a href="{{ url_for('admin.topics') }}" class="button button-secondary">Topics</a>
-        <a href="{{ url_for('admin.languages') }}" class="button button-secondary">Languages</a>
-        <a href="{{ url_for('admin.presets') }}" class="button button-secondary">Fast Starts</a>
-        <a href="{{ url_for('admin.import_questions') }}" class="button button-secondary">Import Questions</a>
-    </div>
-</section>
+<div class="admin-actions">
+    {{ btn("Questions", href=url_for('admin.questions')) }}
+    {{ btn("New question", href=url_for('admin.question_new'), variant="secondary") }}
+    {{ btn("Topics", href=url_for('admin.topics'), variant="secondary") }}
+    {{ btn("Languages", href=url_for('admin.languages'), variant="secondary") }}
+    {{ btn("Fast starts", href=url_for('admin.presets'), variant="secondary") }}
+    {{ btn("Import", href=url_for('admin.import_questions'), variant="secondary") }}
+</div>
 {% endblock %}

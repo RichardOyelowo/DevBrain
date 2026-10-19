@@ -1,0 +1,7 @@
+:root {
+  --db-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --db-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.32);
+  --db-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.36);
+  --db-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.44);
+  --db-shadow-focus: 0 0 0 2px var(--db-bg-base), 0 0 0 4px var(--db-border-focus);
+}

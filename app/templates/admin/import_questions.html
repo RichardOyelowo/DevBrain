@@ -4,15 +4,16 @@
 
 {% block body %}
 <section class="app-page">
-    <div class="page-heading">
-        <p class="eyebrow">Admin</p>
-        <h1>Import questions</h1>
-        <p class="muted">Paste JSON or upload a JSON file. Topic is the learning category, while language is only for code snippets.</p>
+    <div class="db-page-header">
+        <p class="db-eyebrow">Admin / Question bank</p>
+        <h1 class="db-page-title">Import questions</h1>
+        <p class="db-page-subtitle">Paste JSON or upload a JSON file. Topic is the learning category, while language filters code snippets.</p>
     </div>
 
-    <form method="post" enctype="multipart/form-data" class="panel form-grid">
-        <label class="form-group full">Question JSON
-            <textarea name="payload" class="form-control textarea code-input" rows="18" spellcheck="false">[
+    <form method="post" enctype="multipart/form-data" class="db-panel db-p-6 form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="db-field full">Question JSON
+            <textarea name="payload" class="db-textarea code-input" rows="18" spellcheck="false">[
   {
     "topic": "Data Structures",
     "difficulty": "EASY",
@@ -30,21 +31,21 @@
   }
 ]</textarea>
         </label>
-        <label class="form-group full">Upload JSON file
-            <input type="file" name="question_file" accept="application/json,.json" class="form-control">
+        <label class="db-field full">Upload JSON file
+            <input type="file" name="question_file" accept="application/json,.json" class="db-input">
         </label>
-        <button class="button button-primary" type="submit">Import Drafts</button>
+        <button class="db-btn db-btn--primary" type="submit">Import drafts</button>
     </form>
 
-    <div class="table-card">
-        <div class="panel-header">
+    <section class="db-panel db-panel--flush">
+        <div class="db-panel__header">
             <div>
-                <p class="eyebrow">Recent</p>
-                <h2>Import history</h2>
+                <p class="db-eyebrow">Recent</p>
+                <h2 class="db-panel__title">Import history</h2>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="table">
+        <div class="db-table-wrap">
+            <table class="db-table">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -65,6 +66,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 </section>
 {% endblock %}

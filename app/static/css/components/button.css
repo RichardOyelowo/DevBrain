@@ -1,0 +1,97 @@
+.db-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--db-space-2);
+  height: 40px;
+  padding: 0 var(--db-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--db-radius-sm);
+  font-family: var(--db-font-sans);
+  font-size: var(--db-text-sm);
+  font-family: var(--db-font-display);
+  font-weight: var(--db-weight-semibold);
+  letter-spacing: 0.015em;
+  font-weight: var(--db-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background var(--db-duration-fast) var(--db-ease-out),
+    border-color var(--db-duration-fast) var(--db-ease-out),
+    color var(--db-duration-fast) var(--db-ease-out),
+    box-shadow var(--db-duration-fast) var(--db-ease-out);
+}
+
+.db-btn--md {
+  height: 44px;
+  padding: 0 var(--db-space-5);
+  font-size: var(--db-text-sm);
+}
+
+.db-btn--lg {
+  height: 50px;
+  padding: 0 var(--db-space-6);
+  font-size: var(--db-text-base);
+}
+
+.db-btn--primary {
+  background: var(--db-accent);
+  color: var(--db-accent-text);
+}
+
+.db-btn--primary:hover {
+  background: var(--db-accent-hover);
+}
+
+.db-btn--primary:active {
+  background: var(--db-accent-active);
+}
+
+.db-btn--secondary {
+  background: var(--db-bg-muted);
+  border-color: var(--db-border-default);
+  color: var(--db-text-primary);
+}
+
+.db-btn--secondary:hover {
+  background: var(--db-bg-emphasis);
+  border-color: var(--db-border-strong);
+}
+
+.db-btn--ghost {
+  background: transparent;
+  color: var(--db-text-secondary);
+}
+
+.db-btn--ghost:hover {
+  background: var(--db-bg-muted);
+  color: var(--db-text-primary);
+}
+
+.db-btn--danger {
+  background: var(--db-danger-muted);
+  border-color: rgba(235, 87, 87, 0.3);
+  color: var(--db-danger);
+}
+
+.db-btn--danger:hover {
+  background: rgba(235, 87, 87, 0.22);
+}
+
+.db-btn--icon {
+  width: 40px;
+  padding: 0;
+}
+
+.db-btn:disabled,
+.db-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.db-btn-group {
+  display: inline-flex;
+  gap: var(--db-space-2);
+  flex-wrap: wrap;
+}

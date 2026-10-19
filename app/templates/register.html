@@ -1,54 +1,46 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import alert %}
 
 {% block title %}: Register{% endblock %}
 
 {% block body %}
-    <section class="auth-container">
-        <p class="eyebrow">Start tracking progress</p>
-        <h1>Create an Account</h1>
+<section class="db-auth">
+    <p class="db-eyebrow">Get started</p>
+    <h1>Create an account</h1>
+    <p class="db-text-secondary db-text-sm">Free includes 5 quizzes per rolling week, saved reviews, and a dashboard.</p>
 
-        {% if error %}
-            <div class="error-message">{{ error }}</div>
-        {% endif %}
-
-        {% if form.errors %}
-            <div class="form-errors">
-                {% for field, errors in form.errors.items() %}
-                    {% for error in errors %}
-                        <div>{{ error }}</div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <form action="{{ url_for('auth.register') }}" method="post">
-            {{ form.hidden_tag() }}
-
-            <div class="form-group">
-                {{ form.email.label }}
-                {{ form.email(class="form-control", autocomplete="email", autofocus=True) }}
-            </div>
-
-            <div class="form-group">
-                {{ form.username.label }}
-                {{ form.username(class="form-control", placeholder="Optional") }}
-            </div>
-
-            <div class="form-group">
-                {{ form.password.label }}
-                {{ form.password(class="form-control", autocomplete="new-password") }}
-            </div>
-
-            <div class="form-group">
-                {{ form.confirmation.label }}
-                {{ form.confirmation(class="form-control", autocomplete="new-password") }}
-            </div>
-
-            {{ form.submit(class="button button-primary form-submit") }}
-        </form>
-
-        <div class="auth-links">
-            <a href="{{ url_for('auth.login') }}">Already have an account?</a>
+    {% if error %}{{ alert(error, "danger") }}{% endif %}
+    {% if form.errors %}
+        <div class="db-alert db-alert--danger">
+            {% for field, errors in form.errors.items() %}
+                {% for err in errors %}<div>{{ err }}</div>{% endfor %}
+            {% endfor %}
         </div>
-    </section>
+    {% endif %}
+
+    <form action="{{ url_for('auth.register') }}" method="post">
+        {{ form.hidden_tag() }}
+        <div class="db-field">
+            {{ form.email.label(class="db-field__label") }}
+            {{ form.email(class_="db-input", autocomplete="email", autofocus=True) }}
+        </div>
+        <div class="db-field">
+            {{ form.username.label(class="db-field__label") }}
+            {{ form.username(class_="db-input", placeholder="Optional") }}
+        </div>
+        <div class="db-field">
+            {{ form.password.label(class="db-field__label") }}
+            {{ form.password(class_="db-input", autocomplete="new-password") }}
+        </div>
+        <div class="db-field">
+            {{ form.confirmation.label(class="db-field__label") }}
+            {{ form.confirmation(class_="db-input", autocomplete="new-password") }}
+        </div>
+        {{ form.submit(class_="db-btn db-btn--primary db-w-full") }}
+    </form>
+
+    <div class="db-auth__links">
+        <a href="{{ url_for('auth.login') }}">Already have an account?</a>
+    </div>
+</section>
 {% endblock %}

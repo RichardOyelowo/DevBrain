@@ -17,7 +17,16 @@ migrate = Migrate()
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
+        user_id = session.get("user_id")
+        if user_id is None:
+            return redirect(url_for("auth.login"))
+        from .models import User
+        from .session_security import auth_marker
+
+        user = db.session.get(User, user_id)
+        if not user or session.get("auth_marker") != auth_marker(user):
+            session.clear()
+            flash("Please log in again.", "info")
             return redirect(url_for("auth.login"))
         return f(*args, **kwargs)
     return decorated_function
@@ -26,12 +35,18 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get("user_id") is None:
+        user_id = session.get("user_id")
+        if user_id is None:
             return redirect(url_for("auth.login"))
 
         from .models import User
+        from .session_security import auth_marker
 
-        user = db.session.get(User, session["user_id"])
+        user = db.session.get(User, user_id)
+        if not user or session.get("auth_marker") != auth_marker(user):
+            session.clear()
+            flash("Please log in again.", "info")
+            return redirect(url_for("auth.login"))
         if not user or user.role != "admin":
             flash("You need an admin account to open that page.", "danger")
             return redirect(url_for("main.dashboard"))

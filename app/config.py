@@ -10,7 +10,16 @@ def _env_bool(name, default=False):
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "devbrain-local-secret")
+    ENVIRONMENT = os.environ.get("FLASK_ENV", "development")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    if ENVIRONMENT == "production" and not SECRET_KEY:
+        raise RuntimeError("SECRET_KEY is required in production.")
+    SECRET_KEY = SECRET_KEY or "devbrain-local-secret"
+    ADMIN_BOOTSTRAP_ENABLED = _env_bool("ADMIN_BOOTSTRAP_ENABLED", False)
+    AUTH_RATE_LIMIT = int(os.environ.get("AUTH_RATE_LIMIT", 5))
+    AUTH_RATE_WINDOW_SECONDS = int(os.environ.get("AUTH_RATE_WINDOW_SECONDS", 900))
+    TRUST_PROXY_HEADERS = _env_bool("TRUST_PROXY_HEADERS", False)
+    WTF_CSRF_SSL_STRICT = _env_bool("WTF_CSRF_SSL_STRICT", ENVIRONMENT == "production")
 
     raw_database_url = os.environ.get("DATABASE_URL", "sqlite:///instance/devbrain.db")
     if raw_database_url.startswith("postgres://"):
@@ -39,7 +48,7 @@ class Config:
     # Session security
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = os.environ.get("FLASK_ENV") == "production"
+    SESSION_COOKIE_SECURE = _env_bool("SESSION_COOKIE_SECURE", ENVIRONMENT == "production")
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
 
     PREFERRED_URL_SCHEME = "https"

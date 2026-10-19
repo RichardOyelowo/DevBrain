@@ -1,0 +1,49 @@
+.db-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--db-border-subtle);
+  border-radius: var(--db-radius-md);
+}
+
+.db-table {
+  width: 100%;
+  min-width: 560px;
+  font-size: var(--db-text-sm);
+}
+
+.db-table th {
+  padding: var(--db-space-3) var(--db-space-4);
+  border-bottom: 1px solid var(--db-border-subtle);
+  background: var(--db-bg-muted);
+  font-size: var(--db-text-xs);
+  font-weight: var(--db-weight-medium);
+  letter-spacing: var(--db-tracking-wide);
+  text-transform: uppercase;
+  color: var(--db-text-tertiary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.db-table td {
+  padding: var(--db-space-3) var(--db-space-4);
+  border-bottom: 1px solid var(--db-border-subtle);
+  color: var(--db-text-secondary);
+  vertical-align: middle;
+}
+
+.db-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.db-table tbody tr {
+  transition: background var(--db-duration-fast) var(--db-ease-out);
+}
+
+.db-table tbody tr:hover td {
+  background: var(--db-bg-muted);
+}
+
+.db-table td strong {
+  color: var(--db-text-primary);
+  font-weight: var(--db-weight-medium);
+}

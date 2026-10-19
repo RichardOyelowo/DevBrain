@@ -1,0 +1,48 @@
+.db-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--db-space-1);
+  height: 22px;
+  padding: 0 var(--db-space-2);
+  border-radius: var(--db-radius-full);
+  font-size: var(--db-text-xs);
+  font-weight: var(--db-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.db-badge--default {
+  background: var(--db-bg-emphasis);
+  color: var(--db-text-secondary);
+}
+
+.db-badge--accent {
+  background: var(--db-accent-muted);
+  color: var(--db-accent);
+}
+
+.db-badge--violet {
+  background: rgba(191, 166, 255, 0.14);
+  color: #d1bdff;
+}
+
+.db-badge--success {
+  background: var(--db-success-muted);
+  color: var(--db-success);
+}
+
+.db-badge--warning {
+  background: var(--db-warning-muted);
+  color: var(--db-warning);
+}
+
+.db-badge--danger {
+  background: var(--db-danger-muted);
+  color: var(--db-danger);
+}
+
+.db-badge--outline {
+  background: transparent;
+  border: 1px solid var(--db-border-default);
+  color: var(--db-text-secondary);
+}

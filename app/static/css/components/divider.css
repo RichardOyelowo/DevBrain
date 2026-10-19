@@ -1,0 +1,13 @@
+.db-divider {
+  border: none;
+  border-top: 1px solid var(--db-border-subtle);
+  margin: var(--db-space-4) 0;
+}
+
+.db-divider--vertical {
+  width: 1px;
+  height: 100%;
+  border-top: none;
+  border-left: 1px solid var(--db-border-subtle);
+  margin: 0 var(--db-space-4);
+}

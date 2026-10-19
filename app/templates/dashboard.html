@@ -1,69 +1,68 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import btn, metric, empty %}
 
 {% block title %}: Dashboard{% endblock %}
 
 {% block body %}
-<section class="app-page">
-    <section class="dashboard-hero">
+<div class="dashboard-hero">
+    <div>
+        <p class="db-eyebrow">Workspace</p>
+        <h1 class="db-page-title">{{ current_user.username or "Developer" }}</h1>
+        <p class="db-page-subtitle">Volume, average, recent attempts, and the topic that should go next.</p>
+        <div class="db-row db-row--3 db-mt-4">
+            {{ btn("New quiz", href=url_for('main.quiz'), icon_name="zap") }}
+            {{ btn("History", href=url_for('main.history'), variant="secondary") }}
+        </div>
+    </div>
+    <article class="db-card db-metric">
+        <div class="db-metric__label">Average</div>
+        <div class="db-metric__value">{{ stats.average }}%</div>
+    </article>
+</div>
+
+<div class="quota-row">
+    {% if active_attempt %}
+    <div class="db-card"><div class="db-card__body db-row db-row--between db-row--3">
         <div>
-            <p class="eyebrow">Command center</p>
-            <h1>Welcome back, {{ current_user.username or "Developer" }}.</h1>
-            <p class="muted">Track quiz volume, average performance, recent attempts, and the topic that deserves the next focused session.</p>
-            <div class="hero-actions">
-                <a href="{{ url_for('main.quiz') }}" class="button button-primary">New Challenge</a>
-                <a href="{{ url_for('main.history') }}" class="button button-secondary">Review History</a>
-            </div>
+            <strong>Resume {{ active_attempt.topic_label }}</strong>
+            <p class="db-text-sm db-mt-2">{{ active_attempt.answered_count }} of {{ active_attempt.question_count }} answered.</p>
         </div>
-        <div class="score-ring" aria-label="Average score">
-            <div class="score-ring-inner">
-                <strong>{{ stats.average }}%</strong>
-                <span>Average</span>
-            </div>
-        </div>
-    </section>
+        {{ btn("Continue", href=url_for('main.quiz_question', attempt_id=active_attempt.id), variant="secondary") }}
+    </div></div>
+    {% endif %}
+    <div class="db-card"><div class="db-card__body">
+        {% if quota.is_unlimited %}
+            <strong>Unlimited access</strong>
+            <p class="db-text-sm db-mt-2">Start as many sessions as you need.</p>
+        {% else %}
+            <strong>{{ quota.remaining }} quizzes left this week</strong>
+            <p class="db-text-sm db-mt-2">{{ quota.plan.title() }} includes {{ quota.limit }} quizzes per rolling week.</p>
+        {% endif %}
+    </div></div>
+    <div class="db-card"><div class="db-card__body">
+        <p class="db-eyebrow">Recommended</p>
+        <strong>{{ stats.recommended }}</strong>
+        <p class="db-text-sm db-mt-2">Weakest recent signal.</p>
+    </div></div>
+</div>
 
-    <div class="dashboard-top-grid">
-        <div class="quota-banner">
-            {% if quota.is_unlimited %}
-                <strong>Unlimited access</strong>
-                <span>Your account can start as many practice sessions as needed.</span>
-            {% else %}
-                <strong>{{ quota.remaining }} free quizzes left this week</strong>
-                <span>Free accounts include {{ quota.limit }} quiz attempts per rolling week. Unlimited monthly access is planned for the paid tier.</span>
-            {% endif %}
-        </div>
-        <div class="panel compact-panel">
-            <p class="eyebrow">Recommended next</p>
-            <strong>{{ stats.recommended }}</strong>
-            <span class="muted">Prioritize the topic with the weakest recent signal.</span>
-        </div>
-    </div>
+<div class="metric-grid">
+    {{ metric("Total quizzes", stats.total) }}
+    {{ metric("Average", stats.average ~ "%") }}
+    {{ metric("Best", (stats.best|default(0)) ~ "%") }}
+    {{ metric("This week", stats.completed_this_week|default(0)) }}
+    {{ metric("Streak", (stats.streak|default(0)) ~ " days") }}
+    {{ metric("Strongest", stats.strongest) }}
+    {{ metric("Weakest", stats.weakest) }}
+</div>
 
-    <div class="metric-grid">
-        <article class="metric-card">
-            <span>Total quizzes</span>
-            <strong>{{ stats.total }}</strong>
-        </article>
-        <article class="metric-card">
-            <span>Average score</span>
-            <strong>{{ stats.average }}%</strong>
-        </article>
-        <article class="metric-card">
-            <span>Strongest topic</span>
-            <strong>{{ stats.strongest }}</strong>
-        </article>
-        <article class="metric-card">
-            <span>Weakest topic</span>
-            <strong>{{ stats.weakest }}</strong>
-        </article>
-    </div>
-
-    <div class="dashboard-bento">
-        <section class="panel span-7">
-            <div class="panel-header">
-                <h2>Recent attempts</h2>
-                <a href="{{ url_for('main.history') }}">View all</a>
-            </div>
+<div class="bento">
+    <section class="db-panel">
+        <div class="db-panel__header">
+            <h2 class="db-panel__title">Recent attempts</h2>
+            <a class="db-link db-text-sm" href="{{ url_for('main.history') }}">View all</a>
+        </div>
+        <div class="db-panel__body">
             {% if stats.recent %}
                 <div class="attempt-list">
                     {% for attempt in stats.recent %}
@@ -74,65 +73,60 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="empty-state compact">
-                    <h2>No history yet.</h2>
-                    <a href="{{ url_for('main.quiz') }}" class="button button-primary">Start a Quiz</a>
-                </div>
+                {{ empty("No history yet.", action_href=url_for('main.quiz'), action_label="Start a quiz", icon_name="history") }}
             {% endif %}
-        </section>
+        </div>
+    </section>
 
-        <section class="panel span-5">
-            <div class="panel-header">
-                <h2>Launch practice</h2>
-            </div>
-            <p class="muted">Focus your next session on {{ stats.recommended }}.</p>
-            <form action="{{ url_for('main.quiz_start') }}" method="post" class="inline-form">
-                <select name="topics" class="form-control">
+    <section class="db-panel">
+        <div class="db-panel__header"><h2 class="db-panel__title">Launch practice</h2></div>
+        <div class="db-panel__body">
+            <p class="db-text-sm">Focus the next session on {{ stats.recommended }}.</p>
+            <form action="{{ url_for('main.quiz_start') }}" method="post" class="inline-form db-mt-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="topics" class="db-select">
                     {% for topic in topics %}
                         <option value="{{ topic.id }}" {% if topic.name == stats.recommended %}selected{% endif %}>{{ topic.name }}</option>
                     {% endfor %}
                 </select>
-                <select name="difficulty" class="form-control">
+                <select name="difficulty" class="db-select">
                     <option value="EASY">Easy</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HARD">Hard</option>
                 </select>
                 <input type="hidden" name="limit" value="5">
-                <button class="button button-primary" type="submit" {% if not quota.is_unlimited and quota.remaining <= 0 %}disabled{% endif %}>Start</button>
+                <button class="db-btn db-btn--primary" type="submit" {% if not quota.is_unlimited and quota.remaining <= 0 %}disabled{% endif %}>Start</button>
             </form>
-        </section>
+        </div>
+    </section>
 
-        <section class="panel span-7">
-            <div class="panel-header">
-                <h2>Skill analysis</h2>
-                <span class="muted">Current signal</span>
-            </div>
-            <div class="skill-list">
-                <div class="skill-row">
-                    <div><span>{{ stats.strongest }}</span><strong>{{ stats.average if stats.total else 0 }}%</strong></div>
-                    <div class="progress-track"><span style="width: {{ stats.average if stats.total else 8 }}%"></span></div>
+    <section class="db-panel">
+        <div class="db-panel__header"><h2 class="db-panel__title">Weak-topic signal</h2></div>
+        <div class="db-panel__body">
+            {% if stats.topic_breakdown %}
+                <div class="skill-list">
+                    {% for item in stats.topic_breakdown %}
+                        <div class="skill-row">
+                            <div><span>{{ item.topic }}</span> <strong>{{ item.average }}%</strong></div>
+                            <div class="progress-track"><span style="width: {{ item.average if item.average > 8 else 8 }}%"></span></div>
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="skill-row">
-                    <div><span>{{ stats.weakest }}</span><strong>{{ (stats.average - 12) if stats.total and stats.average > 12 else 0 }}%</strong></div>
-                    <div class="progress-track"><span style="width: {{ (stats.average - 12) if stats.total and stats.average > 12 else 8 }}%"></span></div>
-                </div>
-                <div class="skill-row">
-                    <div><span>Consistency</span><strong>{{ 100 if stats.total >= 5 else stats.total * 20 }}%</strong></div>
-                    <div class="progress-track"><span style="width: {{ 100 if stats.total >= 5 else stats.total * 20 }}%"></span></div>
-                </div>
-            </div>
-        </section>
+            {% else %}
+                <p class="db-text-sm">Complete a quiz and topic signals will appear here.</p>
+            {% endif %}
+        </div>
+    </section>
 
-        <section class="panel span-5">
-            <div class="panel-header">
-                <h2>Learning path</h2>
-            </div>
+    <section class="db-panel">
+        <div class="db-panel__header"><h2 class="db-panel__title">Next session</h2></div>
+        <div class="db-panel__body">
             <div class="path-list">
-                <div><span>01</span><strong>Take a focused quiz</strong><small>Choose one skill and answer carefully.</small></div>
-                <div><span>02</span><strong>Review mistakes</strong><small>Read explanations before starting another run.</small></div>
-                <div><span>03</span><strong>Repeat the weak topic</strong><small>Use history to confirm progress.</small></div>
+                <div><span>01</span><div><strong>{{ stats.recommended }}</strong><small class="db-text-tertiary"> Start with the weakest signal.</small></div></div>
+                <div><span>02</span><div><strong>{{ stats.weakest }}</strong><small class="db-text-tertiary"> Review explanations after each miss.</small></div></div>
+                <div><span>03</span><div><strong>{{ stats.strongest }}</strong><small class="db-text-tertiary"> Keep strong topics warm.</small></div></div>
             </div>
-        </section>
-    </div>
-</section>
+        </div>
+    </section>
+</div>
 {% endblock %}

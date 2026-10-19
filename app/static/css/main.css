@@ -1,0 +1,16 @@
+/*
+ * DevBrain Design System v2
+ * Linear-inspired · modular CSS architecture
+ *
+ * Entry point — loaded by layout.html (Commit 2+).
+ * Until then, the four legacy shim files import this.
+ */
+
+@import url("tokens/_index.css");
+@import url("reset/normalize.css");
+@import url("base/_index.css");
+@import url("layout/_index.css");
+@import url("components/_index.css");
+@import url("utilities/_index.css");
+@import url("pages.css");
+@import url("legacy/shim.css");

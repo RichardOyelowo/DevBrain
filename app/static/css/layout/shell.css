@@ -1,0 +1,83 @@
+/* App shell — sidebar + main content (Linear-style) */
+
+.db-shell {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.db-shell--marketing {
+  flex-direction: column;
+}
+
+.db-shell__sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--db-sidebar-width);
+  z-index: var(--db-z-sidebar);
+  display: flex;
+  flex-direction: column;
+  background: var(--db-sidebar-bg);
+  border-right: 1px solid var(--db-sidebar-border);
+}
+
+.db-shell__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.db-shell--app .db-shell__main {
+  margin-left: var(--db-sidebar-width);
+}
+
+.db-shell__content {
+  flex: 1;
+  width: 100%;
+  max-width: var(--db-content-wide);
+  margin: 0 auto;
+  padding: var(--db-space-8) var(--db-page-padding);
+}
+
+.db-shell__content--narrow {
+  max-width: var(--db-content-max);
+}
+
+.db-shell__content--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.db-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--db-z-sidebar) - 1);
+  background: var(--db-bg-overlay);
+}
+
+.db-sidebar-backdrop.is-open {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .db-shell__sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--db-duration-normal) var(--db-ease-out);
+  }
+
+  .db-shell__sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .db-shell--app .db-shell__main {
+    margin-left: 0;
+  }
+
+  .db-shell__content {
+    padding: var(--db-space-6) var(--db-space-4);
+  }
+}

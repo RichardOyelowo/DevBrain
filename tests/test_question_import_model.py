@@ -3,6 +3,7 @@ import json
 from app.extensions import db
 from app.learning import import_questions_from_payload
 from app.models import AnswerOption, Question, QuestionImportBatch, Topic, User
+from app.session_security import auth_marker
 from tests.base import DevBrainTestCase
 
 
@@ -65,6 +66,7 @@ class QuestionImportModelTest(DevBrainTestCase):
         db.session.commit()
         with self.client.session_transaction() as client_session:
             client_session["user_id"] = user.id
+            client_session["auth_marker"] = auth_marker(user)
 
         response = self.client.post(
             "/admin/import",

@@ -1,4 +1,8 @@
 import unittest
+import os
+
+os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
+os.environ.setdefault("SECRET_KEY", "test-secret")
 
 from app import create_app
 from app.db import ensure_database_ready

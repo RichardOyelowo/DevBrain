@@ -1,11 +1,15 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 from .forms import Register, Login, ForgotPassword, ResetPassword
 from .extensions import db, mail, login_required
 from flask_mail import Message
 from .models import User
+from .rate_limit import rate_limit
+from .session_security import auth_marker
 import socket
 import threading
+from datetime import datetime
 from flask import (
     Blueprint, render_template, request,
     redirect, url_for, session, flash, current_app
@@ -60,13 +64,56 @@ def get_serializer():
     return URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
 
+def password_changed_marker(user):
+    return auth_marker(user)
+
+
+def create_reset_token(user):
+    payload = {
+        "user_id": user.id,
+        "password_changed_at": password_changed_marker(user),
+    }
+    return get_serializer().dumps(payload, salt="password-reset-salt")
+
+
+def load_reset_token(token):
+    payload = get_serializer().loads(token, salt="password-reset-salt", max_age=3600)
+    if not isinstance(payload, dict) or "user_id" not in payload:
+        raise BadSignature("Invalid reset token payload.")
+
+    user = db.session.get(User, payload["user_id"])
+    if not user or payload.get("password_changed_at") != password_changed_marker(user):
+        raise BadSignature("Reset token is no longer valid.")
+    return user
+
+
+def registration_role():
+    if User.query.count() == 0 and current_app.config.get("ADMIN_BOOTSTRAP_ENABLED"):
+        return "admin"
+    return "user"
+
+
+def normalize_email(value):
+    return (value or "").strip().lower()
+
+
+def start_user_session(user):
+    session.clear()
+    session["user_id"] = user.id
+    session["auth_marker"] = auth_marker(user)
+
+
 # ---------------- Registration ----------------
 @auth.route("/register", methods=["GET", "POST"])
+@rate_limit("register")
 def register():
+    if session.get("user_id"):
+        return redirect(url_for("main.dashboard"))
+
     form = Register()
 
     if form.validate_on_submit():
-        email = form.email.data
+        email = normalize_email(form.email.data)
         username = form.username.data
         password = form.password.data
 
@@ -74,17 +121,22 @@ def register():
             flash("Email already exists","danger")
             return redirect(url_for("auth.login"))
 
-        role = "admin" if User.query.count() == 0 else "user"
         user = User(
             email=email,
             username=username,
             password=generate_password_hash(password),
-            role=role,
+            password_changed_at=datetime.utcnow(),
+            role=registration_role(),
         )
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Email already exists", "danger")
+            return redirect(url_for("auth.login"))
 
-        session["user_id"] = user.id
+        start_user_session(user)
         return redirect(url_for("main.dashboard"))
 
     return render_template("register.html", form=form)
@@ -92,11 +144,15 @@ def register():
 
 # ---------------- Login ----------------
 @auth.route("/login", methods=["GET", "POST"])
+@rate_limit("login")
 def login():
+    if session.get("user_id"):
+        return redirect(url_for("main.dashboard"))
+
     form = Login()
 
     if form.validate_on_submit():
-        email = form.email.data
+        email = normalize_email(form.email.data)
         password = form.password.data
 
         user = User.query.filter_by(email=email).first()
@@ -105,14 +161,14 @@ def login():
             flash("Invalid email or password", "info")
             return render_template("login.html", form=form)
 
-        session["user_id"] = user.id
+        start_user_session(user)
         return redirect(url_for("main.dashboard"))
 
     return render_template("login.html", form=form)
 
 
 # ---------------- Logout ----------------
-@auth.route("/logout")
+@auth.route("/logout", methods=["POST"])
 @login_required
 def logout():
     session.clear()
@@ -121,17 +177,17 @@ def logout():
 
 # ---------------- Forgot Password ----------------
 @auth.route("/forgot_password", methods=["GET", "POST"])
+@rate_limit("forgot_password")
 def forgot_password():
     form = ForgotPassword()
     
     if form.validate_on_submit():
-        users_email = form.email.data
+        users_email = normalize_email(form.email.data)
 
         user = User.query.filter_by(email=users_email).first()
 
         if user:
-            s = get_serializer()
-            token = s.dumps(user.id, salt="password-reset-salt")
+            token = create_reset_token(user)
             reset_link = url_for("auth.reset_password", token=token, _external=True)
             queue_reset_email(to_email=user.email, reset_link=reset_link, user_id=user.id)
 
@@ -142,12 +198,12 @@ def forgot_password():
 
 # ---------------- Reset Password ----------------
 @auth.route("/reset_password/<token>", methods=["GET", "POST"])
+@rate_limit("reset_password")
 def reset_password(token):
     form = ResetPassword()
 
-    s = get_serializer()
     try:
-        user_id = s.loads(token, salt="password-reset-salt", max_age=3600)
+        user = load_reset_token(token)
     except (BadSignature, SignatureExpired):
         return render_template(
             "forgot_password.html",
@@ -159,9 +215,9 @@ def reset_password(token):
     if form.validate_on_submit():
         new_password = form.password.data
 
-        user = db.session.get(User, user_id)
         if user:
             user.password = generate_password_hash(new_password)
+            user.password_changed_at = datetime.utcnow()
             db.session.commit()
 
         return render_template("forgot_password.html", form_type="success")

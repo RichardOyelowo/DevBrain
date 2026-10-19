@@ -1,0 +1,15 @@
+:root {
+  --db-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --db-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --db-duration-fast: 120ms;
+  --db-duration-normal: 200ms;
+  --db-duration-slow: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --db-duration-fast: 0ms;
+    --db-duration-normal: 0ms;
+    --db-duration-slow: 0ms;
+  }
+}

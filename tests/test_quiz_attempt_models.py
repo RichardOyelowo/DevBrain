@@ -1,5 +1,7 @@
 from app.learning import create_attempt, get_next_pending_answer, submit_answer
-from app.models import LegacyQuiz, QuizAttempt, Topic
+from app.extensions import db
+from app.models import LegacyQuiz, QuizAttempt, Topic, User
+from app.session_security import auth_marker
 from tests.base import DevBrainTestCase
 
 
@@ -79,3 +81,45 @@ class LegacyQuizModelTest(DevBrainTestCase):
         summary = LegacyQuiz.query.filter_by(user_id=user.id).first()
         self.assertIsNotNone(summary)
         self.assertEqual(summary.score, 1)
+
+
+class QuizRouteSafetyTest(DevBrainTestCase):
+    def sign_in(self):
+        user = User(email="learner@example.com", password="hash", role="user")
+        db.session.add(user)
+        db.session.commit()
+        with self.client.session_transaction() as session:
+            session["user_id"] = user.id
+            session["auth_marker"] = auth_marker(user)
+        return user
+
+    def test_results_redirect_for_incomplete_attempt(self):
+        user = self.sign_in()
+        attempt = create_attempt(user.id, [], "EASY", 1)
+
+        response = self.client.get(f"/quiz/{attempt.id}/results", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f"/quiz/{attempt.id}/question", response.headers["Location"])
+
+    def test_review_redirect_for_incomplete_attempt(self):
+        user = self.sign_in()
+        attempt = create_attempt(user.id, [], "EASY", 1)
+
+        response = self.client.get(f"/quiz/{attempt.id}/review", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f"/quiz/{attempt.id}/question", response.headers["Location"])
+
+    def test_invalid_answer_post_redirects_without_crashing(self):
+        user = self.sign_in()
+        attempt = create_attempt(user.id, [], "EASY", 1)
+
+        response = self.client.post(
+            f"/quiz/{attempt.id}/question",
+            data={"attempt_answer_id": "", "option_id": ""},
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(f"/quiz/{attempt.id}/question", response.headers["Location"])

@@ -1,33 +1,36 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import btn %}
 
 {% block title %}: Results{% endblock %}
 
 {% block body %}
-    <section class="results-details">
-        <p class="eyebrow">Quiz complete</p>
-        <h1>Your Quiz Results</h1>
+<section class="quiz-shell db-stack db-stack--6">
+    <div class="db-page-header">
+        <p class="db-eyebrow">Quiz complete</p>
+        <h1 class="db-page-title">Results</h1>
+    </div>
 
-        <div class="score-panel">
-            <div>
-                <span>Score</span>
-                <strong>{{ attempt.score }} / {{ attempt.question_count }}</strong>
-            </div>
-            <div>
-                <span>Percentage</span>
-                <strong>{{ attempt.percentage }}%</strong>
-            </div>
-            <div>
-                <span>Grade</span>
-                <strong>{{ attempt.grade }}</strong>
-            </div>
-        </div>
+    <div class="score-panel">
+        <article class="db-card db-metric">
+            <div class="db-metric__label">Score</div>
+            <div class="db-metric__value">{{ attempt.score }} / {{ attempt.question_count }}</div>
+        </article>
+        <article class="db-card db-metric">
+            <div class="db-metric__label">Percentage</div>
+            <div class="db-metric__value">{{ attempt.percentage }}%</div>
+        </article>
+        <article class="db-card db-metric">
+            <div class="db-metric__label">Grade</div>
+            <div class="db-metric__value">{{ attempt.grade }}</div>
+        </article>
+    </div>
 
-        <div class="actions">
-            <a href="{{ url_for('main.quiz') }}" class="button button-primary">Take Another Quiz</a>
-            <a href="{{ url_for('main.quiz_review', attempt_id=attempt.id) }}" class="button button-secondary">Review Answers</a>
-            {% if session.get('user_id') %}
-                <a href="{{ url_for('main.history') }}" class="button button-secondary">View History</a>
-            {% endif %}
-        </div>
-    </section>
+    <div class="db-btn-group">
+        {{ btn("Take another quiz", href=url_for('main.quiz')) }}
+        {{ btn("Review answers", href=url_for('main.quiz_review', attempt_id=attempt.id), variant="secondary") }}
+        {% if session.get('user_id') %}
+            {{ btn("View history", href=url_for('main.history'), variant="ghost") }}
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

@@ -1,0 +1,58 @@
+.db-code {
+  font-family: var(--db-font-mono);
+  font-size: 0.8125em;
+  padding: 0.15em 0.4em;
+  border-radius: var(--db-radius-xs);
+  background: var(--db-bg-emphasis);
+  color: var(--db-code-accent);
+}
+
+.db-code-block {
+  overflow-x: auto;
+  padding: var(--db-space-4);
+  border: 1px solid var(--db-border-subtle);
+  border-radius: var(--db-radius-md);
+  background: var(--db-code-bg);
+  font-family: var(--db-font-mono);
+  font-size: var(--db-text-sm);
+  line-height: var(--db-leading-relaxed);
+  color: var(--db-code-text);
+  tab-size: 2;
+}
+
+.db-code-block pre {
+  margin: 0;
+  white-space: pre;
+}
+
+.db-terminal {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: var(--db-radius-md);
+  overflow: hidden;
+  background: var(--db-code-bg);
+}
+
+.db-terminal__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--db-space-2);
+  height: 36px;
+  padding: 0 var(--db-space-4);
+  border-bottom: 1px solid var(--db-border-subtle);
+  background: var(--db-bg-muted);
+}
+
+.db-terminal__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--db-radius-full);
+  background: var(--db-border-strong);
+}
+
+.db-terminal__dot--red { background: #ff5f57; }
+.db-terminal__dot--yellow { background: #febc2e; }
+.db-terminal__dot--green { background: #28c840; }
+
+.db-terminal__body {
+  padding: var(--db-space-5);
+}

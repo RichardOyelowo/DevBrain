@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
     const navToggle = document.querySelector("[data-nav-toggle]");
     const navLinks = document.querySelector("[data-nav-links]");
     if (navToggle && navLinks) {
@@ -8,6 +12,34 @@ document.addEventListener("DOMContentLoaded", () => {
             navLinks.classList.toggle("is-open", !expanded);
         });
     }
+
+    const sidebarToggle = document.querySelector("[data-sidebar-toggle]");
+    const sidebar = document.querySelector("[data-sidebar]");
+    const sidebarBackdrop = document.querySelector("[data-sidebar-backdrop]");
+
+    const closeSidebar = () => {
+        sidebar?.classList.remove("is-open");
+        sidebarBackdrop?.classList.remove("is-open");
+        if (sidebarBackdrop) sidebarBackdrop.hidden = true;
+        sidebarToggle?.setAttribute("aria-expanded", "false");
+    };
+
+    const openSidebar = () => {
+        sidebar?.classList.add("is-open");
+        sidebarBackdrop?.classList.add("is-open");
+        if (sidebarBackdrop) sidebarBackdrop.hidden = false;
+        sidebarToggle?.setAttribute("aria-expanded", "true");
+    };
+
+    sidebarToggle?.addEventListener("click", () => {
+        if (sidebar?.classList.contains("is-open")) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    sidebarBackdrop?.addEventListener("click", closeSidebar);
 
     const form = document.querySelector("[data-quiz-form]");
     if (!form) return;

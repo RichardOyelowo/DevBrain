@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% from "components/macros.html" import btn %}
+
+{% block title %}: Plans{% endblock %}
+
+{% block body %}
+{% set plan_cta_url = url_for('main.profile') if current_user else url_for('auth.register') %}
+{% set plan_cta_label = "View account" if current_user else "Create account" %}
+<div class="mkt-pricing-page">
+<section class="mkt-page-hero mkt-pricing-hero">
+    <div class="mkt-page-hero__copy">
+        <p class="db-eyebrow">Plans for a real practice habit</p>
+        <h1>Start free.<br><span>Grow when you’re ready.</span></h1>
+        <p>Every account gets the full quiz, review, history, and dashboard loop. Paid plans are planned, but checkout is not live yet.</p>
+    </div>
+    <aside class="mkt-pricing-note"><span class="mkt-about-callout__icon"><i data-lucide="shield-check"></i></span><p class="db-eyebrow">Available now</p><strong>5 quizzes every 7 days</strong><p>No card required. Your attempts and reviews stay on your account.</p></aside>
+</section>
+
+<div class="pricing-grid mkt-pricing-grid">
+    <article class="pricing-card mkt-plan-card--current">
+        <div class="mkt-plan-card__label"><p class="db-eyebrow">Free</p><span class="db-badge db-badge--success">Available now</span></div>
+        <h2>$0</h2>
+        <p>For learners who want the full product loop before committing.</p>
+        <ul>
+            <li>5 quizzes per rolling week</li>
+            <li>Dashboard, history, and saved reviews</li>
+            <li>Access to published starter categories</li>
+        </ul>
+        {{ btn(plan_cta_label, href=plan_cta_url) }}
+    </article>
+    <article class="pricing-card">
+        <div class="mkt-plan-card__label"><p class="db-eyebrow">Pro</p><span class="db-badge db-badge--warning">Planned</span></div>
+        <h2>$4.99 <small>/ month</small></h2>
+        <p>More room for a steady weekly practice routine.</p>
+        <ul>
+            <li>50 quiz attempts per rolling week</li>
+            <li>All free features</li>
+        </ul>
+        {{ btn(plan_cta_label, href=plan_cta_url, variant="secondary") }}
+    </article>
+    <article class="pricing-card is-featured">
+        <div class="mkt-plan-card__label"><p class="db-eyebrow">Unlimited</p><span class="db-badge db-badge--violet">Planned</span></div>
+        <h2>$9.99 <small>/ month</small></h2>
+        <p>For interview prep and developers who want open-ended practice.</p>
+        <ul>
+            <li>Unlimited quiz attempts</li>
+            <li>All free features</li>
+        </ul>
+        {{ btn(plan_cta_label, href=plan_cta_url, variant="secondary") }}
+    </article>
+</div>
+
+<section class="mkt-section mkt-faq-section">
+    <div class="mkt-section__intro"><p class="db-eyebrow">Plans, clearly</p><h2>Questions about access?</h2><p>The free plan works today. Billing will come later.</p></div>
+    <div class="mkt-faq-grid">
+        <article class="db-card"><div class="db-card__body"><h3>What does Free include?</h3><p class="db-mt-2">The same quiz, review, and dashboard flow as paid plans, limited to 5 starts per rolling week.</p></div></article>
+        <article class="db-card"><div class="db-card__body"><h3>Can I pay today?</h3><p class="db-mt-2">Not yet. Checkout is not connected. You can use the free plan while paid plans are being prepared.</p></div></article>
+        <article class="db-card"><div class="db-card__body"><h3>Do unused quizzes roll over?</h3><p class="db-mt-2">No. The limit uses a rolling 7-day window, not a lifetime bank of unused attempts.</p></div></article>
+    </div>
+</section>
+</div>
+{% endblock %}

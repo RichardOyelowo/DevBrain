@@ -3,14 +3,18 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, Regexp, EqualTo
 
 
+def normalize_email(value):
+    return (value or "").strip().lower()
+
+
 class Login(FlaskForm):
-    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email(message="Please enter a valid email address")])
+    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, filters=[normalize_email], validators=[DataRequired(), Email(message="Please enter a valid email address")])
     password = PasswordField("Password", validators=[DataRequired(), Length(max=50)])
     submit = SubmitField("Login")
 
 
 class Register(FlaskForm):
-    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email()])
+    email = StringField("Email", render_kw={"placeholder": "you@example.com"}, filters=[normalize_email], validators=[DataRequired(), Email()])
     username = StringField("Display name", render_kw={"placeholder": "Richard"}, validators=[Length(max=40)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=20), 
         Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$', 
@@ -20,7 +24,7 @@ class Register(FlaskForm):
 
 
 class ForgotPassword(FlaskForm):
-    email = StringField('Email', render_kw={"placeholder": "you@example.com"}, validators=[DataRequired(), Email(), Length(max=100)])
+    email = StringField('Email', render_kw={"placeholder": "you@example.com"}, filters=[normalize_email], validators=[DataRequired(), Email(), Length(max=100)])
     submit = SubmitField('Send Email')
 
 

@@ -1,0 +1,58 @@
+.db-panel {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: var(--db-radius-md);
+  background: linear-gradient(145deg, rgba(13, 34, 52, 0.94), rgba(8, 25, 40, 0.98));
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.13);
+}
+
+.db-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--db-space-4);
+  padding: var(--db-space-4) var(--db-space-5);
+  border-bottom: 1px solid var(--db-border-subtle);
+}
+
+.db-panel__title {
+  font-size: var(--db-text-sm);
+  font-weight: var(--db-weight-medium);
+  color: var(--db-text-secondary);
+  letter-spacing: var(--db-tracking-wide);
+  text-transform: uppercase;
+}
+
+.db-panel__body {
+  padding: var(--db-space-5);
+}
+
+.db-panel--flush .db-panel__body {
+  padding: 0;
+}
+
+.db-metric {
+  padding: var(--db-space-4) var(--db-space-5);
+}
+
+.db-metric__label {
+  font-size: var(--db-text-xs);
+  font-weight: var(--db-weight-medium);
+  color: var(--db-text-tertiary);
+  letter-spacing: var(--db-tracking-wide);
+  text-transform: uppercase;
+}
+
+.db-metric__value {
+  margin-top: var(--db-space-2);
+  font-size: var(--db-text-2xl);
+  font-weight: var(--db-weight-semibold);
+  color: var(--db-text-primary);
+  letter-spacing: var(--db-tracking-tight);
+  line-height: 1;
+}
+
+.db-metric__delta {
+  margin-top: var(--db-space-2);
+  font-size: var(--db-text-xs);
+  color: var(--db-text-tertiary);
+}

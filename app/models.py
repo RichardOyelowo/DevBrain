@@ -10,13 +10,18 @@ class User(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default="user")
+    plan = db.Column(db.String(20), nullable=False, default="free")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    password_changed_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     attempts = db.relationship("QuizAttempt", back_populates="user", lazy="dynamic")
 
     @property
     def is_admin(self):
         return self.role == "admin"
+
+
+db.Index("uq_users_email_lower", db.func.lower(User.email), unique=True)
 
 
 class LegacyQuiz(db.Model):

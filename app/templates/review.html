@@ -1,31 +1,34 @@
 {% extends "layout.html" %}
+{% from "components/macros.html" import badge %}
 
 {% block title %}: Review{% endblock %}
 
 {% block body %}
-<section class="app-page">
-    <div class="page-heading">
-        <p class="eyebrow">Review</p>
-        <h1>{{ attempt.topic_label }} results</h1>
-        <p class="muted">{{ attempt.score }} of {{ attempt.question_count }} correct. {{ attempt.grade }}.</p>
-    </div>
+<div class="db-page-header">
+    <p class="db-eyebrow">Review</p>
+    <h1 class="db-page-title">{{ attempt.topic_label }}</h1>
+    <p class="db-page-subtitle">{{ attempt.score }} of {{ attempt.question_count }} correct. Grade {{ attempt.grade }}.</p>
+</div>
 
-    <div class="review-list">
-        {% for answer in attempt.answers %}
-            <article class="panel review-item">
+<div class="review-list">
+    {% for answer in attempt.answers %}
+        <article class="db-card">
+            <div class="db-card__body">
                 <div class="question-meta">
                     <span>Question {{ answer.position }}</span>
-                    <span class="{{ 'status-good' if answer.is_correct else 'status-bad' }}">{{ "Correct" if answer.is_correct else "Missed" }}</span>
+                    {{ badge("Correct" if answer.is_correct else "Missed", "success" if answer.is_correct else "danger") }}
                 </div>
-                <h2>{{ answer.question.prompt }}</h2>
+                <h2 class="db-text-lg db-mt-4">{{ answer.question.prompt }}</h2>
                 {% if answer.question.code_snippet %}
                     <pre class="code-block"><code>{{ answer.question.code_snippet }}</code></pre>
                 {% endif %}
-                <p><strong>Your answer:</strong> {{ answer.selected_option.text if answer.selected_option else "No answer" }}</p>
-                <p><strong>Correct answer:</strong> {{ answer.question.correct_option.text if answer.question.correct_option else "Not set" }}</p>
-                <p class="muted">{{ answer.question.explanation }}</p>
-            </article>
-        {% endfor %}
-    </div>
-</section>
+                <p class="db-mt-4"><strong>Your answer:</strong> {{ answer.selected_option.text if answer.selected_option else "No answer" }}</p>
+                <p class="db-mt-2"><strong>Correct answer:</strong> {{ answer.question.correct_option.text if answer.question.correct_option else "Not set" }}</p>
+                {% if answer.question.explanation %}
+                    <p class="db-text-secondary db-mt-4">{{ answer.question.explanation }}</p>
+                {% endif %}
+            </div>
+        </article>
+    {% endfor %}
+</div>
 {% endblock %}
