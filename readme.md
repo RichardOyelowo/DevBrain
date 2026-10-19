@@ -25,6 +25,7 @@ DevBrain is a developer learning and quiz platform built for active practice. Yo
 - [Tech Stack](#tech-stack)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
+- [Plans and production setup](docs/operations-and-plans.md)
 - [Architecture Overview](#architecture-overview)
 - [Database and Models](#database-and-models)
 - [Question Import Format](#question-import-format)
@@ -62,11 +63,11 @@ The current access model:
 
 - Users have to register before taking quizzes
 - Free accounts get 5 quiz attempts per rolling week
+- Pro is limited to 50 quizzes per rolling week; Unlimited has no weekly cap
 - Admin accounts have unlimited access
-- The first account registered automatically becomes the admin
-- Every account after the first is a regular user
+- New accounts are regular users unless admin bootstrap is enabled on an empty database
 
-Payments are not implemented yet -- the 5-quiz limit is enforced in app logic for now.
+Checkout is not connected. The Pro and Unlimited plans are listed as planned.
 
 ---
 
@@ -76,9 +77,10 @@ Payments are not implemented yet -- the 5-quiz limit is enforced in app logic fo
 - SQLAlchemy models with Flask-Migrate support
 - Database-backed learning tables: topics, languages, presets, questions, answer_options, quiz_attempts, quiz_attempt_answers, question_import_batches
 - Legacy quizzes table kept for older summaries
-- First registered user automatically becomes admin
+- Admin bootstrap is off by default
 - User roles: admin and normal user
 - Free user quota enforced at 5 quiz attempts per rolling week
+- Pro quota enforced at 50 quiz attempts per rolling week; Unlimited accounts have no cap
 - Quiz generation from owned published questions, not external API
 - Fallback question selection so quizzes still fill even when exact topic/difficulty matches are low
 - Quiz selection ignores inactive and deprecated language topics, only picks from active categories
@@ -208,7 +210,7 @@ python run.py
 
 Visit `http://localhost:5000`
 
-The first account you register becomes the admin. Every account after that is a regular user.
+New accounts have the regular user role. To create an admin on a fresh local database, set `ADMIN_BOOTSTRAP_ENABLED=true` in `.env`, register the intended first account, then turn the setting off.
 
 ---
 
@@ -224,6 +226,12 @@ The first account you register becomes the admin. Every account after that is a 
 | `MAIL_PORT` | For password reset | SMTP server port |
 | `REDIS_URL` | Optional | Redis-backed sessions if needed |
 | `FLASK_ENV` | Optional | Set to `development` locally |
+| `ADMIN_BOOTSTRAP_ENABLED` | Optional | Give the first account on an empty database the admin role; keep off for public signup |
+| `AUTH_RATE_LIMIT` | Optional | Auth POST limit per IP and email, default `5` |
+| `AUTH_RATE_WINDOW_SECONDS` | Optional | Auth rate limit window, default `900` |
+| `TRUST_PROXY_HEADERS` | Optional | Trust `X-Forwarded-For` from a configured proxy; default `false` |
+| `WTF_CSRF_SSL_STRICT` | Optional | Check HTTPS referrers for CSRF; defaults on in production |
+| `SESSION_COOKIE_SECURE` | Optional | Send session cookies over HTTPS only; defaults on in production |
 
 Example local `.env`:
 
@@ -333,7 +341,7 @@ flask --app run.py db upgrade
 
 ## Admin Flow
 
-The first account registered becomes the admin automatically. No setup command needed. Admins see an extra sidebar entry that regular users never see. Admin routes are in a dedicated blueprint and protected server-side so visiting them without the right role returns a 403.
+Accounts use the regular user role by default. On an empty database, `ADMIN_BOOTSTRAP_ENABLED=true` gives the first signup the admin role. Turn it off after setup. Admins see an extra sidebar entry, and admin routes check the role server-side.
 
 Admins can:
 
@@ -404,15 +412,18 @@ No npm build step and no frontend framework. HTML, CSS, and a small amount of Ja
 ```
 app/static/
   css/
-    base.css        # Reset, variables, typography
-    layout.css      # App shell, sidebar, mobile nav
-    components.css  # Buttons, cards, badges, tables
-    pages.css       # Page-specific overrides, quiz examples, category cloud, signal grid, roadmap strips
+    main.css        # CSS entry point
+    tokens/         # Colors, type, spacing, radii, and layer values
+    base/           # Document styles, focus states, and reset
+    layout/         # Marketing header, app shell, sidebar, footer
+    components/     # Buttons, cards, forms, tables, alerts
+    pages/          # App and marketing page styles
+    legacy/shim.css # Styles kept for older templates
   js/
-    app.js          # Lightweight UI behavior
+    app.js          # Sidebar and marketing navigation
 ```
 
-The design is a dark SaaS-style interface. The logged-in app uses a sidebar on desktop and a collapsible mobile nav on smaller screens. Wide tables convert into readable card layouts on mobile. The homepage now has both quiz example types, a question styles section, category and language breakdowns, and several sections explaining the platform, the admin workflow, and the product direction.
+The app uses server-rendered Jinja templates. There is no frontend build step. The logged-in app has a sidebar and mobile navigation. CSS files load through `main.css`.
 
 ---
 
@@ -435,14 +446,14 @@ Test files:
 ```
 tests/
   base.py                         # Shared test setup and app context
-  test_user_model.py              # User creation, password hashing, role logic, first-user admin
+  test_user_model.py              # User roles, auth, password reset, sessions, and signup limits
   test_topic_question_models.py   # Topics, questions, answer options, status transitions, delete/deactivate behavior
   test_quiz_attempt_models.py     # Attempt creation, answer saving, scoring, grade calculation
   test_question_import_model.py   # Import batch model, validation, draft creation, source tracking
   test_learning_services.py       # Question selection, fallback logic, case-insensitive language filtering, quota checks, dashboard stats, editable presets
 ```
 
-Last known test run: **36 tests OK**
+The command above runs the current test suite.
 
 ---
 
@@ -543,9 +554,9 @@ The original version called an external quiz API every time a user started a qui
 
 Rather than returning an error when exact topic and difficulty matches are low, the app broadens the pool to fill the requested count. This keeps the quiz experience smooth while the question bank is still being built out.
 
-### First User Becomes Admin
+### Admin Bootstrap
 
-No separate admin setup command. The first account registered automatically gets the admin role so the owner can register first and start managing the site immediately.
+New accounts are regular users by default. `ADMIN_BOOTSTRAP_ENABLED` gives the first account on an empty database the admin role. Turn it off after creating that account.
 
 ### Dashboard and Profile as Separate Pages
 
@@ -557,18 +568,22 @@ Dashboard is for understanding your progress and deciding what to practice. Prof
 
 - Passwords hashed with Werkzeug
 - Password reset uses signed time-limited tokens
+- Reset tokens expire after a password change
 - Jinja autoescaping protects all template output
-- Admin routes check role server-side -- not just hidden from the sidebar
+- Admin routes check role and session state server-side
+- Mutating forms use CSRF tokens
+- Login, registration, and password reset POSTs are rate limited
 - Session cookies are HTTP-only
 - Secure cookies enabled in production over HTTPS
 
-Still needs before serious production use: rate limiting on auth routes, a thorough CSRF audit across admin forms, and billing enforcement once payments are added.
+Billing is not connected. Paid plan checkout and subscription updates still need to be built.
 
 ---
 
 ## Known Limitations
 
-- Payments not implemented -- the 5-quiz weekly limit is app logic only
+- Payments not connected; Pro and Unlimited are planned
+- Auth rate limit counters live in each Gunicorn worker process
 - The question bank needs significantly more questions per topic to feel deep
 - Dashboard can grow with better charts and longer-term trend analysis
 - Redis is optional and not required for the core quiz path
