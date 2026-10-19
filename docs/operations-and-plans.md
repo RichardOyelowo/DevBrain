@@ -1,29 +1,50 @@
-# Plans and production setup
+# Plans And Production Operations
 
-DevBrain saves a plan on each user account. `app/learning.py` enforces the quiz limits. Free allows 5 quiz starts in a rolling 7-day window. Pro allows 50. Unlimited has no weekly cap. Admin accounts also have no cap.
+This guide describes the plan limits and the startup path in this repository.
 
-The limit counts quiz attempts when they start. An unfinished attempt uses a slot until it leaves the 7-day window. Attempts and reviews stay in account history.
+## Plans
 
-## Billing status
+`app/learning.py` checks the plan saved on each user:
 
-The plans page lists Pro and Unlimited as planned. Checkout is not connected, so users cannot buy a plan in the app. The `plan` field changes quota behavior, but no payment flow updates it.
+- Free: 5 quiz starts in a rolling 7-day window
+- Pro: 50 quiz starts in a rolling 7-day window
+- Unlimited: no weekly cap
+- Admin: no weekly cap
 
-## Admin account setup
+An attempt uses a slot when it starts, including an unfinished attempt. The slot becomes available after seven days.
 
-New accounts get the `user` role by default. To bootstrap an admin on an empty database, set `ADMIN_BOOTSTRAP_ENABLED=true` before the intended first account registers. Turn it off as soon as that account exists. Do not leave it enabled while public registration is open. The first account is selected by registration order.
+The pricing page lists Pro at $4.99 per month and Unlimited at $9.99 per month as planned prices. Checkout is not connected. No payment provider changes `users.plan`; access must be set through trusted application or database operations.
 
-Existing user roles are not changed by this setting. If the database already has accounts, the setting does not promote a new account.
+## Required settings
 
-## Production settings
+Set a unique `SECRET_KEY` in production. The app refuses to start in production without one. Session cookies use `Secure` by default in production, and strict CSRF referrer checks are enabled by default there.
 
-Set `SECRET_KEY` in production. The app refuses to start without it. Session cookies use `Secure` by default in production. Keep `WTF_CSRF_SSL_STRICT` enabled when serving HTTPS.
+`TRUST_PROXY_HEADERS` defaults to false. Enable it only when the app is behind a trusted proxy that sets forwarded client IP headers.
 
-Auth routes allow 5 POST attempts per 15 minutes for each client IP and email. The limiter keeps its counters in the Gunicorn worker process. `gunicorn.conf.py` starts one worker by default. If the worker count changes, each worker has a separate counter.
+The auth limiter defaults to 5 POST attempts per IP and email in 900 seconds. It stores counters in each Gunicorn worker's memory. Counters are not shared between workers or app instances.
 
-`TRUST_PROXY_HEADERS` is off by default. Turn it on only when the app receives traffic through a trusted proxy that sets `X-Forwarded-For`.
+For the full environment variable list, see the Configuration section in [the README](../readme.md).
 
-## Database upgrade
+## Admin bootstrap
 
-`start.sh` runs `flask db upgrade` before starting Gunicorn. The email migration normalizes existing addresses and adds a case-insensitive unique index. It stops if two rows would have the same lowercased, trimmed email. Resolve those accounts before retrying the migration. Downgrading removes the index but does not restore the old email casing or whitespace.
+The first registered account is a regular user by default. On a new, empty database only, set `ADMIN_BOOTSTRAP_ENABLED=true` before the intended admin registers. Turn it off as soon as the account is created.
 
-For an existing production database, back it up before applying migrations. Do not run `flask init-db` as a deployment step. That command creates the starter question bank when needed.
+The setting does not promote an account on a database that already has users. Do not leave it enabled while registration is open.
+
+## Database startup
+
+`start.sh` runs `flask db upgrade` and `flask ensure-catalog` before Gunicorn starts. The catalog command adds starter rows only when core catalog data is missing.
+
+For an existing production database, take a database backup before applying migrations. Do not run `flask init-db` as a deployment step.
+
+Migration `20260628_0008_unique_lower_user_email.py` normalizes existing email values and adds a case-insensitive unique index. It stops if two rows would share the same lowercased, trimmed address. Resolve duplicates before retrying the migration. Downgrading removes the index but does not restore earlier casing or whitespace.
+
+## Local checks
+
+Run the repository test suite with:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The current tests use in-memory SQLite. Production uses PostgreSQL.
